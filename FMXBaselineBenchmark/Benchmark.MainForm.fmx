@@ -1,0 +1,253 @@
+﻿object BenchmarkMainForm: TBenchmarkMainForm
+  Left = 0
+  Top = 0
+  Caption = 'FMX Baseline Benchmark'
+  ClientHeight = 800
+  ClientWidth = 1280
+  Position = ScreenCenter
+  Constraints.MinHeight = 720.000000000000000000
+  Constraints.MinWidth = 1080.000000000000000000
+  FormFactor.Width = 1280
+  FormFactor.Height = 800
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object FActions: TActionList
+    Left = 24
+    Top = 24
+    object actPrepare: TAction
+      Text = 'Prepare'
+      OnExecute = ActionExecute
+    end
+    object actReset: TAction
+      Text = 'Reset'
+      OnExecute = ActionExecute
+    end
+    object actStart: TAction
+      Text = 'Start'
+      OnExecute = ActionExecute
+    end
+    object actStop: TAction
+      Text = 'Stop'
+      OnExecute = ActionExecute
+    end
+    object actRefresh: TAction
+      Text = 'Refresh'
+      OnExecute = ActionExecute
+    end
+    object actSave: TAction
+      Text = 'Save'
+      OnExecute = ActionExecute
+    end
+    object actSelfTest: TAction
+      Text = 'SelfTest'
+      OnExecute = ActionExecute
+    end
+  end
+  object FTopBar: TLayout
+    Align = Top
+    Size.Width = 1280.000000000000000000
+    Size.Height = 44.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object PrepareButton: TButton
+      Action = actPrepare
+      Align = Left
+      Position.X = 0.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+    object ResetButton: TButton
+      Action = actReset
+      Align = Left
+      Position.X = 82.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+    end
+    object StartButton: TButton
+      Action = actStart
+      Align = Left
+      Position.X = 164.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+    end
+    object StopButton: TButton
+      Action = actStop
+      Align = Left
+      Position.X = 246.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+    end
+    object RefreshButton: TButton
+      Action = actRefresh
+      Align = Left
+      Position.X = 328.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+    end
+    object SaveButton: TButton
+      Action = actSave
+      Align = Left
+      Position.X = 410.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+    end
+    object SelfTestButton: TButton
+      Action = actSelfTest
+      Align = Left
+      Position.X = 492.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 82.000000000000000000
+      Size.Height = 44.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 6
+    end
+  end
+  object FBody: TLayout
+    Align = Client
+    Position.X = 0.000000000000000000
+    Position.Y = 44.000000000000000000
+    Size.Width = 1280.000000000000000000
+    Size.Height = 756.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object FLeftPanel: TLayout
+      Align = Left
+      Size.Width = 260.000000000000000000
+      Size.Height = 756.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object TestLabel: TLabel
+        Align = Top
+        Size.Width = 260.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Test'
+      end
+      object FTestCombo: TComboBox
+        Align = Top
+        Position.Y = 24.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+      end
+      object WorkloadLabel: TLabel
+        Align = Top
+        Position.Y = 56.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Workload'
+      end
+      object FWorkloadCombo: TComboBox
+        Align = Top
+        Position.Y = 80.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+      end
+      object ScenarioLabel: TLabel
+        Align = Top
+        Position.Y = 112.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Scenario'
+      end
+      object FScenarioCombo: TComboBox
+        Align = Top
+        Position.Y = 136.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+      end
+      object SamplingLabel: TLabel
+        Align = Top
+        Position.Y = 168.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Sampling'
+      end
+      object FSamplingCombo: TComboBox
+        Align = Top
+        Position.Y = 192.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+      end
+      object ScaleLabel: TLabel
+        Align = Top
+        Position.Y = 224.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Scale'
+      end
+      object FScaleCombo: TComboBox
+        Align = Top
+        Position.Y = 248.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+      end
+      object WindowLabel: TLabel
+        Align = Top
+        Position.Y = 280.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 24.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Window'
+      end
+      object FWindowCombo: TComboBox
+        Align = Top
+        Position.Y = 304.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 32.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+      end
+    end
+    object FReportMemo: TMemo
+      Align = Right
+      Position.X = 760.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 520.000000000000000000
+      Size.Height = 756.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      ReadOnly = True
+    end
+    object FContent: TLayout
+      Align = Client
+      Position.X = 260.000000000000000000
+      Position.Y = 0.000000000000000000
+      Size.Width = 500.000000000000000000
+      Size.Height = 756.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+    end
+  end
+end

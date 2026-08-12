@@ -1,0 +1,144 @@
+﻿object ThemeUiDesignTestForm: TThemeUiDesignTestForm
+  Left = 0
+  Top = 0
+  Caption = 'UniListView Theme UI Test'
+  ClientHeight = 760
+  ClientWidth = 1180
+  Fill.Color = claWhite
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  OnCreate = FormCreate
+  object RootLayout: TLayout
+    Align = Client
+    Size.Width = 1180.000000000000000000
+    Size.Height = 760.000000000000000000
+    object TopBar: TRectangle
+      Align = Top
+      Size.Width = 1180.000000000000000000
+      Size.Height = 92.000000000000000000
+      Fill.Color = claWhite
+      Stroke.Kind = Solid
+      Stroke.Color = claSilver
+      object TitleLabel: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 12.000000000000000000
+        Size.Width = 360.000000000000000000
+        Size.Height = 28.000000000000000000
+        StyledSettings = [Family, Style]
+        TextSettings.Font.Size = 20.000000000000000000
+        Text = 'UniListView Theme UI Test'
+      end
+      object ThemeCombo: TComboBox
+        Position.X = 16.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 260.000000000000000000
+        Size.Height = 32.000000000000000000
+        OnChange = ThemeComboChange
+      end
+      object SampleButton: TButton
+        Position.X = 292.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 130.000000000000000000
+        Size.Height = 32.000000000000000000
+        Text = 'FMX Button'
+      end
+      object SampleEdit: TEdit
+        Position.X = 438.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 220.000000000000000000
+        Size.Height = 32.000000000000000000
+        Text = 'FMX Edit'
+      end
+      object InfoLabel: TLabel
+        Position.X = 680.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 470.000000000000000000
+        Size.Height = 32.000000000000000000
+        StyledSettings = [Family, Style]
+        Text = 'Theme info'
+      end
+    end
+    object BodyLayout: TLayout
+      Align = Client
+      Position.Y = 92.000000000000000000
+      Size.Width = 1180.000000000000000000
+      Size.Height = 668.000000000000000000
+      Padding.Left = 12.000000000000000000
+      Padding.Top = 12.000000000000000000
+      Padding.Right = 12.000000000000000000
+      Padding.Bottom = 12.000000000000000000
+      object ListPanel: TLayout
+        Align = Left
+        Margins.Right = 12.000000000000000000
+        Size.Width = 360.000000000000000000
+        Size.Height = 644.000000000000000000
+        object ListTitleLabel: TLabel
+          Align = Top
+          Size.Width = 360.000000000000000000
+          Size.Height = 30.000000000000000000
+          StyledSettings = [Family, Style]
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          Text = 'List mode'
+        end
+        object ListView: TUniListView
+          Align = Client
+          Position.Y = 30.000000000000000000
+          Size.Width = 360.000000000000000000
+          Size.Height = 614.000000000000000000
+          ViewMode = uvmList
+          ThemeName = 'Termius Light'
+        end
+      end
+      object TreePanel: TLayout
+        Align = Right
+        Margins.Left = 12.000000000000000000
+        Position.X = 808.000000000000000000
+        Size.Width = 360.000000000000000000
+        Size.Height = 644.000000000000000000
+        object TreeTitleLabel: TLabel
+          Align = Top
+          Size.Width = 360.000000000000000000
+          Size.Height = 30.000000000000000000
+          StyledSettings = [Family, Style]
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          Text = 'Tree mode'
+        end
+        object TreeView: TUniListView
+          Align = Client
+          Position.Y = 30.000000000000000000
+          Size.Width = 360.000000000000000000
+          Size.Height = 614.000000000000000000
+          ViewMode = uvmList
+          TreeMode = True
+          TreeKeyField = 'id'
+          TreeParentField = 'parentid'
+          TreeColumn = 'name'
+          ThemeName = 'Termius Light'
+        end
+      end
+      object CardsPanel: TLayout
+        Align = Client
+        Position.X = 384.000000000000000000
+        Size.Width = 412.000000000000000000
+        Size.Height = 644.000000000000000000
+        object CardsTitleLabel: TLabel
+          Align = Top
+          Size.Width = 412.000000000000000000
+          Size.Height = 30.000000000000000000
+          StyledSettings = [Family, Style]
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          Text = 'Cards mode'
+        end
+        object CardsView: TUniListView
+          Align = Client
+          Position.Y = 30.000000000000000000
+          Size.Width = 412.000000000000000000
+          Size.Height = 614.000000000000000000
+          ViewMode = uvmCards
+          CardLayout = uclGrid
+          ThemeName = 'Termius Light'
+        end
+      end
+    end
+  end
+end

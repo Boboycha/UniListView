@@ -1,0 +1,31 @@
+﻿package UniListViewRuntime;
+
+{$ALIGN 8}
+{$DESCRIPTION 'UniListView FMX runtime package'}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  dbrtl,
+  fmx,
+  Skia.Package.RTL,
+  Skia.Package.FMX;
+
+contains
+  UniList.Types in '..\src\UniList.Types.pas',
+  UniList.Items in '..\src\UniList.Items.pas',
+  UniList.Columns in '..\src\UniList.Columns.pas',
+  UniList.Theme in '..\src\UniList.Theme.pas',
+  UniList.Rules in '..\src\UniList.Rules.pas',
+  UniList.Vector in '..\src\UniList.Vector.pas',
+  UniList.Performance in '..\src\UniList.Performance.pas',
+  UniList.Diagnostics in '..\src\UniList.Diagnostics.pas',
+  UniList.Text in '..\src\UniList.Text.pas',
+  UniList.Search in '..\src\UniList.Search.pas',
+  UniList.Control in '..\src\UniList.Control.pas',
+  UniList.Popup in '..\src\UniList.Popup.pas',
+  UniList.DropDown in '..\src\UniList.DropDown.pas',
+  UniList.Lookup in '..\src\UniList.Lookup.pas',
+  UniList.Json.Adapter in '..\src\UniList.Json.Adapter.pas';
+
+end.

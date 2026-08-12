@@ -1,0 +1,108 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{442C5B7D-A111-4636-91DA-5171C2494806}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="packages\UniListViewDesign.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="packages\UniListViewRuntime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="demo\UniListDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Demos\UniListView.Showcase\UniListView.Showcase.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="UniPopupPerformanceLab\UniPopupPerformanceLab.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="playground\UniListPlayground.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="scrollbox-buttons-lab\FmxScrollBoxButtonsLab.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="UniListViewDesign">
+        <MSBuild Projects="packages\UniListViewDesign.dproj"/>
+    </Target>
+    <Target Name="UniListViewDesign:Clean">
+        <MSBuild Projects="packages\UniListViewDesign.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniListViewDesign:Make">
+        <MSBuild Projects="packages\UniListViewDesign.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UniListViewRuntime">
+        <MSBuild Projects="packages\UniListViewRuntime.dproj"/>
+    </Target>
+    <Target Name="UniListViewRuntime:Clean">
+        <MSBuild Projects="packages\UniListViewRuntime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniListViewRuntime:Make">
+        <MSBuild Projects="packages\UniListViewRuntime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UniListDemo">
+        <MSBuild Projects="demo\UniListDemo.dproj"/>
+    </Target>
+    <Target Name="UniListDemo:Clean">
+        <MSBuild Projects="demo\UniListDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniListDemo:Make">
+        <MSBuild Projects="demo\UniListDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UniListView_Showcase">
+        <MSBuild Projects="Demos\UniListView.Showcase\UniListView.Showcase.dproj"/>
+    </Target>
+    <Target Name="UniListView_Showcase:Clean">
+        <MSBuild Projects="Demos\UniListView.Showcase\UniListView.Showcase.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniListView_Showcase:Make">
+        <MSBuild Projects="Demos\UniListView.Showcase\UniListView.Showcase.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UniPopupPerformanceLab">
+        <MSBuild Projects="UniPopupPerformanceLab\UniPopupPerformanceLab.dproj"/>
+    </Target>
+    <Target Name="UniPopupPerformanceLab:Clean">
+        <MSBuild Projects="UniPopupPerformanceLab\UniPopupPerformanceLab.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniPopupPerformanceLab:Make">
+        <MSBuild Projects="UniPopupPerformanceLab\UniPopupPerformanceLab.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UniListPlayground">
+        <MSBuild Projects="playground\UniListPlayground.dproj"/>
+    </Target>
+    <Target Name="UniListPlayground:Clean">
+        <MSBuild Projects="playground\UniListPlayground.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniListPlayground:Make">
+        <MSBuild Projects="playground\UniListPlayground.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FmxScrollBoxButtonsLab">
+        <MSBuild Projects="scrollbox-buttons-lab\FmxScrollBoxButtonsLab.dproj"/>
+    </Target>
+    <Target Name="FmxScrollBoxButtonsLab:Clean">
+        <MSBuild Projects="scrollbox-buttons-lab\FmxScrollBoxButtonsLab.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FmxScrollBoxButtonsLab:Make">
+        <MSBuild Projects="scrollbox-buttons-lab\FmxScrollBoxButtonsLab.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="UniListViewDesign;UniListViewRuntime;UniListDemo;UniListView_Showcase;UniPopupPerformanceLab;UniListPlayground;FmxScrollBoxButtonsLab"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="UniListViewDesign:Clean;UniListViewRuntime:Clean;UniListDemo:Clean;UniListView_Showcase:Clean;UniPopupPerformanceLab:Clean;UniListPlayground:Clean;FmxScrollBoxButtonsLab:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="UniListViewDesign:Make;UniListViewRuntime:Make;UniListDemo:Make;UniListView_Showcase:Make;UniPopupPerformanceLab:Make;UniListPlayground:Make;FmxScrollBoxButtonsLab:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

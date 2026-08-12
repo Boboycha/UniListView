@@ -1,0 +1,83 @@
+﻿FMX Baseline Benchmark Report
+Test
+  Test ID: 0
+  Test name: Empty Form
+  Scenario: Idle
+  Sampling mode: Event Driven
+  Sampling point: Test surface TPaintBox.OnPaint completion
+  What is measured: FMX paint handler duration and interval between test-surface paint completions
+  What is not measured: Actual GPU present, compositor latency, Canvas.EndScene, driver queue
+  Actual GPU present measurable: No
+  Main Form Paint: N/A - TForm.Paint is not a public FMX hook in this benchmark; test-surface paint is measured instead
+  Canvas.FillText/FillRect/EndScene counters: N/A - not instrumented globally; workload-specific paint duration is measured
+
+Environment
+  Platform/OS: Windows 11 (Version 25H2, OS Build 26200.8875, 64-bit Edition)
+  X11/Wayland: manual field
+  VM/Physical: manual field
+  Renderer: manual field
+  Software rendering: manual field
+  Build: see project configuration
+  Scale: 1,00
+  Window state: Normal
+  Workload: TForm + TLayout + lightweight sampler only
+  Visible workload: single test surface
+
+Session
+  Running: False
+  Session duration: 4,855 s
+  Samples: 2
+  Timer probe samples: 0
+
+Frame Metrics
+  FPS average: 0,2
+  FPS minimum: 0,2
+  FPS 1% low: 0,2
+  Frame interval last: 4706,246 ms
+  Frame interval average: 4706,246 ms
+  Frame interval median: 4706,246 ms
+  Frame interval P95: 4706,246 ms
+  Frame interval P99: 4706,246 ms
+  Frame interval max: 4706,246 ms
+  Frames >16.67 ms: 1 (50,0%)
+  Frames >33.33 ms: 1 (50,0%)
+  Frames >50 ms: 1 (50,0%)
+  Frames >100 ms: 1 (50,0%)
+
+Cost Metrics
+  Paint: Calls=2 Last=0,000 ms Avg=0,000 ms Max=0,000 ms
+  Input-to-paint: N/A - no samples
+  Timer probe interval: N/A - no samples
+  Load: N/A - no samples
+
+Profiler Self-Test
+  Method: TStopwatch + Sleep intervals
+  Sleep 1 ms: measured 16,250 ms
+  Sleep 5 ms: measured 16,229 ms
+  Sleep 20 ms: measured 31,855 ms
+  Sleep 50 ms: measured 63,920 ms
+
+Decision Matrix Template
+| Test | Windows | Ubuntu VM | Debian Physical |
+|---|---:|---:|---:|
+| Empty Form | | | |
+| Empty PaintBox | | | |
+| FillRect 100 | | | |
+| FillText 300 | | | |
+| DrawBitmap 100 | | | |
+| Combined PaintBox | | | |
+| 100 Labels | | | |
+| 100 Cards Controls | | | |
+| TVertScrollBox 100 | | | |
+| Standard TListView 10k | | | |
+| UniListView Cards 10k | import from Showcase | import from Showcase | import from Showcase |
+
+Decision Tree
+  Empty Form slow: bottleneck is FMX application loop/scene, UniListView is not primary cause.
+  Empty PaintBox slow after fast Empty Form: bottleneck is FMX paint/scene lifecycle.
+  PaintBox primitives fast, controls slow: bottleneck is FMX visual tree/layout/style infrastructure.
+  Combined PaintBox fast, UniListView slow: bottleneck is UniListView or Showcase integration.
+  Standard TListView and UniListView equally slow: bottleneck is FMX list/control infrastructure or scene invalidation.
+  UniListView faster than Standard TListView and thresholds pass: UniListView Linux GO.
+
+FINAL DECISION: PENDING - fill three-run Windows/Ubuntu VM/Debian Physical matrix and apply decision tree

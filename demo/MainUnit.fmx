@@ -1,0 +1,711 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'UniListView '#8212' Theme Gallery'
+  ClientHeight = 720
+  ClientWidth = 1120
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  DesignerMasterStyle = 0
+  object BackgroundRect: TRectangle
+    Align = Client
+    Fill.Color = xFF141729
+    Size.Width = 1120.000000000000000000
+    Size.Height = 720.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Kind = None
+    object RootLayout: TLayout
+      Align = Client
+      Margins.Left = 14.000000000000000000
+      Margins.Top = 14.000000000000000000
+      Margins.Right = 14.000000000000000000
+      Margins.Bottom = 14.000000000000000000
+      Size.Width = 1092.000000000000000000
+      Size.Height = 692.000000000000000000
+      Size.PlatformDefault = False
+      object HeaderPanel: TRectangle
+        Align = Top
+        Fill.Color = xFF252A42
+        Size.Width = 1092.000000000000000000
+        Size.Height = 296.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Color = xFF4A70CC
+        XRadius = 12.000000000000000000
+        YRadius = 12.000000000000000000
+        object HeaderLayout: TLayout
+          Align = Client
+          Margins.Left = 16.000000000000000000
+          Margins.Top = 10.000000000000000000
+          Margins.Right = 16.000000000000000000
+          Margins.Bottom = 10.000000000000000000
+          Size.Width = 1060.000000000000000000
+          Size.Height = 276.000000000000000000
+          Size.PlatformDefault = False
+          object SettingsGroupPanel: TRectangle
+            Fill.Color = xFF294FA8
+            HitTest = False
+            Position.X = -8.000000000000000000
+            Position.Y = 87.000000000000000000
+            Size.Width = 728.000000000000000000
+            Size.Height = 45.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF4A70CC
+            XRadius = 8.000000000000000000
+            YRadius = 8.000000000000000000
+          end
+          object PopupGroupPanel: TRectangle
+            Fill.Color = xFF294FA8
+            HitTest = False
+            Position.X = -8.000000000000000000
+            Position.Y = 137.000000000000000000
+            Size.Width = 728.000000000000000000
+            Size.Height = 43.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF4A70CC
+            XRadius = 8.000000000000000000
+            YRadius = 8.000000000000000000
+          end
+          object DropDownGroupPanel: TRectangle
+            Fill.Color = xFF294FA8
+            HitTest = False
+            Position.X = -8.000000000000000000
+            Position.Y = 183.000000000000000000
+            Size.Width = 728.000000000000000000
+            Size.Height = 43.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF4A70CC
+            XRadius = 8.000000000000000000
+            YRadius = 8.000000000000000000
+          end
+          object TitleLabel: TLabel
+            StyledSettings = [Family]
+            Size.Width = 360.000000000000000000
+            Size.Height = 28.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.Font.Size = 18.000000000000000000
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+            Text = 'UniListView '#183' Theme Gallery'
+          end
+          object SearchEdit: TEdit
+            Touch.InteractiveGestures = [LongTap, DoubleTap]
+            TabOrder = 3
+            Position.X = 380.000000000000000000
+            Size.Width = 240.000000000000000000
+            Size.Height = 32.000000000000000000
+            Size.PlatformDefault = False
+            TextPrompt = #1055#1086#1080#1089#1082'... (Ctrl+F)'
+            OnChangeTracking = SearchEditChange
+            OnKeyDown = SearchEditKeyDown
+          end
+          object SearchResultLabel: TLabel
+            StyledSettings = [Family, Size, Style]
+            Position.X = 628.000000000000000000
+            Position.Y = 4.000000000000000000
+            Size.Width = 132.000000000000000000
+            Size.Height = 24.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.FontColor = claWhite
+          end
+          object ThemeCaptionLabel: TLabel
+            StyledSettings = [Family, Size, Style]
+            Position.Y = 46.000000000000000000
+            Size.Width = 48.000000000000000000
+            Size.Height = 32.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.FontColor = claWhite
+            Text = #1058#1077#1084#1072':'
+          end
+          object ThemeComboBox: TComboBox
+            Position.X = 54.000000000000000000
+            Position.Y = 44.000000000000000000
+            Size.Width = 270.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            OnChange = ThemeComboBoxChange
+          end
+          object RandomThemeButton: TButton
+            Position.X = 336.000000000000000000
+            Position.Y = 44.000000000000000000
+            Size.Width = 158.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Text = #1057#1083#1091#1095#1072#1081#1085#1072#1103' '#1090#1077#1084#1072
+            TextSettings.Trimming = None
+            OnClick = RandomThemeButtonClick
+          end
+          object ModeButton: TButton
+            Position.X = 506.000000000000000000
+            Position.Y = 44.000000000000000000
+            Size.Width = 158.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 2
+            Text = #1055#1086#1082#1072#1079#1072#1090#1100' '#1089#1087#1080#1089#1086#1082
+            TextSettings.Trimming = None
+            OnClick = ModeButtonClick
+          end
+          object JsonStressButton: TButton
+            Position.X = 670.000000000000000000
+            Position.Y = 44.000000000000000000
+            Size.Width = 46.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 19
+            Text = 'JSON'
+            TextSettings.Trimming = None
+            OnClick = JsonStressButtonClick
+          end
+          object CardLayoutCaptionLabel: TLabel
+            StyledSettings = [Family, Size, Style]
+            Position.Y = 94.000000000000000000
+            Size.Width = 120.000000000000000000
+            Size.Height = 32.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.FontColor = claWhite
+            Text = #1050#1072#1088#1090#1086#1095#1082#1080':'
+          end
+          object CardLayoutComboBox: TComboBox
+            Position.X = 124.000000000000000000
+            Position.Y = 92.000000000000000000
+            Size.Width = 200.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 4
+            OnChange = CardLayoutComboBoxChange
+          end
+          object ActionVisibilityCaptionLabel: TLabel
+            StyledSettings = [Family, Size, Style]
+            Position.X = 336.000000000000000000
+            Position.Y = 94.000000000000000000
+            Size.Width = 96.000000000000000000
+            Size.Height = 32.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.FontColor = claWhite
+            Text = 'Actions:'
+          end
+          object ActionVisibilityComboBox: TComboBox
+            Position.X = 432.000000000000000000
+            Position.Y = 92.000000000000000000
+            Size.Width = 104.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 5
+            OnChange = ActionVisibilityComboBoxChange
+          end
+          object CardSizingCaptionLabel: TLabel
+            StyledSettings = [Family, Size, Style]
+            Position.X = 544.000000000000000000
+            Position.Y = 94.000000000000000000
+            Size.Width = 60.000000000000000000
+            Size.Height = 32.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.FontColor = claWhite
+            Text = 'Width:'
+          end
+          object CardSizingComboBox: TComboBox
+            Position.X = 604.000000000000000000
+            Position.Y = 92.000000000000000000
+            Size.Width = 112.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 6
+            OnChange = CardSizingComboBoxChange
+          end
+          object PopupAnchorEdit: TEdit
+            Touch.InteractiveGestures = [LongTap, DoubleTap]
+            TabOrder = 7
+            Position.Y = 142.000000000000000000
+            Size.Width = 140.000000000000000000
+            Size.Height = 34.000000000000000000
+            Size.PlatformDefault = False
+            TextPrompt = 'Popup anchor'
+          end
+          object OpenPopupButton: TButton
+            Position.X = 148.000000000000000000
+            Position.Y = 142.000000000000000000
+            Size.Width = 104.000000000000000000
+            Size.Height = 34.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 8
+            Text = 'Open Popup'
+            TextSettings.Trimming = None
+            OnClick = OpenPopupButtonClick
+          end
+          object PopupPlacementComboBox: TComboBox
+            Position.X = 260.000000000000000000
+            Position.Y = 142.000000000000000000
+            Size.Width = 100.000000000000000000
+            Size.Height = 34.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 9
+          end
+          object PopupWidthModeComboBox: TComboBox
+            Position.X = 368.000000000000000000
+            Position.Y = 142.000000000000000000
+            Size.Width = 104.000000000000000000
+            Size.Height = 34.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 10
+          end
+          object PopupEscapeCheckBox: TCheckBox
+            IsChecked = True
+            Position.X = 480.000000000000000000
+            Position.Y = 146.000000000000000000
+            Size.Width = 104.000000000000000000
+            Size.Height = 26.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 11
+            Text = 'Escape'
+          end
+          object PopupOutsideCheckBox: TCheckBox
+            IsChecked = True
+            Position.X = 588.000000000000000000
+            Position.Y = 146.000000000000000000
+            Size.Width = 128.000000000000000000
+            Size.Height = 26.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 12
+            Text = 'Outside click'
+          end
+          object DropDownOpenButton: TButton
+            Position.X = 228.000000000000000000
+            Position.Y = 188.000000000000000000
+            Size.Width = 116.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 13
+            Text = 'Open dropdown'
+            TextSettings.Trimming = None
+          end
+          object DropDownCloseButton: TButton
+            Position.X = 352.000000000000000000
+            Position.Y = 188.000000000000000000
+            Size.Width = 100.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 14
+            Text = 'Close'
+            TextSettings.Trimming = None
+          end
+          object DropDownFieldClickCheckBox: TCheckBox
+            IsChecked = True
+            Position.X = 464.000000000000000000
+            Position.Y = 193.000000000000000000
+            Size.Width = 176.000000000000000000
+            Size.Height = 26.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 15
+            Text = 'Open on field click'
+          end
+          object LookupClearButton: TButton
+            Position.X = 228.000000000000000000
+            Position.Y = 234.000000000000000000
+            Size.Width = 76.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 16
+            Text = 'Clear'
+            TextSettings.Trimming = None
+          end
+          object LookupCommitCheckBox: TCheckBox
+            IsChecked = True
+            Position.X = 312.000000000000000000
+            Position.Y = 239.000000000000000000
+            Size.Width = 116.000000000000000000
+            Size.Height = 26.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 17
+            Text = 'Commit click'
+          end
+          object LookupViewComboBox: TComboBox
+            Position.X = 436.000000000000000000
+            Position.Y = 234.000000000000000000
+            Size.Width = 112.000000000000000000
+            Size.Height = 36.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 18
+            OnChange = LookupViewComboBoxChange
+          end
+          object LookupSelectionLabel: TLabel
+            StyledSettings = [Family, Size, Style]
+            Position.X = 556.000000000000000000
+            Position.Y = 240.000000000000000000
+            Size.Width = 160.000000000000000000
+            Size.Height = 24.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.FontColor = claWhite
+            Text = 'No selection'
+          end
+          object ThemeInfoLayout: TLayout
+            Align = Right
+            Position.X = 720.000000000000000000
+            Size.Width = 340.000000000000000000
+            Size.Height = 276.000000000000000000
+            Size.PlatformDefault = False
+            object ThemeInfoPanel: TRectangle
+              Fill.Color = xFF294FA8
+              HitTest = False
+              Position.X = -4.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 84.000000000000000000
+              Size.PlatformDefault = False
+              Stroke.Color = xFF4A70CC
+              XRadius = 10.000000000000000000
+              YRadius = 10.000000000000000000
+            end
+            object LookupSearchSettingsPanel: TRectangle
+              Fill.Color = xFF294FA8
+              HitTest = False
+              Position.X = -4.000000000000000000
+              Position.Y = 94.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 176.000000000000000000
+              Size.PlatformDefault = False
+              Stroke.Color = xFF4A70CC
+              XRadius = 10.000000000000000000
+              YRadius = 10.000000000000000000
+            end
+            object LookupSearchSettingsLabel: TLabel
+              StyledSettings = [Family, Size]
+              Position.X = 10.000000000000000000
+              Position.Y = 102.000000000000000000
+              Size.Width = 150.000000000000000000
+              Size.Height = 22.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.StyleExt = {00070000000000000004000000}
+              TextSettings.FontColor = claWhite
+              Text = 'Lookup Search'
+            end
+            object LookupShowSearchCheckBox: TCheckBox
+              IsChecked = True
+              Position.X = 10.000000000000000000
+              Position.Y = 128.000000000000000000
+              Size.Width = 150.000000000000000000
+              Size.Height = 24.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 0
+              Text = 'Show search box'
+            end
+            object LookupAutoFocusCheckBox: TCheckBox
+              IsChecked = True
+              Position.X = 170.000000000000000000
+              Position.Y = 128.000000000000000000
+              Size.Width = 150.000000000000000000
+              Size.Height = 24.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 1
+              Text = 'Auto focus'
+            end
+            object LookupClearSearchCheckBox: TCheckBox
+              IsChecked = True
+              Position.X = 10.000000000000000000
+              Position.Y = 158.000000000000000000
+              Size.Width = 190.000000000000000000
+              Size.Height = 24.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 2
+              Text = 'Clear search on close'
+            end
+            object LookupSearchDelayLabel: TLabel
+              StyledSettings = [Family, Size, Style]
+              Position.X = 10.000000000000000000
+              Position.Y = 194.000000000000000000
+              Size.Width = 96.000000000000000000
+              Size.Height = 30.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.FontColor = xFF8D91A5
+              Text = 'Delay (ms):'
+            end
+            object LookupSearchDelayEdit: TEdit
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              TabOrder = 3
+              KeyboardType = NumberPad
+              Text = '250'
+              Position.X = 108.000000000000000000
+              Position.Y = 192.000000000000000000
+              Size.Width = 92.000000000000000000
+              Size.Height = 32.000000000000000000
+              Size.PlatformDefault = False
+              OnChangeTracking = LookupSearchDelayEditChangeTracking
+            end
+            object VariantCaptionLabel: TLabel
+              StyledSettings = [Family, Size, Style]
+              Position.Y = 8.000000000000000000
+              Size.Width = 78.000000000000000000
+              Size.Height = 24.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.FontColor = xFF8D91A5
+              Text = #1042#1072#1088#1080#1072#1085#1090':'
+            end
+            object VariantValueLabel: TLabel
+              StyledSettings = [Family, Size]
+              Position.X = 84.000000000000000000
+              Position.Y = 8.000000000000000000
+              Size.Width = 240.000000000000000000
+              Size.Height = 24.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.StyleExt = {00070000000000000004000000}
+              TextSettings.FontColor = claWhite
+              Text = #1058#1105#1084#1085#1072#1103
+            end
+            object AuthorCaptionLabel: TLabel
+              StyledSettings = [Family, Size, Style]
+              Position.Y = 48.000000000000000000
+              Size.Width = 78.000000000000000000
+              Size.Height = 24.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.FontColor = xFF8D91A5
+              Text = #1040#1074#1090#1086#1088':'
+            end
+            object AuthorValueLabel: TLabel
+              StyledSettings = [Family, Size]
+              Position.X = 84.000000000000000000
+              Position.Y = 48.000000000000000000
+              Size.Width = 240.000000000000000000
+              Size.Height = 24.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.StyleExt = {00070000000000000004000000}
+              TextSettings.FontColor = claWhite
+              Text = 'Termius'
+            end
+          end
+          object LookupGroupPanel: TRectangle
+            Fill.Color = xFF294FA8
+            HitTest = False
+            Position.X = -8.000000000000000000
+            Position.Y = 229.000000000000000000
+            Size.Width = 728.000000000000000000
+            Size.Height = 43.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF4A70CC
+            XRadius = 8.000000000000000000
+            YRadius = 8.000000000000000000
+          end
+        end
+      end
+      object UniListView1: TUniListView
+        Align = Client
+        ClipChildren = True
+        HitTest = True
+        Margins.Top = 14.000000000000000000
+        Size.Width = 1092.000000000000000000
+        Size.Height = 382.000000000000000000
+        Size.PlatformDefault = False
+        Columns = <
+          item
+            LayoutID = '{90AA1BB6-96F2-4063-8452-9C7A3C1BD06A}'
+            FieldName = 'name'
+            Caption = 'Name'
+            Width = 140.000000000000000000
+            MinWidth = 180.000000000000000000
+            MaxWidth = 600.000000000000000000
+            WidthMode = ucwmFill
+          end
+          item
+            LayoutID = '{EFA41DB3-B6FB-47E2-B3E8-40B3CDA76CAC}'
+            FieldName = 'status'
+            Caption = 'Status'
+            Width = 140.000000000000000000
+            MinWidth = 60.000000000000000000
+            MaxWidth = 600.000000000000000000
+          end
+          item
+            LayoutID = '{2AC7F0A8-37B4-4F8E-86D7-55C0CA9B25B4}'
+            FieldName = 'latency_ms'
+            Caption = 'Latency'
+            Width = 90.000000000000000000
+            MinWidth = 60.000000000000000000
+            MaxWidth = 600.000000000000000000
+            DataType = ucdtInteger
+            Alignment = Trailing
+          end>
+        ColorRules = <>
+        Actions = <
+          item
+            Name = 'edit'
+            Caption = 'Edit'
+            Icon = uviEdit
+            Width = 30.000000000000000000
+          end
+          item
+            Name = 'delete'
+            Caption = 'Delete'
+            Icon = uviDelete
+            Width = 30.000000000000000000
+          end>
+        CardTemplate.IconSize = 20.000000000000000000
+        CardTemplate.IconBoxSize = 40.000000000000000000
+        CardTemplate.InnerPadding = 12.000000000000000000
+        CardTemplate.TextGap = 3.000000000000000000
+        CardTemplate.TitleMaxLines = 2
+        CardTemplate.MaxCardHeight = 240.000000000000000000
+        CardTemplate.TitleField = 'title'
+        CardTemplate.TextField = 'text'
+        CardTemplate.DetailField = 'detail'
+        CardTemplate.IconField = 'icon'
+        CardTemplate.StatusField = 'status'
+        ListHeaderHeight = 38.000000000000000000
+        ListRowHeight = 36.000000000000000000
+        ListAutoRowHeight = True
+        ListFilterHeight = 28.000000000000000000
+        ListFooterHeight = 32.000000000000000000
+        TreeKeyField = 'id'
+        TreeParentField = 'parent_id'
+        TreeColumn = 'name'
+        TreeIndent = 18.000000000000000000
+        TreeHasChildrenField = 'has_children'
+        OnTreeLoadChildren = UniListView1TreeLoadChildren
+        CardMinWidth = 250.000000000000000000
+        CardMaxWidth = 360.000000000000000000
+        CardWidth = 300.000000000000000000
+        CardHeight = 132.000000000000000000
+        HorizontalGap = 14.000000000000000000
+        VerticalGap = 14.000000000000000000
+        ContentPadding = 12.000000000000000000
+        CornerRadius = 12.000000000000000000
+        PanThreshold = 5.000000000000000000
+        SearchOptions = [soIgnoreCase, soVisibleColumnsOnly, soWrapAround, soRespectFilters]
+        ThemeName = 'Ocean'
+        FontSize = 12.000000000000000000
+        TitleFontSize = 30.000000000000000000
+        DetailFontSize = 12.000000000000000000
+        BackgroundColor = xFF224FBC
+        CardColor = xFF2E59C0
+        CardHotColor = xFF4168C6
+        CardSelectedColor = xA4C1CEEC
+        TextColor = claWhite
+        SecondaryTextColor = xFFABBCE6
+        AccentColor = xFF7F7F7F
+        HeaderColor = xFF3D65C7
+        AlternateRowColor = xFF345EC3
+        FooterColor = xFF3861C5
+        GridColor = xFF5C7FD4
+        OnSearchChanged = UniListView1SearchChanged
+      end
+      object PopupContentPanel: TRectangle
+        Fill.Kind = None
+        Position.X = 760.000000000000000000
+        Position.Y = 250.000000000000000000
+        Size.Width = 300.000000000000000000
+        Size.Height = 176.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Kind = None
+        Visible = False
+        object PopupTitleLabel: TLabel
+          StyledSettings = [Family]
+          Position.X = 16.000000000000000000
+          Position.Y = 12.000000000000000000
+          Size.Width = 268.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 16.000000000000000000
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.FontColor = claWhite
+          Text = 'Universal FMX Popup Host'
+        end
+        object PopupHintLabel: TLabel
+          StyledSettings = [Family, Size, Style]
+          Position.X = 16.000000000000000000
+          Position.Y = 42.000000000000000000
+          Size.Width = 268.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.FontColor = xFFB8B2B7
+          Text = 'Escape, outside click, resize '#1079#1072' '#1091#1075#1086#1083
+        end
+        object PopupEdit: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 0
+          Position.X = 16.000000000000000000
+          Position.Y = 72.000000000000000000
+          Size.Width = 268.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Focus '#1087#1088#1080#1093#1086#1076#1080#1090' '#1089#1102#1076#1072
+        end
+        object PopupActionButton: TButton
+          Position.X = 164.000000000000000000
+          Position.Y = 120.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Text = 'Close Popup'
+          TextSettings.Trimming = None
+          OnClick = PopupActionButtonClick
+        end
+      end
+      object DropDownContentPanel: TRectangle
+        Fill.Kind = None
+        Position.X = 744.000000000000000000
+        Position.Y = 438.000000000000000000
+        Size.Width = 300.000000000000000000
+        Size.Height = 188.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Kind = None
+        Visible = False
+        object DropDownContentTitleLabel: TLabel
+          StyledSettings = [Family]
+          Position.X = 16.000000000000000000
+          Position.Y = 12.000000000000000000
+          Size.Width = 268.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 16.000000000000000000
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.FontColor = claWhite
+          Text = 'Arbitrary FMX content'
+        end
+        object DropDownContentEdit: TEdit
+          Touch.InteractiveGestures = [LongTap, DoubleTap]
+          TabOrder = 0
+          Position.X = 16.000000000000000000
+          Position.Y = 48.000000000000000000
+          Size.Width = 268.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TextPrompt = 'Any editor'
+        end
+        object DropDownContentCheckBox: TCheckBox
+          IsChecked = True
+          Position.X = 16.000000000000000000
+          Position.Y = 94.000000000000000000
+          Size.Width = 180.000000000000000000
+          Size.Height = 28.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Text = 'Ordinary checkbox'
+        end
+        object DropDownContentCloseButton: TButton
+          Position.X = 164.000000000000000000
+          Position.Y = 136.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          Text = 'Close'
+          TextSettings.Trimming = None
+        end
+      end
+    end
+  end
+  object UniPopupHost1: TUniPopupHost
+    WidthMode = upwContent
+    PopupWidth = 280.000000000000000000
+    Resizable = True
+    MinPopupWidth = 160.000000000000000000
+    MinPopupHeight = 96.000000000000000000
+    MaxPopupWidth = 720.000000000000000000
+    MaxPopupHeight = 320.000000000000000000
+    ThemeName = 'Termius Dark'
+    OnPopupShown = UniPopupHost1PopupShown
+    OnPopupClosed = UniPopupHost1PopupClosed
+  end
+end

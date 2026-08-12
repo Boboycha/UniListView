@@ -1,0 +1,1314 @@
+﻿UniPopupPerformanceLab Automatic Regression Report
+Started: 28.07.2026 13:29:18
+Platform: Windows 11 (Version 25H2, OS Build 26200.8875, 64-bit Edition)
+
+============================================================
+Scenario: Baseline
+State Transition:
+Requested: No PopupComponent
+Reached: YES
+Verification Time: 67,214 ms
+Stored Properties
+PopupComponent:
+  Visible: N/A
+  Enabled: N/A
+  HitTest: N/A
+  Opacity: N/A
+  Align: N/A
+  Size: N/A
+
+Runtime Attachment
+PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: False
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: False
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10002,860 ms Avg=27,146 ms P95=46,328 ms Max=47,650 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: baseline has no Uni controls
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / No PopupComponent
+State Transition:
+Requested: No PopupComponent
+Reached: YES
+Verification Time: 29,272 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: N/A
+  Enabled: N/A
+  HitTest: N/A
+  Opacity: N/A
+  Align: N/A
+  Size: N/A
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: False
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10011,770 ms Avg=25,765 ms P95=42,941 ms Max=47,776 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is not assigned
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Empty / Assigned Closed
+State Transition:
+Requested: PopupComponent assigned, popup closed
+Reached: YES
+Verification Time: 38,407 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 420,000 x 300,000
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10002,567 ms Avg=28,088 ms P95=47,014 ms Max=48,460 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup PopupOpened=False
+PASS: DropDown popup Parent=nil
+PASS: DropDown popup Scene=nil
+PASS: DropDown popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / 10 items / Assigned Closed
+State Transition:
+Requested: PopupComponent assigned, popup closed
+Reached: YES
+Verification Time: 25,073 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: True
+  Opacity: 1,000
+  Align: None
+  Size: 420,000 x 300,000
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10006,853 ms Avg=28,066 ms P95=47,239 ms Max=61,005 ms
+Popup Paint=0 Popup Realign=0
+  Popup content list: Items=10 Visible=4 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup PopupOpened=False
+PASS: DropDown popup Parent=nil
+PASS: DropDown popup Scene=nil
+PASS: DropDown popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / 1000 items / Assigned Closed
+State Transition:
+Requested: PopupComponent assigned, popup closed
+Reached: YES
+Verification Time: 31,268 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: True
+  Opacity: 1,000
+  Align: None
+  Size: 420,000 x 300,000
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10003,951 ms Avg=26,082 ms P95=44,811 ms Max=47,754 ms
+Popup Paint=0 Popup Realign=0
+  Popup content list: Items=1000 Visible=4 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup PopupOpened=False
+PASS: DropDown popup Parent=nil
+PASS: DropDown popup Scene=nil
+PASS: DropDown popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Popup Open
+State Transition:
+Requested: Popup open
+Reached: YES
+Verification Time: 86,432 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: Client
+  Size: 418,000 x 298,000
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: TLayout
+  ParentClass: TLayout
+  Root: assigned
+  Scene: assigned
+  AbsoluteVisible: True
+  AttachedToVisualTree: True
+  ParticipatesInScene: True
+  PopupHostAssigned: True
+  PopupOpened: True
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10009,604 ms Avg=31,932 ms P95=48,027 ms Max=68,174 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup PopupOpened=True
+PASS: DropDown popup Parent<>nil
+PASS: DropDown popup Scene<>nil
+PASS: DropDown popup AttachedToVisualTree=True
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Closed After Open
+State Transition:
+Requested: Popup closed after first open
+Reached: YES
+Verification Time: 34,662 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 420,000 x 300,000
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 1
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10011,400 ms Avg=27,920 ms P95=46,932 ms Max=56,778 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup PopupOpened=False
+PASS: DropDown popup Parent=nil
+PASS: DropDown popup Scene=nil
+PASS: DropDown popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Detached
+State Transition:
+Requested: PopupComponent detached
+Reached: YES
+Verification Time: 25,015 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 420,000 x 300,000
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: N/A
+  Realign Count: N/A
+  MouseMove: N/A
+  HitTest: N/A
+  Repaint Requests: N/A
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10001,149 ms Avg=28,405 ms P95=46,467 ms Max=48,437 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is detached
+PASS: DropDown popup Parent=nil
+PASS: DropDown popup Scene=nil
+PASS: DropDown popup Root=nil
+PASS: detached Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / Empty
+State Transition:
+Requested: PopupComponent assigned, popup closed
+Reached: YES
+Verification Time: 38,032 ms
+Stored Properties
+Lookup PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 360,000 x 322,000
+
+Runtime Attachment
+Lookup PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: 0
+  HitTest: 0
+  Repaint Requests: 0
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10011,909 ms Avg=26,975 ms P95=46,404 ms Max=54,432 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=0 Visible=0 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+PASS: Lookup popup PopupOpened=False
+PASS: Lookup popup Parent=nil
+PASS: Lookup popup Scene=nil
+PASS: Lookup popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / 10 items
+State Transition:
+Requested: PopupComponent assigned, popup closed
+Reached: YES
+Verification Time: 41,018 ms
+Stored Properties
+Lookup PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 360,000 x 322,000
+
+Runtime Attachment
+Lookup PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: 0
+  HitTest: 0
+  Repaint Requests: 0
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10008,408 ms Avg=27,227 ms P95=46,119 ms Max=50,105 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+PASS: Lookup popup PopupOpened=False
+PASS: Lookup popup Parent=nil
+PASS: Lookup popup Scene=nil
+PASS: Lookup popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / 1000 items
+State Transition:
+Requested: PopupComponent assigned, popup closed
+Reached: YES
+Verification Time: 39,950 ms
+Stored Properties
+Lookup PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 360,000 x 322,000
+
+Runtime Attachment
+Lookup PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: 0
+  HitTest: 0
+  Repaint Requests: 0
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10003,338 ms Avg=28,571 ms P95=47,087 ms Max=48,435 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=1000 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+PASS: Lookup popup PopupOpened=False
+PASS: Lookup popup Parent=nil
+PASS: Lookup popup Scene=nil
+PASS: Lookup popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / Popup Open
+State Transition:
+Requested: Popup open
+Reached: NO
+Timeout: 500 ms
+Stored Properties
+Lookup PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 360,000 x 322,000
+
+Runtime Attachment
+Lookup PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: 0
+  HitTest: 0
+  Repaint Requests: 0
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Measurement not started.
+Validation:
+FAILED: Expected runtime state was not reached.
+Lookup popup: expected open attachment state
+Result: FAILED (Timeout)
+Notes: Expected runtime state was not reached.
+
+============================================================
+Scenario: Lookup / Closed After Open
+State Transition:
+Requested: Popup closed after first open
+Reached: YES
+Verification Time: 37,297 ms
+Stored Properties
+Lookup PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 360,000 x 322,000
+
+Runtime Attachment
+Lookup PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: 0
+  HitTest: 0
+  Repaint Requests: 0
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10012,730 ms Avg=30,247 ms P95=47,023 ms Max=47,729 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+PASS: Lookup popup PopupOpened=False
+PASS: Lookup popup Parent=nil
+PASS: Lookup popup Scene=nil
+PASS: Lookup popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / Detached
+State Transition:
+Requested: PopupComponent detached
+Reached: YES
+Verification Time: 35,277 ms
+Stored Properties
+Lookup PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 360,000 x 322,000
+
+Runtime Attachment
+Lookup PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: 0
+  HitTest: 0
+  Repaint Requests: 0
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10000,188 ms Avg=28,860 ms P95=47,020 ms Max=55,218 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is detached
+PASS: Lookup popup Parent=nil
+PASS: Lookup popup Scene=nil
+PASS: Lookup popup Root=nil
+PASS: detached Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown + Lookup / 10 items / Assigned Closed
+State Transition:
+Requested: PopupComponent assigned, popup closed
+Reached: YES
+Verification Time: 38,165 ms
+Stored Properties
+DropDown PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: True
+  Opacity: 1,000
+  Align: None
+  Size: 420,000 x 300,000
+Lookup PopupComponent:
+  Visible: True
+  Enabled: True
+  HitTest: False
+  Opacity: 1,000
+  Align: None
+  Size: 360,000 x 322,000
+
+Runtime Attachment
+DropDown PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+Lookup PopupComponent:
+  Parent: nil
+  ParentClass: nil
+  Root: nil
+  Scene: nil
+  AbsoluteVisible: True
+  AttachedToVisualTree: False
+  ParticipatesInScene: False
+  PopupHostAssigned: True
+  PopupOpened: False
+
+Activity Sources
+PopupHost:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupRoot:
+  Paint Count: N/A (runtime hook not exposed)
+  Realign Count: N/A (runtime hook not exposed)
+  MouseMove: N/A (runtime hook not exposed)
+  HitTest: N/A (runtime hook not exposed)
+  Repaint Requests: N/A (runtime hook not exposed)
+PopupComponent:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupPopup:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+LookupList:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: 0
+  HitTest: 0
+  Repaint Requests: 0
+DropDown:
+  Paint Count: 0
+  Realign Count: 0
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+TestForm:
+  Paint Count: N/A (benchmark hook not installed)
+  Realign Count: N/A (benchmark hook not installed)
+  MouseMove: N/A (benchmark hook not installed)
+  HitTest: N/A (benchmark hook not installed)
+  Repaint Requests: N/A (benchmark hook not installed)
+
+Metrics:
+Duration=10002,227 ms Avg=30,215 ms P95=46,921 ms Max=48,559 ms
+Popup Paint=0 Popup Realign=0
+  Popup content list: Items=10 Visible=4 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup PopupOpened=False
+PASS: DropDown popup Parent=nil
+PASS: DropDown popup Scene=nil
+PASS: DropDown popup AttachedToVisualTree=False
+PASS: Lookup popup is assigned
+PASS: Lookup popup PopupOpened=False
+PASS: Lookup popup Parent=nil
+PASS: Lookup popup Scene=nil
+PASS: Lookup popup AttachedToVisualTree=False
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+SUMMARY
+Scenario | Verification | Result | Avg | P95 | Max | Popup Paint | Popup Realign | Notes
+Baseline | OK | PASS | 27,146 | 46,328 | 47,650 | 0 | 0 | 
+DropDown / No PopupComponent | OK | PASS | 25,765 | 42,941 | 47,776 | 0 | 0 | 
+DropDown / Empty / Assigned Closed | OK | PASS | 28,088 | 47,014 | 48,460 | 0 | 0 | 
+DropDown / 10 items / Assigned Closed | OK | PASS | 28,066 | 47,239 | 61,005 | 0 | 0 | 
+DropDown / 1000 items / Assigned Closed | OK | PASS | 26,082 | 44,811 | 47,754 | 0 | 0 | 
+DropDown / Popup Open | OK | PASS | 31,932 | 48,027 | 68,174 | 0 | 0 | 
+DropDown / Closed After Open | OK | PASS | 27,920 | 46,932 | 56,778 | 0 | 0 | 
+DropDown / Detached | OK | PASS | 28,405 | 46,467 | 48,437 | 0 | 0 | 
+Lookup / Empty | OK | PASS | 26,975 | 46,404 | 54,432 | 0 | 0 | 
+Lookup / 10 items | OK | PASS | 27,227 | 46,119 | 50,105 | 0 | 0 | 
+Lookup / 1000 items | OK | PASS | 28,571 | 47,087 | 48,435 | 0 | 0 | 
+Lookup / Popup Open | Timeout | FAILED (Timeout) | 0,000 | 0,000 | 0,000 | 0 | 0 | Expected runtime state was not reached.
+Lookup / Closed After Open | OK | PASS | 30,247 | 47,023 | 47,729 | 0 | 0 | 
+Lookup / Detached | OK | PASS | 28,860 | 47,020 | 55,218 | 0 | 0 | 
+DropDown + Lookup / 10 items / Assigned Closed | OK | PASS | 30,215 | 46,921 | 48,559 | 0 | 0 | 
+
+Executed: 15
+Passed: 14
+Failed: 1
+Skipped: 0
+Total duration: 141364,922 ms

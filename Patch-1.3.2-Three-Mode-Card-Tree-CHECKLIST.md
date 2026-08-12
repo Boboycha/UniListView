@@ -1,0 +1,29 @@
+﻿# Patch 1.3.2 - Three-Mode Card Tree Checklist
+
+- [x] Architecture Review
+- [x] Existing Card Tree Regression
+- [x] Public API
+- [x] Explorer Visible Set
+- [x] Explorer Parent Detection
+- [x] Explorer Rendering
+- [x] Explorer Navigation
+- [x] Navigate State Reuse
+- [x] Breadcrumbs
+- [x] Hierarchy Regression
+- [x] Hit Testing
+- [x] Mouse
+- [x] Keyboard
+- [x] Selection
+- [x] Check Engine Integration
+- [x] Search
+- [x] Filter
+- [x] Sorting
+- [x] Theme
+- [x] Performance
+- [x] Design-Time
+- [x] Packages - runtime Linux64 built; Win32 BPL output locked by loaded IDE
+- [ ] Design package build - deferred while Delphi has runtime BPL loaded
+- [x] Demo
+- [x] Windows Validation - Showcase Debug Win32 build
+- [x] Linux Validation - runtime package and Showcase Linux64 builds
+- [ ] Regression - runtime interaction validation by user

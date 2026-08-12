@@ -1,0 +1,445 @@
+﻿UniPopupPerformanceLab Automatic Regression Report
+Started: 28.07.2026 12:55:49
+Platform: Windows 11 (Version 25H2, OS Build 26200.8875, 64-bit Edition)
+
+============================================================
+Scenario: Baseline
+Runtime State:
+Popup:
+  Popup exists: False
+  Parent class: nil
+  Parent=nil: True
+  Visible: False
+  AbsoluteVisible: False
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: False
+  Popup currently open: False
+
+Metrics:
+Duration=10017,953 ms Avg=31,846 ms P95=50,970 ms Max=63,291 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: baseline has no Uni controls
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / No PopupComponent
+Runtime State:
+DropDown Popup:
+  Popup exists: False
+  Parent class: nil
+  Parent=nil: True
+  Visible: False
+  AbsoluteVisible: False
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10001,410 ms Avg=33,446 ms P95=55,051 ms Max=65,182 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is not assigned
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Empty / Assigned Closed
+Runtime State:
+DropDown Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10015,459 ms Avg=32,415 ms P95=49,351 ms Max=62,686 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup is closed
+PASS: DropDown popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / 10 items / Assigned Closed
+Runtime State:
+DropDown Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10003,839 ms Avg=32,063 ms P95=48,389 ms Max=71,627 ms
+Popup Paint=0 Popup Realign=0
+  Popup content list: Items=10 Visible=4 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup is closed
+PASS: DropDown popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / 1000 items / Assigned Closed
+Runtime State:
+DropDown Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10007,072 ms Avg=32,745 ms P95=51,930 ms Max=61,635 ms
+Popup Paint=0 Popup Realign=0
+  Popup content list: Items=1000 Visible=4 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup is closed
+PASS: DropDown popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Popup Open
+Runtime State:
+DropDown Popup:
+  Popup exists: True
+  Parent class: TLayout
+  Parent=nil: False
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: True
+  Root assigned: True
+  Attached to visual tree: True
+  PopupHost assigned: True
+  Popup currently open: True
+
+Metrics:
+Duration=10016,420 ms Avg=33,006 ms P95=48,603 ms Max=72,509 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup is open
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Closed After Open
+Runtime State:
+DropDown Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10018,185 ms Avg=33,862 ms P95=48,664 ms Max=66,502 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup remains assigned
+PASS: DropDown popup is closed after open
+PASS: DropDown popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown / Detached
+Runtime State:
+DropDown Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10025,461 ms Avg=33,615 ms P95=52,566 ms Max=65,388 ms
+Popup Paint=0 Popup Realign=0
+
+Validation:
+PASS: DropDown popup is detached
+PASS: DropDown popup detached Parent=nil
+PASS: detached Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / Empty
+Runtime State:
+Lookup Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10014,784 ms Avg=30,301 ms P95=48,741 ms Max=62,830 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=0 Visible=0 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+PASS: Lookup popup is closed
+PASS: Lookup popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / 10 items
+Runtime State:
+Lookup Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10022,761 ms Avg=30,698 ms P95=47,494 ms Max=62,136 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+PASS: Lookup popup is closed
+PASS: Lookup popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / 1000 items
+Runtime State:
+Lookup Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10015,128 ms Avg=30,864 ms P95=47,803 ms Max=64,144 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=1000 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+PASS: Lookup popup is closed
+PASS: Lookup popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / Popup Open
+Runtime State:
+Lookup Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10012,783 ms Avg=31,197 ms P95=48,731 ms Max=62,126 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is assigned
+FAILED: Lookup popup is open
+
+Result: FAILED
+Notes: Runtime validation failed
+
+============================================================
+Scenario: Lookup / Closed After Open
+Runtime State:
+Lookup Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10019,276 ms Avg=33,296 ms P95=53,529 ms Max=61,740 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup remains assigned
+PASS: Lookup popup is closed after open
+PASS: Lookup popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: Lookup / Detached
+Runtime State:
+Lookup Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10015,500 ms Avg=26,894 ms P95=46,224 ms Max=60,639 ms
+Popup Paint=0 Popup Realign=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: Lookup popup is detached
+PASS: Lookup popup detached Parent=nil
+PASS: detached Popup Paint = 0
+
+Result: PASS
+
+============================================================
+Scenario: DropDown + Lookup / 10 items / Assigned Closed
+Runtime State:
+DropDown Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+Lookup Popup:
+  Popup exists: True
+  Parent class: nil
+  Parent=nil: True
+  Visible: True
+  AbsoluteVisible: True
+  Scene assigned: False
+  Root assigned: False
+  Attached to visual tree: False
+  PopupHost assigned: True
+  Popup currently open: False
+
+Metrics:
+Duration=10010,840 ms Avg=28,476 ms P95=46,526 ms Max=61,936 ms
+Popup Paint=0 Popup Realign=0
+  Popup content list: Items=10 Visible=4 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+  Lookup internal list: Items=10 Visible=9 Paint=0 RepaintRequests=0 RealignRequests=0 MouseMove=0 HitTests=0
+
+Validation:
+PASS: DropDown popup is assigned
+PASS: DropDown popup is closed
+PASS: DropDown popup closed and not participating in scene
+PASS: Lookup popup is assigned
+PASS: Lookup popup is closed
+PASS: Lookup popup closed and not participating in scene
+PASS: closed Popup Paint = 0
+
+Result: PASS
+
+SUMMARY
+Scenario | PASS | Avg | P95 | Max | Popup Paint | Popup Realign | Notes
+Baseline | PASS | 31,846 | 50,970 | 63,291 | 0 | 0 | 
+DropDown / No PopupComponent | PASS | 33,446 | 55,051 | 65,182 | 0 | 0 | 
+DropDown / Empty / Assigned Closed | PASS | 32,415 | 49,351 | 62,686 | 0 | 0 | 
+DropDown / 10 items / Assigned Closed | PASS | 32,063 | 48,389 | 71,627 | 0 | 0 | 
+DropDown / 1000 items / Assigned Closed | PASS | 32,745 | 51,930 | 61,635 | 0 | 0 | 
+DropDown / Popup Open | PASS | 33,006 | 48,603 | 72,509 | 0 | 0 | 
+DropDown / Closed After Open | PASS | 33,862 | 48,664 | 66,502 | 0 | 0 | 
+DropDown / Detached | PASS | 33,615 | 52,566 | 65,388 | 0 | 0 | 
+Lookup / Empty | PASS | 30,301 | 48,741 | 62,830 | 0 | 0 | 
+Lookup / 10 items | PASS | 30,698 | 47,494 | 62,136 | 0 | 0 | 
+Lookup / 1000 items | PASS | 30,864 | 47,803 | 64,144 | 0 | 0 | 
+Lookup / Popup Open | FAILED | 31,197 | 48,731 | 62,126 | 0 | 0 | Runtime validation failed
+Lookup / Closed After Open | PASS | 33,296 | 53,529 | 61,740 | 0 | 0 | 
+Lookup / Detached | PASS | 26,894 | 46,224 | 60,639 | 0 | 0 | 
+DropDown + Lookup / 10 items / Assigned Closed | PASS | 28,476 | 46,526 | 61,936 | 0 | 0 | 
+
+Executed: 15
+Passed: 14
+Failed: 1
+Skipped: 0
+Total duration: 165966,960 ms

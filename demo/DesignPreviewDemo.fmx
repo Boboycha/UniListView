@@ -1,0 +1,79 @@
+﻿object DesignPreviewForm: TDesignPreviewForm
+  Left = 0
+  Top = 0
+  Caption = 'UniListView Design-Time Preview'
+  ClientHeight = 720
+  ClientWidth = 1120
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  Position = ScreenCenter
+  DesignerMasterStyle = 0
+  object ListPreview: TUniListView
+    Position.X = 12.000000000000000000
+    Position.Y = 12.000000000000000000
+    Size.Width = 542.000000000000000000
+    Size.Height = 342.000000000000000000
+    Size.PlatformDefault = False
+    ViewMode = uvmList
+    ThemeName = 'Termius Light'
+    FontFamily = 'Segoe UI'
+    FontSize = 12.000000000000000000
+    TitleFontSize = 15.000000000000000000
+    DetailFontSize = 11.000000000000000000
+    DesignPreviewRows = 8
+    ListAutoRowHeight = True
+    ShowCheckBoxes = True
+  end
+  object CardsPreview: TUniListView
+    Position.X = 566.000000000000000000
+    Position.Y = 12.000000000000000000
+    Size.Width = 542.000000000000000000
+    Size.Height = 342.000000000000000000
+    Size.PlatformDefault = False
+    ThemeName = 'Termius Dark'
+    CardSizingMode = ucsmAutoByTitle
+    FontFamily = 'Segoe UI'
+    FontSize = 12.000000000000000000
+    TitleFontSize = 15.000000000000000000
+    DetailFontSize = 11.000000000000000000
+    DesignPreviewRows = 8
+    CardMinWidth = 240.000000000000000000
+    CardMaxWidth = 320.000000000000000000
+    CardHeight = 112.000000000000000000
+    ShowCheckBoxes = True
+  end
+  object FullWidthPreview: TUniListView
+    Position.X = 12.000000000000000000
+    Position.Y = 366.000000000000000000
+    Size.Width = 542.000000000000000000
+    Size.Height = 342.000000000000000000
+    Size.PlatformDefault = False
+    CardLayout = uclFullWidth
+    ThemeName = 'Aubergine'
+    FontFamily = 'Segoe UI'
+    FontSize = 12.000000000000000000
+    TitleFontSize = 15.000000000000000000
+    DetailFontSize = 11.000000000000000000
+    DesignPreviewRows = 8
+    CardTemplate.AutoCardHeight = True
+    CardTemplate.WordWrap = True
+    ShowCheckBoxes = True
+  end
+  object TreePreview: TUniListView
+    Position.X = 566.000000000000000000
+    Position.Y = 366.000000000000000000
+    Size.Width = 542.000000000000000000
+    Size.Height = 342.000000000000000000
+    Size.PlatformDefault = False
+    ViewMode = uvmList
+    TreeMode = True
+    ThemeName = 'Grass'
+    FontFamily = 'Segoe UI'
+    FontSize = 12.000000000000000000
+    TitleFontSize = 15.000000000000000000
+    DetailFontSize = 11.000000000000000000
+    DesignPreviewRows = 8
+    ShowCheckBoxes = True
+  end
+end

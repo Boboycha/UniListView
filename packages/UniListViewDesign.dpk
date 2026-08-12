@@ -1,0 +1,14 @@
+﻿package UniListViewDesign;
+
+{$ALIGN 8}
+{$DESCRIPTION 'UniListView FMX design-time package'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  fmx,
+  designide,
+  UniListViewRuntime;
+
+end.

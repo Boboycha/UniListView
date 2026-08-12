@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{BBAA8C2D-E0D0-4697-AD42-AD54C6617441}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="UniListViewRuntime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="UniListViewDesign.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="UniListViewRuntime">
+        <MSBuild Projects="UniListViewRuntime.dproj"/>
+    </Target>
+    <Target Name="UniListViewRuntime:Clean">
+        <MSBuild Projects="UniListViewRuntime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniListViewRuntime:Make">
+        <MSBuild Projects="UniListViewRuntime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UniListViewDesign">
+        <MSBuild Projects="UniListViewDesign.dproj"/>
+    </Target>
+    <Target Name="UniListViewDesign:Clean">
+        <MSBuild Projects="UniListViewDesign.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniListViewDesign:Make">
+        <MSBuild Projects="UniListViewDesign.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="UniListViewRuntime;UniListViewDesign"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="UniListViewRuntime:Clean;UniListViewDesign:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="UniListViewRuntime:Make;UniListViewDesign:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

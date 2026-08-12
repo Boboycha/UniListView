@@ -1,0 +1,540 @@
+﻿object JsonStressForm: TJsonStressForm
+  Left = 0
+  Top = 0
+  Caption = 'UniListView '#8212' JSON Stress Test'
+  ClientHeight = 850
+  ClientWidth = 1400
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object BackgroundRect: TRectangle
+    Align = Client
+    Fill.Color = xFF141729
+    Size.Width = 1400.000000000000000000
+    Size.Height = 850.000000000000000000
+    Size.PlatformDefault = False
+    Stroke.Kind = None
+    object RootLayout: TLayout
+      Align = Client
+      Margins.Left = 10.000000000000000000
+      Margins.Top = 10.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Margins.Bottom = 10.000000000000000000
+      Size.Width = 1380.000000000000000000
+      Size.Height = 830.000000000000000000
+      Size.PlatformDefault = False
+      object SettingsPanel: TRectangle
+        Align = Top
+        Fill.Color = xFF252A42
+        Size.Width = 1380.000000000000000000
+        Size.Height = 230.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Color = xFF4A70CC
+        XRadius = 10.000000000000000000
+        YRadius = 10.000000000000000000
+        object TitleLabel: TLabel
+          StyledSettings = [Family]
+          Position.X = 14.000000000000000000
+          Position.Y = 10.000000000000000000
+          Size.Width = 250.000000000000000000
+          Size.Height = 30.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 18.000000000000000000
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.FontColor = claWhite
+          Text = 'JSON Stress Test'
+        end
+        object RowCountLabel: TLabel
+          StyledSettings = [Family, Size, Style]
+          Position.X = 280.000000000000000000
+          Position.Y = 10.000000000000000000
+          Size.Width = 48.000000000000000000
+          Size.Height = 30.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.FontColor = claWhite
+          Text = 'Rows:'
+        end
+        object RowCountCombo: TComboBox
+          Position.X = 330.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          ItemIndex = 1
+          Items.Strings = (
+            '100'
+            '1 000'
+            '10 000'
+            '50 000'
+            '100 000')
+          TabOrder = 0
+        end
+        object ColumnCountLabel: TLabel
+          StyledSettings = [Family, Size, Style]
+          Position.X = 466.000000000000000000
+          Position.Y = 10.000000000000000000
+          Size.Width = 68.000000000000000000
+          Size.Height = 30.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.FontColor = claWhite
+          Text = 'Columns:'
+        end
+        object ColumnCountCombo: TComboBox
+          Position.X = 536.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 100.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          ItemIndex = 0
+          Items.Strings = (
+            '10'
+            '30'
+            '50'
+            '100'
+            '200')
+          TabOrder = 1
+        end
+        object SmallButton: TButton
+          Action = actRunPresetSmall
+          Position.X = 660.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 82.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+        end
+        object MediumButton: TButton
+          Action = actRunPresetMedium
+          Position.X = 748.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 82.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 3
+        end
+        object LargeButton: TButton
+          Action = actRunPresetLarge
+          Position.X = 836.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 82.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 4
+        end
+        object VeryLargeButton: TButton
+          Action = actRunPresetVeryLarge
+          Position.X = 924.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 96.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 5
+        end
+        object CloseButton: TButton
+          Action = actClose
+          Position.X = 1278.000000000000000000
+          Position.Y = 8.000000000000000000
+          Size.Width = 88.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 6
+        end
+        object NestedObjectsCheck: TCheckBox
+          IsChecked = True
+          Position.X = 14.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 132.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 7
+          Text = 'Nested objects'
+        end
+        object UnicodeCheck: TCheckBox
+          IsChecked = True
+          Position.X = 150.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 92.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 8
+          Text = 'Unicode'
+        end
+        object RandomNullsCheck: TCheckBox
+          IsChecked = True
+          Position.X = 246.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 116.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 9
+          Text = 'Random nulls'
+        end
+        object DifferentFieldsCheck: TCheckBox
+          IsChecked = True
+          Position.X = 366.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 148.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 10
+          Text = 'Different field sets'
+        end
+        object LargeTextCheck: TCheckBox
+          Position.X = 518.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 102.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 11
+          Text = 'Large text'
+        end
+        object BooleanFieldsCheck: TCheckBox
+          IsChecked = True
+          Position.X = 624.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 116.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 12
+          Text = 'Boolean fields'
+        end
+        object FloatFieldsCheck: TCheckBox
+          IsChecked = True
+          Position.X = 744.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 104.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 13
+          Text = 'Float fields'
+        end
+        object DateTimeFieldsCheck: TCheckBox
+          IsChecked = True
+          Position.X = 852.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 132.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 14
+          Text = 'Date/time strings'
+        end
+        object GuidFieldsCheck: TCheckBox
+          IsChecked = True
+          Position.X = 988.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 106.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 15
+          Text = 'GUID strings'
+        end
+        object NestedArraysCheck: TCheckBox
+          IsChecked = True
+          Position.X = 1098.000000000000000000
+          Position.Y = 50.000000000000000000
+          Size.Width = 124.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 16
+          Text = 'Nested arrays'
+        end
+        object GenerateButton: TButton
+          Action = actGenerateJson
+          Position.X = 14.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 108.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 17
+        end
+        object LoadButton: TButton
+          Action = actLoadJson
+          Position.X = 128.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 94.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 18
+        end
+        object GenerateLoadButton: TButton
+          Action = actGenerateAndLoad
+          Position.X = 228.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 142.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 19
+        end
+        object ReloadButton: TButton
+          Action = actReloadJson
+          Position.X = 376.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 94.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 20
+        end
+        object ReloadTenButton: TButton
+          Action = actReloadTenTimes
+          Position.X = 476.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 108.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 21
+        end
+        object ClearButton: TButton
+          Action = actClear
+          Position.X = 590.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 88.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 22
+        end
+        object ListModeButton: TButton
+          Action = actToggleListMode
+          Position.X = 696.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 82.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 23
+        end
+        object CardsModeButton: TButton
+          Action = actToggleCardsMode
+          Position.X = 784.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 82.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 24
+        end
+        object AutoFitButton: TButton
+          Action = actAutoBestFit
+          Position.X = 872.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 90.000000000000000000
+          Size.Height = 36.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 25
+        end
+        object SearchEdit: TEdit
+          Position.X = 14.000000000000000000
+          Position.Y = 140.000000000000000000
+          Size.Width = 300.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 26
+          TextPrompt = 'Search loaded JSON...'
+        end
+        object SearchButton: TButton
+          Action = actApplySearch
+          Position.X = 320.000000000000000000
+          Position.Y = 140.000000000000000000
+          Size.Width = 92.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 27
+        end
+        object ClearSearchButton: TButton
+          Action = actClearSearch
+          Position.X = 418.000000000000000000
+          Position.Y = 140.000000000000000000
+          Size.Width = 110.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 28
+        end
+        object CopyStatsButton: TButton
+          Action = actCopyStatistics
+          Position.X = 534.000000000000000000
+          Position.Y = 140.000000000000000000
+          Size.Width = 118.000000000000000000
+          Size.Height = 34.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 29
+        end
+        object MemoryNoteLabel: TLabel
+          StyledSettings = [Family, Size, Style]
+          Position.X = 14.000000000000000000
+          Position.Y = 184.000000000000000000
+          Size.Width = 900.000000000000000000
+          Size.Height = 26.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.FontColor = xFFB8BFD8
+          Text = 'Synchronous Core benchmark. Process memory: N/A (portable RTL has no process-memory counter).'
+        end
+      end
+      object BodyLayout: TLayout
+        Align = Client
+        Margins.Top = 10.000000000000000000
+        Position.Y = 240.000000000000000000
+        Size.Width = 1380.000000000000000000
+        Size.Height = 590.000000000000000000
+        Size.PlatformDefault = False
+        object SidePanel: TRectangle
+          Align = Right
+          Fill.Color = xFF252A42
+          Size.Width = 360.000000000000000000
+          Size.Height = 590.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Color = xFF4A70CC
+          XRadius = 10.000000000000000000
+          YRadius = 10.000000000000000000
+          object StatisticsLabel: TLabel
+            StyledSettings = [Family, Size]
+            Position.X = 12.000000000000000000
+            Position.Y = 10.000000000000000000
+            Size.Width = 160.000000000000000000
+            Size.Height = 24.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+            Text = 'Statistics'
+          end
+          object StatisticsMemo: TMemo
+            ReadOnly = True
+            Position.X = 12.000000000000000000
+            Position.Y = 38.000000000000000000
+            Size.Width = 336.000000000000000000
+            Size.Height = 238.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 0
+            WordWrap = False
+          end
+          object LogLabel: TLabel
+            StyledSettings = [Family, Size]
+            Position.X = 12.000000000000000000
+            Position.Y = 286.000000000000000000
+            Size.Width = 160.000000000000000000
+            Size.Height = 24.000000000000000000
+            Size.PlatformDefault = False
+            TextSettings.Font.StyleExt = {00070000000000000004000000}
+            TextSettings.FontColor = claWhite
+            Text = 'Log'
+          end
+          object LogMemo: TMemo
+            ReadOnly = True
+            Position.X = 12.000000000000000000
+            Position.Y = 314.000000000000000000
+            Size.Width = 336.000000000000000000
+            Size.Height = 264.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            WordWrap = False
+          end
+        end
+        object StressListView: TUniListView
+          Align = Client
+          ClipChildren = True
+          HitTest = True
+          Margins.Right = 10.000000000000000000
+          Size.Width = 1010.000000000000000000
+          Size.Height = 590.000000000000000000
+          Size.PlatformDefault = False
+          Columns = <>
+          Actions = <>
+          ViewMode = uvmList
+          ThemeName = 'Termius Dark'
+          FontFamily = 'Segoe UI'
+          FontSize = 12.000000000000000000
+          TitleFontSize = 15.000000000000000000
+          DetailFontSize = 11.000000000000000000
+          CardTemplate.TitleField = 'name'
+          CardTemplate.TextField = 'description'
+          CardTemplate.DetailField = 'address.city'
+          DesignPreviewMode = dpmNone
+          ListAutoRowHeight = False
+          ShowCheckBoxes = False
+        end
+      end
+    end
+  end
+  object StressActions: TActionList
+    Left = 1080
+    Top = 16
+    object actGenerateJson: TAction
+      Text = 'Generate JSON'
+      OnExecute = actGenerateJsonExecute
+    end
+    object actLoadJson: TAction
+      Text = 'Load JSON'
+      OnExecute = actLoadJsonExecute
+    end
+    object actGenerateAndLoad: TAction
+      Text = 'Generate && Load'
+      ShortCut = 120
+      OnExecute = actGenerateAndLoadExecute
+    end
+    object actReloadJson: TAction
+      Text = 'Reload'
+      ShortCut = 16466
+      OnExecute = actReloadJsonExecute
+    end
+    object actReloadTenTimes: TAction
+      Text = 'Reload x10'
+      OnExecute = actReloadTenTimesExecute
+    end
+    object actClear: TAction
+      Text = 'Clear'
+      OnExecute = actClearExecute
+    end
+    object actRunPresetSmall: TAction
+      Text = 'Small'
+      OnExecute = actRunPresetSmallExecute
+    end
+    object actRunPresetMedium: TAction
+      Text = 'Medium'
+      OnExecute = actRunPresetMediumExecute
+    end
+    object actRunPresetLarge: TAction
+      Text = 'Large'
+      OnExecute = actRunPresetLargeExecute
+    end
+    object actRunPresetVeryLarge: TAction
+      Text = 'Very Large'
+      OnExecute = actRunPresetVeryLargeExecute
+    end
+    object actToggleListMode: TAction
+      Text = 'List'
+      OnExecute = actToggleListModeExecute
+    end
+    object actToggleCardsMode: TAction
+      Text = 'Cards'
+      OnExecute = actToggleCardsModeExecute
+    end
+    object actAutoBestFit: TAction
+      Text = 'AutoBestFit'
+      OnExecute = actAutoBestFitExecute
+    end
+    object actApplySearch: TAction
+      Text = 'Search'
+      ShortCut = 16454
+      OnExecute = actApplySearchExecute
+    end
+    object actClearSearch: TAction
+      Text = 'Clear search'
+      OnExecute = actClearSearchExecute
+    end
+    object actCopyStatistics: TAction
+      Text = 'Copy stats'
+      OnExecute = actCopyStatisticsExecute
+    end
+    object actClose: TAction
+      Text = 'Close'
+      ShortCut = 27
+      OnExecute = actCloseExecute
+    end
+  end
+  object JsonDataAdapter: TUniJsonDataAdapter
+    ListView = StressListView
+    RootPath = 'data'
+    ArrayPath = 'items'
+    Left = 1160
+    Top = 16
+  end
+end

@@ -1,0 +1,215 @@
+object PopupPerfMainForm: TPopupPerfMainForm
+  Left = 0
+  Top = 0
+  Caption = 'UniPopup Performance Lab'
+  ClientHeight = 800
+  ClientWidth = 1400
+  Position = ScreenCenter
+  Constraints.MinHeight = 680.000000000000000000
+  Constraints.MinWidth = 1100.000000000000000000
+  FormFactor.Width = 1400
+  FormFactor.Height = 800
+  FormFactor.Devices = [Desktop]
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object TopBar: TLayout
+    Align = Top
+    Size.Width = 1400.000000000000000000
+    Size.Height = 104.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object TestModeLabel: TLabel
+      Position.X = 16.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 360.000000000000000000
+      Size.Height = 20.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Test Mode'
+    end
+    object TestModeCombo: TComboBox
+      Position.X = 16.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 360.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      OnChange = SelectionChanged
+    end
+    object PopupStateLabel: TLabel
+      Position.X = 392.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 320.000000000000000000
+      Size.Height = 20.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Popup State'
+    end
+    object PopupStateCombo: TComboBox
+      Position.X = 392.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 320.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      OnChange = SelectionChanged
+    end
+    object PopupContentLabel: TLabel
+      Position.X = 728.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 300.000000000000000000
+      Size.Height = 20.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Popup Content'
+    end
+    object PopupContentCombo: TComboBox
+      Position.X = 728.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 300.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      OnChange = SelectionChanged
+    end
+    object StartButton: TButton
+      Action = actStart
+      ImageIndex = -1
+      Position.X = 1044.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      TextSettings.Trimming = None
+    end
+    object StopButton: TButton
+      Action = actStop
+      ImageIndex = -1
+      Position.X = 1132.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+      TextSettings.Trimming = None
+    end
+    object ResetButton: TButton
+      Action = actReset
+      ImageIndex = -1
+      Position.X = 1220.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+      TextSettings.Trimming = None
+    end
+    object RefreshButton: TButton
+      Action = actRefresh
+      ImageIndex = -1
+      Position.X = 1308.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 34.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 6
+      TextSettings.Trimming = None
+    end
+    object RunFullMatrixButton: TButton
+      Action = actRunFullMatrix
+      ImageIndex = -1
+      Position.X = 1044.000000000000000000
+      Position.Y = 70.000000000000000000
+      Size.Width = 168.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 7
+      TextSettings.Trimming = None
+    end
+  end
+  object Body: TLayout
+    Align = Client
+    Size.Width = 1400.000000000000000000
+    Size.Height = 696.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object ReportMemo: TMemo
+      Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+      DataDetectorTypes = []
+      ReadOnly = True
+      Align = Right
+      Position.X = 880.000000000000000000
+      Size.Width = 520.000000000000000000
+      Size.Height = 696.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Viewport.Width = 516.000000000000000000
+      Viewport.Height = 692.000000000000000000
+    end
+    object TestArea: TLayout
+      Align = Client
+      Size.Width = 880.000000000000000000
+      Size.Height = 696.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      object PopupStage: TLayout
+        Position.X = 32.000000000000000000
+        Position.Y = 144.000000000000000000
+        Size.Width = 420.000000000000000000
+        Size.Height = 300.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object MarkerTrack: TRectangle
+        Align = Bottom
+        Fill.Color = xFFF1F3F5
+        Position.Y = 644.000000000000000000
+        Size.Width = 880.000000000000000000
+        Size.Height = 52.000000000000000000
+        Size.PlatformDefault = False
+        Stroke.Color = xFF9AA4AE
+        object Marker: TRectangle
+          Fill.Color = xFF1677FF
+          HitTest = False
+          Position.Y = 12.000000000000000000
+          Size.Width = 28.000000000000000000
+          Size.Height = 28.000000000000000000
+          Size.PlatformDefault = False
+          Stroke.Kind = None
+        end
+      end
+    end
+  end
+  object MarkerTimer: TTimer
+    Enabled = False
+    Interval = 16
+    OnTimer = MarkerTimerTick
+    Left = 56
+    Top = 24
+  end
+  object Actions: TActionList
+    Left = 24
+    Top = 24
+    object actApply: TAction
+      Text = 'Apply'
+      OnExecute = ActionExecute
+    end
+    object actStart: TAction
+      Text = 'Start'
+      OnExecute = ActionExecute
+    end
+    object actStop: TAction
+      Text = 'Stop'
+      OnExecute = ActionExecute
+    end
+    object actReset: TAction
+      Text = 'Reset'
+      OnExecute = ActionExecute
+    end
+    object actRefresh: TAction
+      Text = 'Refresh'
+      OnExecute = ActionExecute
+    end
+    object actRunFullMatrix: TAction
+      Text = 'Run Full Matrix'
+      OnExecute = ActionExecute
+    end
+  end
+end
