@@ -4,18 +4,18 @@ interface
 
 uses
   System.Types, System.UITypes, System.Math,
-  Skia,
+  UniList.Canvas,
   UniList.Types;
 
-procedure DrawVectorIcon(const ACanvas: ISkCanvas; const AIcon: TUniVectorIcon;
+procedure DrawVectorIcon(const ACanvas: IUniCanvas; const AIcon: TUniVectorIcon;
   const R: TRectF; const AColor: TAlphaColor; const AStrokeWidth: Single = 1.7);
 
 implementation
 
-procedure DrawVectorIcon(const ACanvas: ISkCanvas; const AIcon: TUniVectorIcon;
+procedure DrawVectorIcon(const ACanvas: IUniCanvas; const AIcon: TUniVectorIcon;
   const R: TRectF; const AColor: TAlphaColor; const AStrokeWidth: Single);
 var
-  P: ISkPaint;
+  P: IUniPaint;
   C: TPointF;
   S, L, T, B, M: Single;
   I: Integer;
@@ -23,13 +23,13 @@ begin
   if AIcon = uviNone then
     Exit;
 
-  P := TSkPaint.Create;
+  P := TUniPaintFactory.Create;
   P.AntiAlias := True;
   P.Color := AColor;
-  P.Style := TSkPaintStyle.Stroke;
+  P.Style := TUniPaintStyle.Stroke;
   P.StrokeWidth := AStrokeWidth;
-  P.StrokeCap := TSkStrokeCap.Round;
-  P.StrokeJoin := TSkStrokeJoin.Round;
+  P.StrokeCap := TUniStrokeCap.Round;
+  P.StrokeJoin := TUniStrokeJoin.Round;
 
   C := R.CenterPoint;
   S := Min(R.Width, R.Height);
@@ -48,10 +48,10 @@ begin
         ACanvas.Save;
         try
           ACanvas.Rotate(-45, C.X, C.Y);
-          P.Style := TSkPaintStyle.Fill;
+          P.Style := TUniPaintStyle.Fill;
           ACanvas.DrawRoundRect(RectF(C.X - S * 0.32, C.Y - S * 0.08,
             C.X + S * 0.14, C.Y + S * 0.08), S * 0.03, S * 0.03, P);
-          P.Style := TSkPaintStyle.Stroke;
+          P.Style := TUniPaintStyle.Stroke;
           ACanvas.DrawLine(PointF(C.X + S * 0.14, C.Y - S * 0.08),
             PointF(C.X + S * 0.28, C.Y), P);
           ACanvas.DrawLine(PointF(C.X + S * 0.14, C.Y + S * 0.08),
@@ -88,7 +88,7 @@ begin
       end;
     uviMore:
       begin
-        P.Style := TSkPaintStyle.Fill;
+        P.Style := TUniPaintStyle.Fill;
         for I := -1 to 1 do
           ACanvas.DrawCircle(C.X + I * S * 0.23, C.Y, S * 0.055, P);
       end;

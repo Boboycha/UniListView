@@ -147,7 +147,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_UsePackage>rtl;dbrtl;Skia.Package.RTL;fmx;Skia.Package.FMX;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;dbrtl;fmx;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>rtl;dbrtl;fmx;$(DCC_UsePackage)</DCC_UsePackage>
@@ -187,13 +187,12 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="dbrtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
-        <DCCReference Include="Skia.Package.RTL.dcp"/>
-        <DCCReference Include="Skia.Package.FMX.dcp"/>
         <DCCReference Include="..\src\UniList.Types.pas"/>
         <DCCReference Include="..\src\UniList.Items.pas"/>
         <DCCReference Include="..\src\UniList.Columns.pas"/>
         <DCCReference Include="..\src\UniList.Theme.pas"/>
         <DCCReference Include="..\src\UniList.Rules.pas"/>
+        <DCCReference Include="..\src\UniList.Canvas.pas"/>
         <DCCReference Include="..\src\UniList.Vector.pas"/>
         <DCCReference Include="..\src\UniList.Performance.pas"/>
         <DCCReference Include="..\src\UniList.Diagnostics.pas"/>

@@ -101,6 +101,17 @@ begin
   Result := Max(1, LowValue);
 end;
 
+function HyphenBreakLength(const AText: string;
+  const AFittingLength: Integer): Integer;
+var
+  I: Integer;
+begin
+  Result := AFittingLength;
+  for I := Min(AFittingLength, Length(AText) - 1) downto 2 do
+    if AText[I] = '-' then
+      Exit(I);
+end;
+
 function BuildMeasuredTextLayout(const AText: string;
   const AMaxWidth, AFontSize: Single; const AWordWrap,
   AEllipsis: Boolean; const AMaxLines: Integer;
@@ -163,6 +174,7 @@ begin
           begin
             PrefixLength := FittingPrefixLength(Part, AMaxWidth,
               AMeasureText);
+            PrefixLength := HyphenBreakLength(Part, PrefixLength);
             Lines.Add(Copy(Part, 1, PrefixLength));
             Delete(Part, 1, PrefixLength);
           end;
@@ -249,8 +261,9 @@ begin
           Part := WordValue;
           while Length(Part) > MaxChars do
           begin
-            Lines.Add(Copy(Part, 1, MaxChars));
-            Delete(Part, 1, MaxChars);
+            TakeCount := HyphenBreakLength(Part, MaxChars);
+            Lines.Add(Copy(Part, 1, TakeCount));
+            Delete(Part, 1, TakeCount);
           end;
           Current := Part;
         end

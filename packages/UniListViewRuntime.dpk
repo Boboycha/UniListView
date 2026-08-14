@@ -7,9 +7,7 @@
 requires
   rtl,
   dbrtl,
-  fmx,
-  Skia.Package.RTL,
-  Skia.Package.FMX;
+  fmx;
 
 contains
   UniList.Types in '..\src\UniList.Types.pas',
@@ -17,6 +15,7 @@ contains
   UniList.Columns in '..\src\UniList.Columns.pas',
   UniList.Theme in '..\src\UniList.Theme.pas',
   UniList.Rules in '..\src\UniList.Rules.pas',
+  UniList.Canvas in '..\src\UniList.Canvas.pas',
   UniList.Vector in '..\src\UniList.Vector.pas',
   UniList.Performance in '..\src\UniList.Performance.pas',
   UniList.Diagnostics in '..\src\UniList.Diagnostics.pas',

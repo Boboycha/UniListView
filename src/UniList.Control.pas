@@ -8,8 +8,8 @@ uses
   System.Rtti, System.Generics.Collections, System.JSON, System.IOUtils,
   System.StrUtils, System.Actions,
   Data.DB,
-  FMX.Types, FMX.Controls, FMX.Skia, FMX.Platform,
-  Skia,
+  FMX.Types, FMX.Controls, FMX.Objects, FMX.Platform,
+  UniList.Canvas,
   UniList.Types, UniList.Items, UniList.Vector, UniList.Performance, UniList.Text,
   UniList.Columns, UniList.Theme, UniList.Rules, UniList.Search;
 
@@ -56,7 +56,7 @@ type
     constructor Create(const AListView: TUniListView);
   end;
 
-  TUniListView = class(TSkPaintBox)
+  TUniListView = class(TPaintBox)
   private
     FItems: TUniListItems;
     FViewMode: TUniViewMode;
@@ -236,8 +236,9 @@ type
     FOnSearchChanged: TNotifyEvent;
     FInitializing: Boolean;
     FFontFamily: string;
-    FFontTypeface: ISkTypeface;
-    FTitleMeasureFont: ISkFont;
+    FFontTypeface: IUniTypeface;
+    FTitleMeasureFont: IUniFont;
+    FRenderScale: Single;
     FFontSize: Single;
     FTitleFontSize: Single;
     FDetailFontSize: Single;
@@ -255,8 +256,9 @@ type
     procedure ColorRulesChanged(Sender: TObject);
     procedure TemplateChanged(Sender: TObject);
     procedure ResizeHeightTimer(Sender: TObject);
-    procedure DoDraw(Sender: TObject; const ACanvas: ISkCanvas;
+    procedure DoDraw(Sender: TObject; const ACanvas: IUniCanvas;
       const ADest: TRectF; const AOpacity: Single);
+    procedure Redraw;
     procedure SetSelectedIndex(const Value: Integer);
     procedure SetThemeName(const Value: string);
     procedure SetFontFamily(const Value: string);
@@ -325,8 +327,8 @@ type
     procedure PopulateDesignCardAliases(const AItem: TUniListItem);
     function DesignSampleText(const AColumn: TUniListColumn;
       const ARowIndex: Integer): string;
-    function CreateTextFont(const ASize: Single): ISkFont;
-    function GetTitleMeasureFont: ISkFont;
+    function CreateTextFont(const ASize: Single): IUniFont;
+    function GetTitleMeasureFont: IUniFont;
     function MeasureTitleTextWidth(const AText: string): Single;
     function CurrentSceneScale: Single;
     procedure RebuildSearchTree;
@@ -334,7 +336,7 @@ type
     procedure RestoreSearchTreeState;
     procedure ExpandTreePathToItem(const AItemIndex: Integer);
     function VisibleSearchFields: TArray<string>;
-    procedure DrawSearchHighlights(const ACanvas: ISkCanvas;
+    procedure DrawSearchHighlights(const ACanvas: IUniCanvas;
       const AItemIndex: Integer; const AText: string; const AX,
       ABaseline, AFontSize: Single);
     function CardDisplayCount: Integer;
@@ -355,10 +357,10 @@ type
     function CanPanWithMouse: Boolean;
     function VScrollRect: TRectF;
     function HScrollRect: TRectF;
-    procedure DrawScrollBars(const ACanvas: ISkCanvas);
-    procedure DrawCard(const ACanvas: ISkCanvas; const AIndex: Integer;
+    procedure DrawScrollBars(const ACanvas: IUniCanvas);
+    procedure DrawCard(const ACanvas: IUniCanvas; const AIndex: Integer;
       const R: TRectF);
-    procedure DrawFullWidthCard(const ACanvas: ISkCanvas;
+    procedure DrawFullWidthCard(const ACanvas: IUniCanvas;
       const AItemIndex: Integer; const R: TRectF);
     function FullWidthUsesRoles: Boolean;
     procedure FullWidthValues(AItem: TUniListItem;
@@ -374,14 +376,14 @@ type
     function WrapCellText(const AText: string; const AWidth: Single;
       const AMaxLines: Integer): TArray<string>;
     function ListDisplayIndexAtY(const AY: Single): Integer;
-    procedure DrawList(const ACanvas: ISkCanvas; const ADest: TRectF);
-    procedure DrawListHeader(const ACanvas: ISkCanvas);
-    procedure DrawListFilter(const ACanvas: ISkCanvas);
-    procedure DrawListFooter(const ACanvas: ISkCanvas);
+    procedure DrawList(const ACanvas: IUniCanvas; const ADest: TRectF);
+    procedure DrawListHeader(const ACanvas: IUniCanvas);
+    procedure DrawListFilter(const ACanvas: IUniCanvas);
+    procedure DrawListFooter(const ACanvas: IUniCanvas);
     function FooterDisplayText(const AColumn: TUniListColumn): string;
-    procedure DrawListRow(const ACanvas: ISkCanvas; const AIndex: Integer;
+    procedure DrawListRow(const ACanvas: IUniCanvas; const AIndex: Integer;
       const R: TRectF);
-    procedure DrawListActions(const ACanvas: ISkCanvas;
+    procedure DrawListActions(const ACanvas: IUniCanvas;
       const AItemIndex: Integer; const ARowRect: TRectF;
       const ABackgroundColor: TAlphaColor);
     function ListActionsWidth(AItem: TUniListItem): Single;
@@ -395,7 +397,7 @@ type
     procedure RebuildCardTreeVisibleSet;
     procedure BuildCardTreeBreadcrumbs;
     procedure CalculateCardTreeLayout;
-    procedure DrawCardTreeChrome(const ACanvas: ISkCanvas);
+    procedure DrawCardTreeChrome(const ACanvas: IUniCanvas);
     function CardTreeActive: Boolean;
     function CardTreeItemHasChildren(const AItemIndex: Integer): Boolean;
     function CardTreeItemIsParent(const AItemIndex: Integer): Boolean;
@@ -436,7 +438,7 @@ type
     function ListCheckAt(const P: TPointF; out ADisplayIndex: Integer): Boolean;
     function CardCheckRect(const AItemIndex: Integer): TRectF;
     function CardCheckAt(const P: TPointF; out AItemIndex: Integer): Boolean;
-    procedure DrawCheckBox(const ACanvas: ISkCanvas; const ARect: TRectF;
+    procedure DrawCheckBox(const ACanvas: IUniCanvas; const ARect: TRectF;
       const AState: TUniCheckState);
     procedure ToggleTreeCheck(const ADisplayIndex: Integer);
     procedure ToggleTreeNode(const ADisplayIndex: Integer);
@@ -455,7 +457,7 @@ type
     procedure ShowColumnsMenu(const X, Y: Single);
     procedure HideColumnChooser;
     procedure UpdateColumnChooserRect(const X, Y: Single);
-    procedure DrawColumnChooser(const ACanvas: ISkCanvas);
+    procedure DrawColumnChooser(const ACanvas: IUniCanvas);
     function ColumnChooserHit(const P: TPointF): Integer;
     function VisibleColumnCount: Integer;
     procedure ResetColumnLayout;
@@ -485,7 +487,7 @@ type
       ATitleColumn: TUniListColumn): string; overload;
     function CardTitleColumn: TUniListColumn;
     function MeasureWidestTitleWord(const ATitle: string;
-      const AFont: ISkFont): Single;
+      const AFont: IUniFont): Single;
     function ItemText(AItem: TUniListItem): string;
     function ItemDetail(AItem: TUniListItem): string;
     function ItemIcon(AItem: TUniListItem): TUniVectorIcon;
@@ -499,6 +501,7 @@ type
     function FirstVisibleIndex: Integer;
     function LastVisibleIndex: Integer;
   protected
+    procedure Paint; override;
     procedure DoItemClick(const AItemIndex: Integer); virtual;
     procedure DoItemDoubleClick(const AItemIndex: Integer); virtual;
     procedure DoSearchChanged; virtual;
@@ -825,9 +828,14 @@ const
   ACTION_PRESSED_BLEND = 0.28;
   ACTION_DISABLED_BLEND = 0.45;
 
-function SkColor(const C: TAlphaColor): TAlphaColor;
+function UniColor(const C: TAlphaColor): TAlphaColor;
 begin
   Result := C;
+end;
+
+procedure TUniListView.Redraw;
+begin
+  Repaint;
 end;
 
 constructor TUniDesignPreviewDataLink.Create(const AListView: TUniListView);
@@ -1041,7 +1049,6 @@ begin
   HitTest := True;
   AutoCapture := True;
   CanFocus := True;
-  OnDraw := DoDraw;
   SetBounds(Position.X, Position.Y, 640, 360);
   FLastLayoutWidth := Width;
   FLastLayoutHeight := Height;
@@ -1199,17 +1206,23 @@ begin
   InvalidateLayout;
 end;
 
-function TUniListView.CreateTextFont(const ASize: Single): ISkFont;
+function TUniListView.CreateTextFont(const ASize: Single): IUniFont;
+var
+  DrawSize: Single;
 begin
   if not Assigned(FFontTypeface) and (FFontFamily <> '') then
-    FFontTypeface := TSkTypeface.MakeFromName(FFontFamily,
-      TSkFontStyle.Normal);
+    FFontTypeface := TUniTypefaceFactory.MakeFromName(FFontFamily,
+      TUniFontStyle.Normal);
   if not Assigned(FFontTypeface) then
-    FFontTypeface := TSkTypeface.MakeDefault;
-  Result := TSkFont.Create(FFontTypeface, ASize);
+    FFontTypeface := TUniTypefaceFactory.MakeDefault;
+  if FRenderScale > 0 then
+    DrawSize := Max(1, Round(ASize * FRenderScale)) / FRenderScale
+  else
+    DrawSize := ASize;
+  Result := TUniFontFactory.Create(FFontTypeface, DrawSize);
 end;
 
-function TUniListView.GetTitleMeasureFont: ISkFont;
+function TUniListView.GetTitleMeasureFont: IUniFont;
 begin
   if not Assigned(FTitleMeasureFont) then
     FTitleMeasureFont := CreateTextFont(FTitleFontSize);
@@ -1884,7 +1897,7 @@ begin
   SearchText := '';
 end;
 
-procedure TUniListView.DrawSearchHighlights(const ACanvas: ISkCanvas;
+procedure TUniListView.DrawSearchHighlights(const ACanvas: IUniCanvas;
   const AItemIndex: Integer; const AText: string; const AX, ABaseline,
   AFontSize: Single);
 const
@@ -1892,11 +1905,11 @@ const
   HIGHLIGHT_HORIZONTAL_PADDING = 1.0;
   HIGHLIGHT_VERTICAL_PADDING = 2.0;
 var
-  Font: ISkFont;
+  Font: IUniFont;
   Haystack, Needle: string;
   MatchLeft, MatchRight: Single;
   MatchPosition, SearchPosition: Integer;
-  Paint: ISkPaint;
+  Paint: IUniPaint;
 begin
   if (FSearchEngine = nil) or (FSearchEngine.SearchText = '') or
      not FSearchEngine.IsMatch(AItemIndex) or (AText = '') then
@@ -1914,9 +1927,9 @@ begin
     Exit;
 
   Font := CreateTextFont(AFontSize);
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := UniBlendColor(FCardColor, FAccentColor, HIGHLIGHT_BLEND);
   while MatchPosition > 0 do
   begin
@@ -2234,7 +2247,7 @@ begin
 end;
 
 function TUniListView.MeasureWidestTitleWord(const ATitle: string;
-  const AFont: ISkFont): Single;
+  const AFont: IUniFont): Single;
 var
   CharacterIndex, WordStart: Integer;
   WordValue: string;
@@ -2262,7 +2275,7 @@ end;
 
 function TUniListView.MeasureAutoTitleCardWidth: Single;
 var
-  Font: ISkFont;
+  Font: IUniFont;
   Item: TUniListItem;
   LongestWordWidth, MaximumWidth, MinimumWidth: Single;
   TitleValue: string;
@@ -2949,10 +2962,31 @@ begin
   end;
 end;
 
-procedure TUniListView.DoDraw(Sender: TObject; const ACanvas: ISkCanvas;
+procedure TUniListView.Paint;
+var
+  NativeCanvas: IUniCanvas;
+  NewRenderScale, ScaleX, ScaleY: Single;
+begin
+  inherited;
+  ScaleX := Max(0.001, Abs(AbsoluteScale.X) * CurrentSceneScale);
+  ScaleY := Max(0.001, Abs(AbsoluteScale.Y) * CurrentSceneScale);
+  NewRenderScale := Max(ScaleX, ScaleY);
+  if not SameValue(FRenderScale, NewRenderScale, 0.001) then
+  begin
+    FRenderScale := NewRenderScale;
+    FTitleMeasureFont := nil;
+    InvalidateCardHeightCache;
+    InvalidateAutoTitleWidth;
+    InvalidateLayout;
+  end;
+  NativeCanvas := WrapCanvas(Canvas, ScaleX, ScaleY);
+  DoDraw(Self, NativeCanvas, LocalRect, AbsoluteOpacity);
+end;
+
+procedure TUniListView.DoDraw(Sender: TObject; const ACanvas: IUniCanvas;
   const ADest: TRectF; const AOpacity: Single);
 var
-  Paint: ISkPaint;
+  Paint: IUniPaint;
   I, ItemIndex, FirstIndex, LastIndex: Integer;
   DrawnCount: Int64;
   PerfTimer, ModeTimer: TUniPerfScope;
@@ -2961,9 +2995,9 @@ begin
   PerfTimer := TUniPerfScope.Start(upcPaint);
   try
   EnsureLayout;
-  Paint := TSkPaint.Create;
-  Paint.Color := SkColor(FBackgroundColor);
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint := TUniPaintFactory.Create;
+  Paint.Color := UniColor(FBackgroundColor);
+  Paint.Style := TUniPaintStyle.Fill;
   if CardTreeActive then
     ACanvas.DrawRect(RectF(0, 0, Width, Height), Paint)
   else
@@ -3138,7 +3172,7 @@ begin
   end;
 end;
 
-procedure TUniListView.DrawFullWidthCard(const ACanvas: ISkCanvas;
+procedure TUniListView.DrawFullWidthCard(const ACanvas: IUniCanvas;
   const AItemIndex: Integer; const R: TRectF);
 const
   RULE_INDICATOR_WIDTH = 4.0;
@@ -3154,12 +3188,12 @@ var
   DetailColumn, SubtitleColumn, TitleColumn, TrailingColumn: TUniListColumn;
   DetailLayout, SubtitleLayout, TitleLayout, TrailingLayout: TUniTextLayout;
   DetailValue, SubtitleValue, TitleValue, TrailingValue: string;
-  Font: ISkFont;
+  Font: IUniFont;
   Item: TUniListItem;
   SecondaryIcon: TUniVectorIcon;
   IsHot, IsPressed, UseRuleBackground, UseRuleText,
     UseText: Boolean;
-  Paint: ISkPaint;
+  Paint: IUniPaint;
 
     BlockTimer: TUniPerfScope;
 
@@ -3222,11 +3256,11 @@ var
     BlockRect := RectF(AX, AY, AX + AWidth, AY + ALayout.Height);
     if UseBlockBackground then
     begin
-      Paint.Style := TSkPaintStyle.Fill;
+      Paint.Style := TUniPaintStyle.Fill;
       Paint.Color := BlockBackground;
       ACanvas.DrawRoundRect(BlockRect, 4, 4, Paint);
     end;
-    Paint.Style := TSkPaintStyle.Fill;
+    Paint.Style := TUniPaintStyle.Fill;
     Paint.Color := BlockText;
     Font := CreateTextFont(AFontSize);
     for LocalLineIndex := 0 to High(ALayout.Lines) do
@@ -3270,9 +3304,9 @@ begin
   else
     BackgroundColor := FCardColor;
 
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := BackgroundColor;
   ACanvas.DrawRoundRect(R, FCornerRadius, FCornerRadius, Paint);
   if UseRuleBackground then
@@ -3287,7 +3321,7 @@ begin
   end;
   if AItemIndex = FSelectedIndex then
   begin
-    Paint.Style := TSkPaintStyle.Stroke;
+    Paint.Style := TUniPaintStyle.Stroke;
     Paint.StrokeWidth := 1;
     Paint.Color := (FAccentColor and $00FFFFFF) or $80000000;
     ACanvas.DrawRoundRect(R, FCornerRadius, FCornerRadius, Paint);
@@ -3311,7 +3345,7 @@ begin
     IconBox := RectF(TextX, R.Top + FULL_WIDTH_CARD_VERTICAL_PADDING,
       TextX + FCardTemplate.IconBoxSize,
       R.Top + FULL_WIDTH_CARD_VERTICAL_PADDING + FCardTemplate.IconBoxSize);
-    Paint.Style := TSkPaintStyle.Fill;
+    Paint.Style := TUniPaintStyle.Fill;
     Paint.Color := (FAccentColor and $00FFFFFF) or $12000000;
     BlockTimer := TUniPerfScope.Start(upcDrawCardIcon);
     try
@@ -3434,7 +3468,7 @@ begin
         (FPressedHit.ActionIndex = ActionIndex) and FMousePressed;
       if IsHot or IsPressed then
       begin
-        Paint.Style := TSkPaintStyle.Fill;
+        Paint.Style := TUniPaintStyle.Fill;
         if IsPressed then
           Paint.Color := UniBlendColor(BackgroundColor, FAccentColor,
             ACTION_PRESSED_BLEND)
@@ -3459,14 +3493,14 @@ begin
     end;
 end;
 
-procedure TUniListView.DrawCard(const ACanvas: ISkCanvas;
+procedure TUniListView.DrawCard(const ACanvas: IUniCanvas;
   const AIndex: Integer; const R: TRectF);
 const
   RULE_INDICATOR_WIDTH = 4.0;
   RULE_INDICATOR_INSET = 8.0;
 var
-  Paint: ISkPaint;
-  Font: ISkFont;
+  Paint: IUniPaint;
+  Font: IUniFont;
   Item: TUniListItem;
   SecondaryIcon: TUniVectorIcon;
   Bg, IconColor, RuleBackground, RuleText, CardTextColor: TAlphaColor;
@@ -3498,11 +3532,11 @@ var
        (FSelectedTextHit.ItemIndex = AIndex) and
        (FSelectedTextHit.TextPart = Part) then
     begin
-      Paint.Style := TSkPaintStyle.Fill;
+      Paint.Style := TUniPaintStyle.Fill;
       Paint.Color := (FAccentColor and $00FFFFFF) or $55000000;
       ACanvas.DrawRoundRect(LR, 3, 3, Paint);
     end;
-    Paint.Style := TSkPaintStyle.Fill;
+    Paint.Style := TUniPaintStyle.Fill;
     Paint.Color := Color;
     Font := CreateTextFont(FontSize);
     for LineIndex := 0 to High(L.Lines) do
@@ -3535,14 +3569,14 @@ begin
   else if CardTreeActive and CardTreeItemVisualParent(AIndex) then
     Bg := FCardTreeParentBackgroundColor
   else Bg := FCardColor;
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := Bg;
   ACanvas.DrawRoundRect(R, FCornerRadius, FCornerRadius, Paint);
   if UseRuleBackground then
   begin
-    Paint.Style := TSkPaintStyle.Fill;
+    Paint.Style := TUniPaintStyle.Fill;
     Paint.Color := RuleBackground;
     AR := RectF(R.Left + RULE_INDICATOR_INSET,
       R.Top + RULE_INDICATOR_INSET,
@@ -3553,7 +3587,7 @@ begin
   end;
   if AIndex = FSelectedIndex then
   begin
-    Paint.Style := TSkPaintStyle.Stroke;
+    Paint.Style := TUniPaintStyle.Stroke;
     Paint.StrokeWidth := 1;
     Paint.Color := (FAccentColor and $00FFFFFF) or $80000000;
     ACanvas.DrawRoundRect(R, FCornerRadius, FCornerRadius, Paint);
@@ -3578,7 +3612,7 @@ begin
       R.Top + FCardTemplate.InnerPadding,
       TextX + FCardTemplate.IconBoxSize,
       R.Top + FCardTemplate.InnerPadding + FCardTemplate.IconBoxSize);
-    Paint.Style := TSkPaintStyle.Fill;
+    Paint.Style := TUniPaintStyle.Fill;
     Paint.Color := (FAccentColor and $00FFFFFF) or $12000000;
     BlockTimer := TUniPerfScope.Start(upcDrawCardIcon);
     try
@@ -3640,7 +3674,7 @@ begin
         (FPressedHit.ActionIndex = I) and FMousePressed;
       if IsHot or IsPressed then
       begin
-        Paint.Style := TSkPaintStyle.Fill;
+        Paint.Style := TUniPaintStyle.Fill;
         if IsPressed then
           Paint.Color := UniBlendColor(Bg, FAccentColor,
             ACTION_PRESSED_BLEND)
@@ -4121,7 +4155,7 @@ begin
     Result := -1;
 end;
 
-procedure TUniListView.DrawColumnChooser(const ACanvas: ISkCanvas);
+procedure TUniListView.DrawColumnChooser(const ACanvas: IUniCanvas);
 const
   ITEM_HEIGHT = 30.0;
   MENU_PADDING = 6.0;
@@ -4132,8 +4166,8 @@ const
   SHADOW_OFFSET_X = 2.0;
   SHADOW_OFFSET_Y = 3.0;
 var
-  Paint: ISkPaint;
-  Font: ISkFont;
+  Paint: IUniPaint;
+  Font: IUniFont;
   ItemIndex, FirstItem, LastItem: Integer;
   ItemRect, CheckRect, ShadowRect, CheckIconRect: TRectF;
   Caption: string;
@@ -4156,16 +4190,16 @@ begin
   else
     CheckMarkColor := $FFFFFFFF;
 
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := PopupShadowColor;
   ShadowRect := FColumnChooserRect;
   ShadowRect.Offset(SHADOW_OFFSET_X, SHADOW_OFFSET_Y);
   ACanvas.DrawRoundRect(ShadowRect, POPUP_RADIUS, POPUP_RADIUS, Paint);
   Paint.Color := PopupColor;
   ACanvas.DrawRoundRect(FColumnChooserRect, POPUP_RADIUS, POPUP_RADIUS, Paint);
-  Paint.Style := TSkPaintStyle.Stroke;
+  Paint.Style := TUniPaintStyle.Stroke;
   Paint.StrokeWidth := 1;
   Paint.Color := PopupBorderColor;
   ACanvas.DrawRoundRect(FColumnChooserRect, POPUP_RADIUS, POPUP_RADIUS, Paint);
@@ -4184,7 +4218,7 @@ begin
       FColumnChooserRect.Top + MENU_PADDING + (ItemIndex - FirstItem + 1) * ITEM_HEIGHT);
     if ItemIndex = FColumnChooserHotIndex then
     begin
-      Paint.Style := TSkPaintStyle.Fill;
+      Paint.Style := TUniPaintStyle.Fill;
       Paint.Color := PopupHoverColor;
       ACanvas.DrawRoundRect(ItemRect, ITEM_RADIUS, ITEM_RADIUS, Paint);
     end;
@@ -4197,13 +4231,13 @@ begin
         ItemRect.CenterPoint.Y - CHECK_SIZE * 0.5,
         ItemRect.Left + 7 + CHECK_SIZE,
         ItemRect.CenterPoint.Y + CHECK_SIZE * 0.5);
-      Paint.Style := TSkPaintStyle.Stroke;
+      Paint.Style := TUniPaintStyle.Stroke;
       Paint.StrokeWidth := 1.4;
       Paint.Color := CheckBorderColor;
       ACanvas.DrawRoundRect(CheckRect, 2, 2, Paint);
       if IsChecked then
       begin
-        Paint.Style := TSkPaintStyle.Fill;
+        Paint.Style := TUniPaintStyle.Fill;
         Paint.Color := FAccentColor;
         ACanvas.DrawRoundRect(CheckRect, 2, 2, Paint);
         CheckIconRect := CheckRect;
@@ -4225,7 +4259,7 @@ begin
     else
       Caption := 'Сбросить расположение';
 
-    Paint.Style := TSkPaintStyle.Fill;
+    Paint.Style := TUniPaintStyle.Fill;
     Paint.Color := FTextColor;
     Baseline := ItemRect.Top + (ITEM_HEIGHT + FFontSize) * 0.5 - 1;
     if ItemIndex < FColumns.Count then
@@ -4236,17 +4270,17 @@ begin
   ACanvas.Restore;
 end;
 
-procedure TUniListView.DrawListHeader(const ACanvas: ISkCanvas);
+procedure TUniListView.DrawListHeader(const ACanvas: IUniCanvas);
 var
-  Paint: ISkPaint;
-  Font: ISkFont;
+  Paint: IUniPaint;
+  Font: IUniFont;
   ColumnIndex, DrawPass, SortIndex: Integer;
   R, PassClip: TRectF;
   TextX, Baseline, FrozenRight: Single;
 begin
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := FHeaderColor;
   ACanvas.DrawRect(RectF(0, 0, Width, FListHeaderHeight), Paint);
   Font := CreateTextFont(FFontSize);
@@ -4268,7 +4302,7 @@ begin
         R := RectF(ColumnScreenLeft(ColumnIndex), 0,
           ColumnScreenLeft(ColumnIndex) + FColumnWidths[ColumnIndex],
           FListHeaderHeight);
-        Paint.Style := TSkPaintStyle.Fill;
+        Paint.Style := TUniPaintStyle.Fill;
         Paint.Color := FHeaderColor;
         ACanvas.DrawRect(R, Paint);
         Paint.Color := FTextColor;
@@ -4291,14 +4325,14 @@ begin
         end;
         if FColumns[ColumnIndex].FilterValue <> '' then
         begin
-          Paint.Style := TSkPaintStyle.Fill;
+          Paint.Style := TUniPaintStyle.Fill;
           Paint.Color := FAccentColor;
           ACanvas.DrawCircle(R.Right - 7, 7, 3, Paint);
         end;
         ACanvas.Restore;
         if FListGridLines then
         begin
-          Paint.Style := TSkPaintStyle.Stroke;
+          Paint.Style := TUniPaintStyle.Stroke;
           Paint.StrokeWidth := 1;
           Paint.Color := FGridColor;
           ACanvas.DrawLine(R.Right, 0, R.Right, FListHeaderHeight, Paint);
@@ -4309,7 +4343,7 @@ begin
 
   if FListHorizontalGridLines then
   begin
-    Paint.Style := TSkPaintStyle.Stroke;
+    Paint.Style := TUniPaintStyle.Stroke;
     Paint.StrokeWidth := 1;
     Paint.Color := FGridColor;
     ACanvas.DrawLine(0, FListHeaderHeight - 0.5, Width,
@@ -4379,7 +4413,7 @@ begin
     end;
 end;
 
-procedure TUniListView.DrawListActions(const ACanvas: ISkCanvas;
+procedure TUniListView.DrawListActions(const ACanvas: IUniCanvas;
   const AItemIndex: Integer; const ARowRect: TRectF;
   const ABackgroundColor: TAlphaColor);
 var
@@ -4388,7 +4422,7 @@ var
   IconColor: TAlphaColor;
   IsHot, IsPressed: Boolean;
   Item: TUniListItem;
-  Paint: ISkPaint;
+  Paint: IUniPaint;
   PanelWidth: Single;
 begin
   if (AItemIndex < 0) or (AItemIndex >= FItems.Count) then
@@ -4398,9 +4432,9 @@ begin
   if PanelWidth <= 0 then
     Exit;
 
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := ABackgroundColor;
   PanelRect := RectF(Width - PanelWidth, ARowRect.Top,
     Width, ARowRect.Bottom);
@@ -4442,14 +4476,14 @@ begin
     end;
 end;
 
-procedure TUniListView.DrawListRow(const ACanvas: ISkCanvas;
+procedure TUniListView.DrawListRow(const ACanvas: IUniCanvas;
   const AIndex: Integer; const R: TRectF);
 const
   TREE_TOGGLE_STROKE_WIDTH = 1.8;
   TREE_TOGGLE_INSET = 5.0;
 var
-  Paint: ISkPaint;
-  Font: ISkFont;
+  Paint: IUniPaint;
+  Font: IUniFont;
   ColumnIndex, DrawPass, ItemIndex: Integer;
   CellRect, PassClip, TextClipRect: TRectF;
   TextValueLocal: string;
@@ -4472,9 +4506,9 @@ begin
   RowText := FTextColor;
   ResolveColorRules(FItems[ItemIndex], '', RowBackground, RowText,
     UseRowBackground, UseRowText);
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   if ItemIndex = FSelectedIndex then
     Paint.Color := FCardSelectedColor
   else if FHotHit.ItemIndex = ItemIndex then
@@ -4532,7 +4566,7 @@ begin
         if UseRowText then CellText := RowText else CellText := FTextColor;
         ResolveColorRules(FItems[ItemIndex], FColumns[ColumnIndex].FieldName,
           CellBackground, CellText, UseCellBackground, UseCellText);
-        Paint.Style := TSkPaintStyle.Fill;
+        Paint.Style := TUniPaintStyle.Fill;
         if ItemIndex = FSelectedIndex then
           Paint.Color := FCardSelectedColor
         else if FHotHit.ItemIndex = ItemIndex then
@@ -4554,7 +4588,7 @@ begin
         if FTreeMode and SameText(TreeColumnName, FTreeColumn) and
            TreeNodeCanExpand(ItemIndex) then
         begin
-          Paint.Style := TSkPaintStyle.Stroke;
+          Paint.Style := TUniPaintStyle.Stroke;
           Paint.StrokeWidth := TREE_TOGGLE_STROKE_WIDTH;
           Paint.Color := FAccentColor;
           if TreeIsExpanded(ItemIndex) then
@@ -4575,7 +4609,7 @@ begin
               (TreeToggle.Top + TreeToggle.Bottom) * 0.5, TreeToggle.Left + 6,
               TreeToggle.Bottom - TREE_TOGGLE_INSET, Paint);
           end;
-          Paint.Style := TSkPaintStyle.Fill;
+          Paint.Style := TUniPaintStyle.Fill;
         end;
         if FTreeMode and CheckBoxesVisible and SameText(TreeColumnName, FTreeColumn) then
         begin
@@ -4633,7 +4667,7 @@ begin
         ACanvas.Restore;
         if FListGridLines then
         begin
-          Paint.Style := TSkPaintStyle.Stroke;
+          Paint.Style := TUniPaintStyle.Stroke;
           Paint.StrokeWidth := 1;
           Paint.Color := FGridColor;
           UniPerfInc(upcDrawRowGridLines);
@@ -4645,7 +4679,7 @@ begin
   DrawListActions(ACanvas, ItemIndex, R, EffectiveRowBackground);
   if FListGridLines and FListHorizontalGridLines then
   begin
-    Paint.Style := TSkPaintStyle.Stroke;
+    Paint.Style := TUniPaintStyle.Stroke;
     Paint.StrokeWidth := 1;
     Paint.Color := FGridColor;
     ACanvas.DrawLine(0, R.Bottom - 0.5, Width, R.Bottom - 0.5, Paint);
@@ -4715,10 +4749,10 @@ begin
     Result := FloatToStr(Value);
 end;
 
-procedure TUniListView.DrawListFooter(const ACanvas: ISkCanvas);
+procedure TUniListView.DrawListFooter(const ACanvas: IUniCanvas);
 var
-  Paint: ISkPaint;
-  Font: ISkFont;
+  Paint: IUniPaint;
+  Font: IUniFont;
   ColumnIndex, DrawPass: Integer;
   R, PassClip: TRectF;
   TextValueLocal: string;
@@ -4727,9 +4761,9 @@ begin
   if not FListFooterVisible then
     Exit;
   FooterTop := Height - FListFooterHeight;
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := FFooterColor;
   ACanvas.DrawRect(RectF(0, FooterTop, Width, Height), Paint);
   Font := CreateTextFont(FFontSize);
@@ -4750,7 +4784,7 @@ begin
       begin
         R := RectF(ColumnScreenLeft(ColumnIndex), FooterTop,
           ColumnScreenLeft(ColumnIndex) + FColumnWidths[ColumnIndex], Height);
-        Paint.Style := TSkPaintStyle.Fill;
+        Paint.Style := TUniPaintStyle.Fill;
         Paint.Color := FFooterColor;
         ACanvas.DrawRect(R, Paint);
         TextValueLocal := FooterDisplayText(FColumns[ColumnIndex]);
@@ -4768,7 +4802,7 @@ begin
         ACanvas.Restore;
         if FListGridLines then
         begin
-          Paint.Style := TSkPaintStyle.Stroke;
+          Paint.Style := TUniPaintStyle.Stroke;
           Paint.StrokeWidth := 1;
           Paint.Color := FGridColor;
           ACanvas.DrawLine(R.Right, FooterTop, R.Right, Height, Paint);
@@ -4778,14 +4812,14 @@ begin
   end;
   if FListHorizontalGridLines then
   begin
-    Paint.Style := TSkPaintStyle.Stroke;
+    Paint.Style := TUniPaintStyle.Stroke;
     Paint.StrokeWidth := 1;
     Paint.Color := FGridColor;
     ACanvas.DrawLine(0, FooterTop + 0.5, Width, FooterTop + 0.5, Paint);
   end;
 end;
 
-procedure TUniListView.DrawList(const ACanvas: ISkCanvas;
+procedure TUniListView.DrawList(const ACanvas: IUniCanvas;
   const ADest: TRectF);
 var
   ItemIndex, FirstIndex, LastIndex: Integer;
@@ -4937,16 +4971,16 @@ begin
   InvalidateLayout;
 end;
 
-procedure TUniListView.DrawScrollBars(const ACanvas: ISkCanvas);
+procedure TUniListView.DrawScrollBars(const ACanvas: IUniCanvas);
 var
-  Paint: ISkPaint;
+  Paint: IUniPaint;
   R: TRectF;
 begin
   if FScrollBars = usbNever then Exit;
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
   Paint.Color := FGridColor;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   if ((FScrollBars = usbAlways) or (FContentHeight > Height)) and
      (FScrollMode in [usmVertical, usmBoth]) then
   begin
@@ -7250,23 +7284,23 @@ begin
   FContentWidth := Width;
 end;
 
-procedure TUniListView.DrawCardTreeChrome(const ACanvas: ISkCanvas);
+procedure TUniListView.DrawCardTreeChrome(const ACanvas: IUniCanvas);
 var
   BadgeRect: TRectF;
   BadgeText: string;
   BadgeTextWidth: Single;
   BreadcrumbIndex: Integer;
   ChildCount: Integer;
-  Font: ISkFont;
+  Font: IUniFont;
   Icon: TUniVectorIcon;
   IconRect: TRectF;
   ItemIndex: Integer;
-  Paint: ISkPaint;
+  Paint: IUniPaint;
   TextX: Single;
 begin
   if not CardTreeActive then
     Exit;
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
   Font := CreateTextFont(FFontSize);
   if CardTreeNavigationPresentation and FCardTreeShowBreadcrumbs then
@@ -7352,7 +7386,7 @@ begin
         BadgeRect.Right := CardRect(BreadcrumbIndex).Right -
           CARD_TREE_ICON_PADDING;
       BadgeRect.Left := BadgeRect.Right - CARD_TREE_BADGE_WIDTH;
-      Paint.Style := TSkPaintStyle.Fill;
+      Paint.Style := TUniPaintStyle.Fill;
       Paint.Color := UniBlendColor(FCardTreeParentBackgroundColor,
         FCardTreeNavigationIconColor, 0.25);
       ACanvas.DrawRoundRect(BadgeRect, CARD_TREE_BADGE_RADIUS,
@@ -7877,27 +7911,27 @@ begin
   end;
 end;
 
-procedure TUniListView.DrawCheckBox(const ACanvas: ISkCanvas;
+procedure TUniListView.DrawCheckBox(const ACanvas: IUniCanvas;
   const ARect: TRectF; const AState: TUniCheckState);
 var
-  Paint: ISkPaint;
+  Paint: IUniPaint;
 begin
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
-  Paint.Style := TSkPaintStyle.Stroke;
+  Paint.Style := TUniPaintStyle.Stroke;
   Paint.StrokeWidth := 1.5;
   Paint.Color := FGridColor;
   ACanvas.DrawRoundRect(ARect, 3, 3, Paint);
   if AState = ucsUnchecked then
     Exit;
-  Paint.Style := TSkPaintStyle.Fill;
+  Paint.Style := TUniPaintStyle.Fill;
   Paint.Color := FAccentColor;
   ACanvas.DrawRoundRect(ARect, 3, 3, Paint);
   Paint.Color := FBackgroundColor;
   Paint.StrokeWidth := 2;
   if AState = ucsChecked then
   begin
-    Paint.Style := TSkPaintStyle.Stroke;
+    Paint.Style := TUniPaintStyle.Stroke;
     ACanvas.DrawLine(ARect.Left + 3, ARect.Top + 7,
       ARect.Left + 6, ARect.Bottom - 3, Paint);
     ACanvas.DrawLine(ARect.Left + 6, ARect.Bottom - 3,
@@ -7905,7 +7939,7 @@ begin
   end
   else
   begin
-    Paint.Style := TSkPaintStyle.Fill;
+    Paint.Style := TUniPaintStyle.Fill;
     ACanvas.DrawRect(RectF(ARect.Left + 3, (ARect.Top + ARect.Bottom) * 0.5 - 1,
       ARect.Right - 3, (ARect.Top + ARect.Bottom) * 0.5 + 1), Paint);
   end;
@@ -8480,17 +8514,17 @@ begin
     end;
 end;
 
-procedure TUniListView.DrawListFilter(const ACanvas: ISkCanvas);
+procedure TUniListView.DrawListFilter(const ACanvas: IUniCanvas);
 var
-  Paint: ISkPaint;
-  Font: ISkFont;
+  Paint: IUniPaint;
+  Font: IUniFont;
   ColumnIndex: Integer;
   R: TRectF;
   TextValueLocal: string;
 begin
   if not FListFilterVisible then
     Exit;
-  Paint := TSkPaint.Create;
+  Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
   Font := CreateTextFont(FFontSize);
   for ColumnIndex := 0 to FColumns.Count - 1 do
@@ -8499,7 +8533,7 @@ begin
       R := RectF(ColumnScreenLeft(ColumnIndex), FListHeaderHeight,
         ColumnScreenLeft(ColumnIndex) + FColumnWidths[ColumnIndex],
         ListBodyTop);
-      Paint.Style := TSkPaintStyle.Fill;
+      Paint.Style := TUniPaintStyle.Fill;
       if ColumnIndex = FFilterEditColumn then
         Paint.Color := $FFFFFFFF
       else
@@ -8517,7 +8551,7 @@ begin
       ACanvas.DrawSimpleText(TextValueLocal, R.Left + 8,
         R.Top + (R.Height + FFontSize) * 0.5 - 1, Font, Paint);
       ACanvas.Restore;
-      Paint.Style := TSkPaintStyle.Stroke;
+      Paint.Style := TUniPaintStyle.Stroke;
       Paint.StrokeWidth := 1;
       Paint.Color := FGridColor;
       ACanvas.DrawRect(R, Paint);
