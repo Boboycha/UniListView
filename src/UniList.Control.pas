@@ -577,6 +577,7 @@ type
     function NavigationPageSize: Integer;
     function ItemColumnDisplayText(const AItemIndex: Integer;
       const AColumnName: string): string;
+    function ItemIndexAt(const APoint: TPointF): Integer;
     function SaveLayoutToJSON: string;
     procedure LoadLayoutFromJSON(const AJSON: string);
     procedure SaveLayoutToFile(const AFileName: string);
@@ -6012,6 +6013,14 @@ begin
       Exit;
     end;
   end;
+end;
+
+function TUniListView.ItemIndexAt(const APoint: TPointF): Integer;
+var
+  Hit: TUniCardHit;
+begin
+  Hit := HitTestAt(APoint);
+  Result := Hit.ItemIndex;
 end;
 
 function TUniListView.SaveLayoutToJSON: string;
