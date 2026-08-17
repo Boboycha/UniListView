@@ -1061,7 +1061,16 @@ end;
 
 destructor TUniListView.Destroy;
 begin
+  FInitializing := True;
+  if FResizeHeightTimer <> nil then
+  begin
+    FResizeHeightTimer.Enabled := False;
+    FResizeHeightTimer.OnTimer := nil;
+  end;
   FDesignDataLink.DataSource := nil;
+
+  inherited;
+
   FDesignDataLink.Free;
   FSearchEngine.Free;
   FSearchTreeExpandedKeys.Free;
@@ -1074,7 +1083,6 @@ begin
   FCardTemplate.Free;
   FActions.Free;
   FItems.Free;
-  inherited;
 end;
 
 procedure TUniListView.ColorRulesChanged(Sender: TObject);
