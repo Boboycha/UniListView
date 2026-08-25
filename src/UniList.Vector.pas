@@ -3,7 +3,7 @@
 interface
 
 uses
-  System.Types, System.UITypes, System.Math,
+  System.Types, System.UITypes, System.Math, System.Math.Vectors,
   UniList.Canvas,
   UniList.Types;
 
@@ -17,8 +17,9 @@ procedure DrawVectorIcon(const ACanvas: IUniCanvas; const AIcon: TUniVectorIcon;
 var
   P: IUniPaint;
   C: TPointF;
-  S, L, T, B, M: Single;
+  S, L, T, B, M, A, OuterRadius, InnerRadius: Single;
   I: Integer;
+  StarPoints: TPolygon;
 begin
   if AIcon = uviNone then
     Exit;
@@ -41,26 +42,18 @@ begin
   case AIcon of
     uviEdit:
       begin
-        (* Тонкие штрихи на 16-18px не читались как карандаш - переходим
-           на заливку: сплошной скруглённый корпус + треугольный носик,
-           весь рисунок повёрнут на -45° вокруг центра, чтобы получить
-           карандаш, направленный в верхне-правый угол. *)
-        ACanvas.Save;
-        try
-          ACanvas.Rotate(-45, C.X, C.Y);
-          P.Style := TUniPaintStyle.Fill;
-          ACanvas.DrawRoundRect(RectF(C.X - S * 0.32, C.Y - S * 0.08,
-            C.X + S * 0.14, C.Y + S * 0.08), S * 0.03, S * 0.03, P);
-          P.Style := TUniPaintStyle.Stroke;
-          ACanvas.DrawLine(PointF(C.X + S * 0.14, C.Y - S * 0.08),
-            PointF(C.X + S * 0.28, C.Y), P);
-          ACanvas.DrawLine(PointF(C.X + S * 0.14, C.Y + S * 0.08),
-            PointF(C.X + S * 0.28, C.Y), P);
-          ACanvas.DrawLine(PointF(C.X + S * 0.14, C.Y - S * 0.08),
-            PointF(C.X + S * 0.14, C.Y + S * 0.08), P);
-        finally
-          ACanvas.Restore;
-        end;
+        (* Match the outline pencil used by nbFmxDocking header actions. *)
+        P.StrokeWidth := Max(1, AStrokeWidth * 0.72);
+        SetLength(StarPoints, 5);
+        StarPoints[0] := PointF(C.X - S * 0.3125, C.Y + S * 0.3125);
+        StarPoints[1] := PointF(C.X - S * 0.1375, C.Y + S * 0.2792);
+        StarPoints[2] := PointF(C.X + S * 0.2917, C.Y - S * 0.1500);
+        StarPoints[3] := PointF(C.X + S * 0.1500, C.Y - S * 0.2917);
+        StarPoints[4] := PointF(C.X - S * 0.2792, C.Y + S * 0.1375);
+        ACanvas.DrawPolygon(StarPoints, P);
+        ACanvas.DrawLine(
+          PointF(C.X + S * 0.1125, C.Y - S * 0.2542),
+          PointF(C.X + S * 0.2542, C.Y - S * 0.1125), P);
       end;
     uviDelete:
       begin
@@ -108,7 +101,25 @@ begin
         ACanvas.DrawLine(PointF(C.X - S * 0.06, B - S * 0.10),
           PointF(M - S * 0.03, T + S * 0.10), P);
       end;
-    uviDatabase:
+    uviStar, uviStarFilled:
+      begin
+        SetLength(StarPoints, 10);
+        OuterRadius := S * 0.34;
+        InnerRadius := OuterRadius * 0.45;
+        for I := 0 to High(StarPoints) do
+        begin
+          A := -Pi * 0.5 + I * Pi / 5;
+          if Odd(I) then
+            StarPoints[I] := PointF(C.X + Cos(A) * InnerRadius,
+              C.Y + Sin(A) * InnerRadius)
+          else
+            StarPoints[I] := PointF(C.X + Cos(A) * OuterRadius,
+              C.Y + Sin(A) * OuterRadius);
+        end;
+        if AIcon = uviStarFilled then
+          P.Style := TUniPaintStyle.Fill;
+        ACanvas.DrawPolygon(StarPoints, P);
+      end;    uviDatabase:
       begin
         ACanvas.DrawOval(RectF(L + S * 0.08, T + S * 0.10,
           M - S * 0.08, T + S * 0.32), P);

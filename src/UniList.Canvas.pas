@@ -70,6 +70,7 @@ type
       const APaint: IUniPaint); overload;
     procedure DrawCircle(const AX, AY, ARadius: Single; const APaint: IUniPaint);
     procedure DrawOval(const ARect: TRectF; const APaint: IUniPaint);
+    procedure DrawPolygon(const APoints: TPolygon; const APaint: IUniPaint);
     procedure DrawArc(const ARect: TRectF; const AStartAngle, ASweepAngle: Single;
       const AUseCenter: Boolean; const APaint: IUniPaint);
     procedure DrawSimpleText(const AText: string; const AX, ABaseline: Single;
@@ -164,6 +165,7 @@ type
       const APaint: IUniPaint); overload;
     procedure DrawCircle(const AX, AY, ARadius: Single; const APaint: IUniPaint);
     procedure DrawOval(const ARect: TRectF; const APaint: IUniPaint);
+    procedure DrawPolygon(const APoints: TPolygon; const APaint: IUniPaint);
     procedure DrawArc(const ARect: TRectF; const AStartAngle, ASweepAngle: Single;
       const AUseCenter: Boolean; const APaint: IUniPaint);
     procedure DrawSimpleText(const AText: string; const AX, ABaseline: Single;
@@ -336,6 +338,16 @@ begin
     FCanvas.FillEllipse(ARect, 1)
   else
     FCanvas.DrawEllipse(ARect, 1);
+end;
+
+procedure TCanvasAdapter.DrawPolygon(const APoints: TPolygon;
+  const APaint: IUniPaint);
+begin
+  ApplyPaint(APaint);
+  if APaint.Style = TUniPaintStyle.Fill then
+    FCanvas.FillPolygon(APoints, 1)
+  else
+    FCanvas.DrawPolygon(APoints, 1);
 end;
 
 procedure TCanvasAdapter.DrawArc(const ARect: TRectF; const AStartAngle,

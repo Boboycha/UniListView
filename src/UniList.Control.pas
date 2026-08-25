@@ -433,6 +433,7 @@ type
     function TreeCheckState(const AItemIndex: Integer): TUniCheckState;
     function ItemCheckKey(const AItemIndex: Integer): string;
     function FirstVisibleColumnIndex: Integer;
+    function IsLastVisibleColumn(const AColumnIndex: Integer): Boolean;
     function ListCheckRect(const ADisplayIndex, AColumnIndex: Integer;
       const ARowRect: TRectF): TRectF;
     function ListCheckAt(const P: TPointF; out ADisplayIndex: Integer): Boolean;
@@ -493,6 +494,8 @@ type
     function ItemIcon(AItem: TUniListItem): TUniVectorIcon;
     function ItemSecondaryIcon(AItem: TUniListItem): TUniVectorIcon;
     function ActionVisible(AItem: TUniListItem; AAction: TUniCardAction): Boolean;
+    function ActionDisplayed(const AItemIndex: Integer;
+      AAction: TUniCardAction): Boolean;
     function ActionEnabled(AItem: TUniListItem; AAction: TUniCardAction): Boolean;
     function AreActionsVisibleForItem(const AItemIndex: Integer): Boolean;
     procedure ClearHoverState;
@@ -507,6 +510,7 @@ type
     procedure DoSearchChanged; virtual;
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
+    procedure ReadState(Reader: TReader); override;
     procedure Resize; override;
     procedure Loaded; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Single); override;
@@ -2016,6 +2020,22 @@ begin
     Result := AItem.FieldAsBoolean(AAction.VisibleField, True);
 end;
 
+function TUniListView.ActionDisplayed(const AItemIndex: Integer;
+  AAction: TUniCardAction): Boolean;
+begin
+  Result := (AItemIndex >= 0) and (AItemIndex < FItems.Count) and
+    ActionVisible(FItems[AItemIndex], AAction);
+  if not Result then
+    Exit;
+  case AAction.Visibility of
+    ucavAlways:
+      Exit(True);
+    ucavOnHover:
+      Exit(FHotHit.ItemIndex = AItemIndex);
+  end;
+  if FActionVisibility = uavOnHover then
+    Result := FHotHit.ItemIndex = AItemIndex;
+end;
 function TUniListView.ActionEnabled(AItem: TUniListItem;
   AAction: TUniCardAction): Boolean;
 begin
@@ -2028,15 +2048,16 @@ end;
 
 function TUniListView.AreActionsVisibleForItem(
   const AItemIndex: Integer): Boolean;
+var
+  ActionIndex: Integer;
 begin
-  if not FCardTemplate.ShowActions or (AItemIndex < 0) then
+  if not FCardTemplate.ShowActions or (AItemIndex < 0) or
+     (AItemIndex >= FItems.Count) then
     Exit(False);
-  case FActionVisibility of
-    uavOnHover:
-      Result := FHotHit.ItemIndex = AItemIndex;
-  else
-    Result := True;
-  end;
+  Result := False;
+  for ActionIndex := 0 to FActions.Count - 1 do
+    if ActionDisplayed(AItemIndex, FActions[ActionIndex]) then
+      Exit(True);
 end;
 
 procedure TUniListView.ClearHoverState;
@@ -2111,17 +2132,37 @@ end;
 function TUniListView.CardChromeWidth: Single;
 var
   ActionIndex: Integer;
+  ActionWidth, MaximumActionWidth: Single;
+  Item: TUniListItem;
 begin
   Result := FCardTemplate.InnerPadding * 2;
   if CheckBoxesVisible then
     Result := Result + GRID_CARD_CHECKBOX_SIZE + GRID_CARD_CHECKBOX_GAP;
   if FCardTemplate.ShowIcon then
     Result := Result + FCardTemplate.IconBoxSize + GRID_CARD_ICON_GAP;
-  if FCardTemplate.ShowActions then
+  if not FCardTemplate.ShowActions then
+    Exit;
+
+  MaximumActionWidth := 0;
+  if Assigned(FItems) and (FItems.Count > 0) then
+  begin
+    for Item in FItems do
+    begin
+      ActionWidth := 0;
+      for ActionIndex := 0 to FActions.Count - 1 do
+        if ActionVisible(Item, FActions[ActionIndex]) then
+          ActionWidth := ActionWidth + FActions[ActionIndex].Width +
+            GRID_CARD_ACTION_GAP;
+      MaximumActionWidth := Max(MaximumActionWidth, ActionWidth);
+    end;
+  end
+  else
     for ActionIndex := 0 to FActions.Count - 1 do
-      if FActions[ActionIndex].Visible then
-        Result := Result + FActions[ActionIndex].Width +
-          GRID_CARD_ACTION_GAP;
+      if FActions[ActionIndex].Visible and
+         (FActions[ActionIndex].VisibleField = '') then
+        MaximumActionWidth := MaximumActionWidth +
+          FActions[ActionIndex].Width + GRID_CARD_ACTION_GAP;
+  Result := Result + MaximumActionWidth;
 end;
 
 procedure TUniListView.InvalidateAutoTitleWidth;
@@ -2266,7 +2307,7 @@ begin
     Exit;
   WordStart := 1;
   for CharacterIndex := 1 to Length(ATitle) do
-    if CharInSet(ATitle[CharacterIndex], [#9, #10, #13, ' ']) then
+    if CharInSet(ATitle[CharacterIndex], [#9, #10, #13, ' ', '-']) then
     begin
       if CharacterIndex > WordStart then
       begin
@@ -2284,10 +2325,10 @@ end;
 
 function TUniListView.MeasureAutoTitleCardWidth: Single;
 var
-  Font: IUniFont;
+  TextFont, TitleFont: IUniFont;
   Item: TUniListItem;
-  LongestWordWidth, MaximumWidth, MinimumWidth: Single;
-  TitleValue: string;
+  TextValueLocal, TitleValue: string;
+  MaximumWidth, MinimumWidth, RequiredTextWidth: Single;
   TitleColumn: TUniListColumn;
 begin
   if not FAutoTitleWidthDirty then
@@ -2295,26 +2336,33 @@ begin
 
   MinimumWidth := Max(1, FCardMinWidth);
   MaximumWidth := Max(MinimumWidth, FCardMaxWidth);
-  LongestWordWidth := 0;
-  if FCardTemplate.ShowTitle then
+  RequiredTextWidth := 0;
+  TitleFont := GetTitleMeasureFont;
+  TextFont := CreateTextFont(FFontSize);
+  TitleColumn := CardTitleColumn;
+  for Item in FItems do
   begin
-    Font := GetTitleMeasureFont;
-    TitleColumn := CardTitleColumn;
-    for Item in FItems do
+    if FCardTemplate.ShowTitle then
     begin
       TitleValue := ItemTitle(Item, TitleColumn);
-      if TitleValue = '' then
-        Continue;
-      LongestWordWidth := Max(LongestWordWidth,
-        MeasureWidestTitleWord(TitleValue, Font));
+      RequiredTextWidth := Max(RequiredTextWidth,
+        MeasureWidestTitleWord(TitleValue, TitleFont));
     end;
+
+    if FCardTemplate.ShowText then
+    begin
+      TextValueLocal := ItemText(Item);
+      RequiredTextWidth := Max(RequiredTextWidth,
+        MeasureWidestTitleWord(TextValueLocal, TextFont));
+    end;
+
   end;
 
-  if LongestWordWidth <= 0 then
+  if RequiredTextWidth <= 0 then
     FAutoTitleCardWidth := MinimumWidth
   else
     FAutoTitleCardWidth := EnsureRange(
-      LongestWordWidth + CardChromeWidth,
+      RequiredTextWidth + CardChromeWidth,
       MinimumWidth, MaximumWidth);
   FAutoTitleWidthDirty := False;
   FAutoTitleSceneScale := CurrentSceneScale;
@@ -2541,7 +2589,7 @@ function TUniListView.CardWidthForViewport(
   const AViewportWidth: Single): Single;
 var
   Available: Single;
-  Candidate: Single;
+  Candidate, NextCandidate: Single;
   ColumnCount: Integer;
 begin
   Available := Max(1, AViewportWidth - FContentPadding * 2);
@@ -2566,6 +2614,16 @@ begin
             (Candidate + FHorizontalGap)));
           Result := (Available - (ColumnCount - 1) * FHorizontalGap) /
             ColumnCount;
+          while Result > FCardMaxWidth do
+          begin
+            NextCandidate := (Available - ColumnCount * FHorizontalGap) /
+              (ColumnCount + 1);
+            if NextCandidate < FCardMinWidth then
+              Break;
+            Inc(ColumnCount);
+            Result := NextCandidate;
+          end;
+          Result := Min(Result, FCardMaxWidth);
         end
         else
           Result := Min(Available, Max(Candidate, FCardWidth));
@@ -2600,7 +2658,7 @@ end;
 
 procedure TUniListView.RecalculateLayout;
 var
-  Available, Candidate, TextWidth, X, TopValue: Single;
+  Available, Candidate, NextCandidate, TextWidth, X, TopValue: Single;
   DisplayCount, I, ItemIndex, Row, RowCount: Integer;
   GeometryOnly: Boolean;
   ReuseItemHeights: Boolean;
@@ -2659,6 +2717,16 @@ begin
             (Candidate + FHorizontalGap)));
           FActualCardWidth :=
             (Available - (FColumnCount - 1) * FHorizontalGap) / FColumnCount;
+          while FActualCardWidth > FCardMaxWidth do
+          begin
+            NextCandidate := (Available - FColumnCount * FHorizontalGap) /
+              (FColumnCount + 1);
+            if NextCandidate < FCardMinWidth then
+              Break;
+            Inc(FColumnCount);
+            FActualCardWidth := NextCandidate;
+          end;
+          FActualCardWidth := Min(FActualCardWidth, FCardMaxWidth);
         end
         else
         begin
@@ -3463,7 +3531,7 @@ begin
      CardTreeItemIsParent(AItemIndex) then
     ActionX := ActionX - CARD_TREE_BADGE_WIDTH - CARD_TREE_BADGE_GAP;
   for ActionIndex := FActions.Count - 1 downto 0 do
-    if ActionVisible(Item, FActions[ActionIndex]) then
+    if ActionDisplayed(AItemIndex, FActions[ActionIndex]) then
     begin
       ActionRect := RectF(ActionX - FActions[ActionIndex].Width,
         R.Top + FULL_WIDTH_CARD_VERTICAL_PADDING, ActionX,
@@ -3671,7 +3739,7 @@ begin
      CardTreeItemIsParent(AIndex) then
     ActionX := ActionX - CARD_TREE_BADGE_WIDTH - CARD_TREE_BADGE_GAP;
   for I := FActions.Count - 1 downto 0 do
-    if ActionVisible(Item, FActions[I]) then
+    if ActionDisplayed(AIndex, FActions[I]) then
     begin
       AR := RectF(ActionX - FActions[I].Width,
         R.Top + FCardTemplate.InnerPadding,
@@ -4339,7 +4407,7 @@ begin
           ACanvas.DrawCircle(R.Right - 7, 7, 3, Paint);
         end;
         ACanvas.Restore;
-        if FListGridLines then
+        if FListGridLines and not IsLastVisibleColumn(ColumnIndex) then
         begin
           Paint.Style := TUniPaintStyle.Stroke;
           Paint.StrokeWidth := 1;
@@ -4452,7 +4520,7 @@ begin
     Exit;
 
   for ActionIndex := FActions.Count - 1 downto 0 do
-    if ActionVisible(Item, FActions[ActionIndex]) then
+    if ActionDisplayed(AItemIndex, FActions[ActionIndex]) then
     begin
       ActionRect := ListActionRect(Item, ARowRect, ActionIndex);
       IsHot := (FHotHit.Kind = uchAction) and
@@ -4674,7 +4742,7 @@ begin
           ACanvas.DrawSimpleText(TextValueLocal, TextX, Baseline, Font, Paint);
         end;
         ACanvas.Restore;
-        if FListGridLines then
+        if FListGridLines and not IsLastVisibleColumn(ColumnIndex) then
         begin
           Paint.Style := TUniPaintStyle.Stroke;
           Paint.StrokeWidth := 1;
@@ -4809,7 +4877,7 @@ begin
         ACanvas.ClipRect(R);
         ACanvas.DrawSimpleText(TextValueLocal, TextX, Baseline, Font, Paint);
         ACanvas.Restore;
-        if FListGridLines then
+        if FListGridLines and not IsLastVisibleColumn(ColumnIndex) then
         begin
           Paint.Style := TUniPaintStyle.Stroke;
           Paint.StrokeWidth := 1;
@@ -5092,7 +5160,7 @@ begin
       ItemIndex := DisplayItemIndex(I);
       if AreActionsVisibleForItem(ItemIndex) then
         for A := FActions.Count - 1 downto 0 do
-          if ActionVisible(FItems[ItemIndex], FActions[A]) then
+          if ActionDisplayed(ItemIndex, FActions[A]) then
           begin
             AR := ListActionRect(FItems[ItemIndex], ListRowRect(I), A);
             if AR.Contains(P) then
@@ -5152,7 +5220,7 @@ begin
         ActionX := ActionX - FCardTreeNavigationIconSize -
           CARD_TREE_ICON_PADDING;
       for A := FActions.Count - 1 downto 0 do
-        if ActionVisible(FItems[ItemIndex], FActions[A]) then
+        if ActionDisplayed(ItemIndex, FActions[A]) then
         begin
           AR := RectF(ActionX - FActions[A].Width,
             R.Top + ActionTop, ActionX,
@@ -5836,6 +5904,13 @@ begin
   else if FResizeHeightTimer.Enabled then
     FResizeHeightTimer.Enabled := False;
   InvalidateLayout(True);
+end;
+
+procedure TUniListView.ReadState(Reader: TReader);
+begin
+  FColumns.Clear;
+  FActions.Clear;
+  inherited ReadState(Reader);
 end;
 
 procedure TUniListView.Loaded;
@@ -7858,6 +7933,21 @@ begin
       Exit(I);
 end;
 
+function TUniListView.IsLastVisibleColumn(
+  const AColumnIndex: Integer): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  if (AColumnIndex < 0) or (AColumnIndex >= FColumns.Count) or
+     not FColumns[AColumnIndex].Visible then
+    Exit;
+  for I := AColumnIndex + 1 to FColumns.Count - 1 do
+    if FColumns[I].Visible then
+      Exit;
+  Result := True;
+end;
+
 function TUniListView.ListCheckRect(const ADisplayIndex, AColumnIndex: Integer;
   const ARowRect: TRectF): TRectF;
 var
@@ -8571,7 +8661,12 @@ begin
       Paint.Style := TUniPaintStyle.Stroke;
       Paint.StrokeWidth := 1;
       Paint.Color := FGridColor;
-      ACanvas.DrawRect(R, Paint);
+      ACanvas.DrawLine(R.Left, R.Top, R.Right, R.Top, Paint);
+      ACanvas.DrawLine(R.Left, R.Bottom, R.Right, R.Bottom, Paint);
+      if ColumnIndex = FirstVisibleColumnIndex then
+        ACanvas.DrawLine(R.Left, R.Top, R.Left, R.Bottom, Paint);
+      if not IsLastVisibleColumn(ColumnIndex) then
+        ACanvas.DrawLine(R.Right, R.Top, R.Right, R.Bottom, Paint);
     end;
 end;
 

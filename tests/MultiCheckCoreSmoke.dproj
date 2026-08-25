@@ -50,7 +50,10 @@
         </DelphiCompile>
         <DCCReference Include="..\src\UniList.Types.pas"/>
         <DCCReference Include="..\src\UniList.Items.pas"/>
+        <DCCReference Include="..\src\UniList.Canvas.pas"/>
         <DCCReference Include="..\src\UniList.Vector.pas"/>
+        <DCCReference Include="..\src\UniList.Performance.pas"/>
+        <DCCReference Include="..\src\UniList.Diagnostics.pas"/>
         <DCCReference Include="..\src\UniList.Text.pas"/>
         <DCCReference Include="..\src\UniList.Columns.pas"/>
         <DCCReference Include="..\src\UniList.Theme.pas"/>

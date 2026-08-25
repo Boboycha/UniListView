@@ -3,12 +3,16 @@
 {$APPTYPE CONSOLE}
 
 uses
+  System.Classes,
   System.SysUtils,
   System.StartUpCopy,
   FMX.Forms,
   UniList.Types in '..\src\UniList.Types.pas',
   UniList.Items in '..\src\UniList.Items.pas',
+  UniList.Canvas in '..\src\UniList.Canvas.pas',
   UniList.Vector in '..\src\UniList.Vector.pas',
+  UniList.Performance in '..\src\UniList.Performance.pas',
+  UniList.Diagnostics in '..\src\UniList.Diagnostics.pas',
   UniList.Text in '..\src\UniList.Text.pas',
   UniList.Columns in '..\src\UniList.Columns.pas',
   UniList.Theme in '..\src\UniList.Theme.pas',
@@ -22,6 +26,49 @@ begin
     raise Exception.Create(AMessage);
 end;
 
+procedure CheckStreamedCollections;
+var
+  Source: TUniListView;
+  Stream: TMemoryStream;
+  Target: TUniListView;
+begin
+  Source := TUniListView.Create(nil);
+  Target := TUniListView.Create(nil);
+  Stream := TMemoryStream.Create;
+  try
+    Source.Columns.Clear;
+    with Source.Columns.Add do
+    begin
+      FieldName := 'name';
+      Caption := 'Name';
+      WidthMode := ucwmFill;
+    end;
+    Source.Actions.Clear;
+    with Source.Actions.Add do
+      Name := 'edit';
+
+    Require(Target.Columns.Count = 3,
+      'The constructor defaults needed by the streaming test are missing');
+    Require(Target.Actions.Count = 2,
+      'The constructor actions needed by the streaming test are missing');
+
+    Stream.WriteComponent(Source);
+    Stream.Position := 0;
+    Stream.ReadComponent(Target);
+
+    Require(Target.Columns.Count = 1,
+      'Streamed columns were appended to constructor defaults');
+    Require(Target.Actions.Count = 1,
+      'Streamed actions were appended to constructor defaults');
+    Require(Target.Columns[0].FieldName = 'name',
+      'The streamed column was not restored');
+  finally
+    Stream.Free;
+    Target.Free;
+    Source.Free;
+  end;
+end;
+
 procedure Run;
 var
   CheckedItem: TUniListItem;
@@ -31,6 +78,7 @@ var
   ListView: TUniListView;
 begin
   Application.Initialize;
+  CheckStreamedCollections;
   ListView := TUniListView.Create(nil);
   try
     ListView.MultiCheck := True;

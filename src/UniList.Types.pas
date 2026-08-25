@@ -12,6 +12,7 @@ type
   TUniCardTreeMode = (ctmNavigate, ctmHierarchy, ctmExplorer);
   TUniTreeCheckMode = (tcmIndependent, tcmCascadeDown, tcmCascadeFull);
   TUniActionVisibility = (uavAlways, uavOnHover);
+  TUniCardActionVisibility = (ucavInherit, ucavAlways, ucavOnHover);
   TUniScrollMode = (usmVertical, usmHorizontal, usmBoth);
   TUniPanMode = (upmDisabled, upmMouse, upmTouch, upmMouseAndTouch);
   TUniCardSizingMode = (ucsmFixed, ucsmResponsive, ucsmStretchColumns,
@@ -32,7 +33,9 @@ type
     uviChevronRight,
     uviChevronDown,
     uviChevronUp,
-    uviChevronLeft
+    uviChevronLeft,
+    uviStar,
+    uviStarFilled
   );
 
   TUniItemActionEvent = procedure(Sender: TObject; const AItemIndex: Integer;
@@ -49,9 +52,11 @@ type
     FEnabled: Boolean;
     FVisibleField: string;
     FEnabledField: string;
+    FVisibility: TUniCardActionVisibility;
     FAction: TContainedAction;
     procedure SetWidth(const Value: Single);
     procedure SetVisible(const Value: Boolean);
+    procedure SetVisibility(const Value: TUniCardActionVisibility);
     procedure SetAction(const Value: TContainedAction);
   published
     property Name: string read FName write FName;
@@ -62,6 +67,8 @@ type
     property Enabled: Boolean read FEnabled write FEnabled default True;
     property VisibleField: string read FVisibleField write FVisibleField;
     property EnabledField: string read FEnabledField write FEnabledField;
+    property Visibility: TUniCardActionVisibility read FVisibility write SetVisibility
+      default ucavInherit;
     (* Если назначен - клик по кнопке вызывает Action.Execute вместо/в
        дополнение к OnItemAction (см. TUniListView.ActionItemIndex,
        который на время Execute указывает на строку, по которой кликнули). *)
@@ -192,6 +199,7 @@ begin
   FVisible := True;
   FEnabled := True;
   FIcon := uviNone;
+  FVisibility := ucavInherit;
 end;
 
 procedure TUniCardAction.Assign(Source: TPersistent);
@@ -212,6 +220,7 @@ begin
   FEnabled := Action.FEnabled;
   FVisibleField := Action.FVisibleField;
   FEnabledField := Action.FEnabledField;
+  FVisibility := Action.FVisibility;
   SetAction(Action.FAction);
   Changed(False);
 end;
@@ -232,6 +241,15 @@ begin
   if FVisible = Value then
     Exit;
   FVisible := Value;
+  Changed(False);
+end;
+
+procedure TUniCardAction.SetVisibility(
+  const Value: TUniCardActionVisibility);
+begin
+  if FVisibility = Value then
+    Exit;
+  FVisibility := Value;
   Changed(False);
 end;
 
