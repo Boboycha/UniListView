@@ -7541,6 +7541,23 @@ var
     end;
   end;
 
+  function IsDisconnectedCycle(const AItemIndex: Integer): Boolean;
+  var
+    CurrentIndex, Step: Integer;
+    CurrentParentKey: string;
+  begin
+    CurrentIndex := AItemIndex;
+    for Step := 0 to Length(FFilteredIndices) do
+    begin
+      CurrentParentKey := LowerCase(TreeItemParentKey(CurrentIndex));
+      if (CurrentParentKey = '') or
+         not FilteredKeyToIndex.TryGetValue(CurrentParentKey, CurrentIndex) or
+         Visited.ContainsKey(CurrentIndex) then
+        Exit(False);
+    end;
+    Result := True;
+  end;
+
 begin
   UniPerfInc(upcCardTreeRebuild);
   SetLength(FTreeVisibleIndices, 0);
@@ -7645,11 +7662,13 @@ begin
          not FilteredKeyToIndex.ContainsKey(ParentKey) then
         AddBranch(ItemIndex, 0);
     end;
-    { Cycles and duplicate keys must not make records disappear. }
+    { Only disconnected cycles need a synthetic root. Descendants of a
+      collapsed node are intentionally unvisited and must remain hidden. }
     for I := 0 to High(FFilteredIndices) do
     begin
       ItemIndex := FFilteredIndices[I];
-      if not Visited.ContainsKey(ItemIndex) then
+      if not Visited.ContainsKey(ItemIndex) and
+         IsDisconnectedCycle(ItemIndex) then
         AddBranch(ItemIndex, 0);
     end;
     FTreeVisibleIndices := VisibleList.ToArray;
