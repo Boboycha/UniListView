@@ -3,7 +3,7 @@
 ## Executables
 
 - Baseline project: `FMXBaselineBenchmark.exe`
-- UniListView comparison: `..\Demos\UniListView.Showcase\UniListView.Showcase.exe`
+- UniListView comparison: `..\demo\UniListDemo.exe`
 
 ## Strict Session Protocol
 

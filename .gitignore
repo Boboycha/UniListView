@@ -33,7 +33,7 @@ iOSSimulator/
 *.deployproj
 *.stat
 *.tvsconfig
-*.Showcase
+/Demos/UniListView.Showcase/UniListView.Showcase
 
 # Editor / OS files
 .vs/

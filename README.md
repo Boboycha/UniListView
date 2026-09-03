@@ -1,6 +1,6 @@
-﻿# UniListView FMX v0.2.0
+﻿# UniListView FMX
 
-Первый этап Vector UI + Card Template для Delphi 12 Athens, FMX и Skia.
+Виртуализированный список и карточная сетка для Delphi FMX и Skia.
 
 ## Что реализовано
 
