@@ -8,7 +8,7 @@ uses
   System.Rtti, System.Generics.Collections, System.JSON, System.IOUtils,
   System.StrUtils, System.Actions,
   Data.DB,
-  FMX.Types, FMX.Controls, FMX.Objects, FMX.Platform,
+  FMX.Types, FMX.Controls, FMX.Objects, FMX.Platform, FMX.Graphics,
   UniList.Canvas,
   UniList.Types, UniList.Items, UniList.Vector, UniList.Performance, UniList.Text,
   UniList.Columns, UniList.Theme, UniList.Rules, UniList.Search;
