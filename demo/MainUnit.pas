@@ -3,9 +3,9 @@
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Actions, System.Math, System.UITypes,
+  System.SysUtils, System.Classes, System.Actions, System.Math, System.UITypes, System.IOUtils,
   FMX.Types, FMX.Controls, FMX.Controls.Presentation, FMX.Forms, FMX.StdCtrls,
-  FMX.Edit, FMX.ListBox, FMX.Objects, FMX.Layouts, FMX.ActnList, FMX.Filter.Effects,
+  FMX.Edit, FMX.ListBox, FMX.Objects, FMX.Layouts, FMX.ActnList, FMX.Filter.Effects, FMX.Dialogs, FMX.Styles,
   UniList.Types, UniList.Items, UniList.Columns, UniList.Theme, UniList.Rules,
   UniList.Control;
 
@@ -55,6 +55,10 @@ type
     actCollapseAll: TAction;
     actJsonStress: TAction;
     StyleBook1: TStyleBook;
+    OpenStyleButton: TButton;
+    OpenStyleDialog: TOpenDialog;
+    actLoadStyle: TAction;
+    procedure actLoadStyleExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: WideChar; Shift: TShiftState);
@@ -82,14 +86,22 @@ type
     procedure UniListView1StateChanged(Sender: TObject);
   private
     FEventText: string;
+    FStyleFiles: TStringList;
+    FEmbeddedStyleBook: TStyleBook;
+    FUpdatingStyles: Boolean;
+    FSelectedStyleIndex: Integer;
+    procedure InstallStyle(const AStyle: TStyleBook);
     procedure ConfigureList;
     procedure PopulateDemo(const AItemCount: Integer);
-    procedure FillThemes;
-    procedure ApplyTheme;
+    procedure FillStyles;
+    procedure ApplySelectedStyle;
     procedure ApplyMode(const AMode: Integer);
     procedure UpdateChrome;
     procedure UpdateModeButtons;
     procedure UpdateStatus;
+  public
+    destructor Destroy; override;
+    procedure LoadStyleFile(const AFileName: string);
   end;
 
 var
@@ -109,7 +121,11 @@ const
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  FillThemes;
+  FStyleFiles := TStringList.Create;
+  FEmbeddedStyleBook := TStyleBook.Create(Self);
+  FEmbeddedStyleBook.Styles.Assign(StyleBook1.Styles);
+  UniListView1.UseStyleBook := True;
+  FillStyles;
   DataSetComboBox.Items.Add('32 items');
   DataSetComboBox.Items.Add('1,000 items');
   DataSetComboBox.Items.Add('10,000 items');
@@ -122,7 +138,7 @@ begin
   ConfigureList;
   PopulateDemo(32);
   ApplyMode(MODE_CARDS);
-  ApplyTheme;
+  ApplySelectedStyle;
 end;
 
 procedure TMainForm.ConfigureList;
@@ -276,64 +292,150 @@ begin
   UpdateStatus;
 end;
 
-procedure TMainForm.FillThemes;
-var
-  ThemeName: string;
-  DefaultIndex: Integer;
+destructor TMainForm.Destroy;
 begin
-  ThemeComboBox.Items.Clear;
-  DefaultIndex := -1;
-  for ThemeName in TUniThemeManager.ThemeNames do
-  begin
-    ThemeComboBox.Items.Add(ThemeName);
-    if SameText(ThemeName, 'Atom One Dark') then
-      DefaultIndex := ThemeComboBox.Items.Count - 1;
-  end;
-  if DefaultIndex < 0 then
-    DefaultIndex := 0;
-  ThemeComboBox.ItemIndex := DefaultIndex;
+  FUpdatingStyles := True;
+  FreeAndNil(FStyleFiles);
+  inherited;
 end;
 
-procedure TMainForm.ApplyTheme;
+procedure TMainForm.FillStyles;
+var
+  Directory, FileName: string;
 begin
-  if ThemeComboBox.ItemIndex < 0 then
-    Exit;
-  UniListView1.ThemeName := ThemeComboBox.Items[ThemeComboBox.ItemIndex];
+  FUpdatingStyles := True;
+  try
+    ThemeComboBox.Items.Clear;
+    FStyleFiles.Clear;
+    ThemeComboBox.Items.Add('Embedded form style');
+    FStyleFiles.Add('');
+    Directory := System.IOUtils.TPath.Combine(ExtractFilePath(ParamStr(0)), 'styles');
+    if TDirectory.Exists(Directory) then
+      for FileName in TDirectory.GetFiles(Directory, '*.style') do
+      begin
+        ThemeComboBox.Items.Add(System.IOUtils.TPath.GetFileNameWithoutExtension(FileName));
+        FStyleFiles.Add(FileName);
+      end;
+    FSelectedStyleIndex := 0;
+    ThemeComboBox.ItemIndex := 0;
+    if TDirectory.Exists(Directory) then OpenStyleDialog.InitialDir := Directory;
+  finally
+    FUpdatingStyles := False;
+  end;
+end;
+
+procedure TMainForm.InstallStyle(const AStyle: TStyleBook);
+begin
+  // Detach controls before replacing the style resources they reference.
+  StyleBook := nil;
+  try
+    StyleBook1.Styles.Assign(AStyle.Styles);
+  finally
+    StyleBook := StyleBook1;
+  end;
+  UniListView1.UseStyleBook := True;
+  UniListView1.RefreshStyleBook;
   UpdateChrome;
+end;
+
+procedure TMainForm.LoadStyleFile(const AFileName: string);
+var
+  Candidate: TStyleBook;
+  FileName: string;
+  Index: Integer;
+begin
+  FileName := ExpandFileName(AFileName);
+  if not TFile.Exists(FileName) or not TStyleStreaming.CanLoadFromFile(FileName) then
+    raise Exception.Create('Cannot read FMX style: ' + FileName);
+  Candidate := TStyleBook.Create(nil);
+  try
+    Candidate.LoadFromFile(FileName);
+    if (Candidate.Style = nil) or (Candidate.Style.ChildrenCount = 0) then
+      raise Exception.Create('The style has no resources for this platform: ' + FileName);
+    InstallStyle(Candidate);
+  finally
+    Candidate.Free;
+  end;
+  FUpdatingStyles := True;
+  try
+    Index := FStyleFiles.IndexOf(FileName);
+    if Index < 0 then
+    begin
+      Index := FStyleFiles.Add(FileName);
+      ThemeComboBox.Items.Add(System.IOUtils.TPath.GetFileNameWithoutExtension(FileName));
+    end;
+    FSelectedStyleIndex := Index;
+    ThemeComboBox.ItemIndex := Index;
+  finally
+    FUpdatingStyles := False;
+  end;
+  FEventText := 'Style loaded: ' + System.IOUtils.TPath.GetFileName(FileName);
+  UpdateStatus;
+end;
+
+procedure TMainForm.ApplySelectedStyle;
+begin
+  if FUpdatingStyles or (FStyleFiles = nil) or (ThemeComboBox.ItemIndex < 0) then Exit;
+  if ThemeComboBox.ItemIndex = 0 then
+  begin
+    InstallStyle(FEmbeddedStyleBook);
+    FSelectedStyleIndex := 0;
+    FEventText := 'Embedded form style';
+    UpdateStatus;
+  end
+  else
+    LoadStyleFile(FStyleFiles[ThemeComboBox.ItemIndex]);
+end;
+
+procedure TMainForm.actLoadStyleExecute(Sender: TObject);
+begin
+  if OpenStyleDialog.Execute then
+    try
+      LoadStyleFile(OpenStyleDialog.FileName);
+    except
+      on E: Exception do ShowMessage(E.Message);
+    end;
 end;
 
 procedure TMainForm.UpdateChrome;
 var
-  Theme: TUniThemeDefinition;
   Surface: TAlphaColor;
 begin
-  Theme := TUniThemeManager.Find(UniListView1.ThemeName);
-  if Theme = nil then
-    Exit;
-  Surface := UniBlendColor(Theme.Background, Theme.Foreground, 0.08);
-  Background.Fill.Color := Theme.Background;
+  Surface := UniBlendColor(UniListView1.BackgroundColor, UniListView1.TextColor, 0.08);
+  Background.Fill.Color := UniListView1.BackgroundColor;
   Header.Fill.Color := Surface;
   Toolbar.Fill.Color := Surface;
   Sidebar.Fill.Color := Surface;
   StatusBar.Fill.Color := Surface;
-  Header.Stroke.Color := UniBlendColor(Theme.Background, Theme.Foreground, 0.18);
+  Header.Stroke.Color := UniBlendColor(UniListView1.BackgroundColor, UniListView1.TextColor, 0.18);
   Toolbar.Stroke.Color := Header.Stroke.Color;
   Sidebar.Stroke.Color := Header.Stroke.Color;
   StatusBar.Stroke.Color := Header.Stroke.Color;
-  ProductLabel.TextSettings.FontColor := Theme.Foreground;
-  SubtitleLabel.TextSettings.FontColor := Theme.TerminalUI;
-  OptionsLabel.TextSettings.FontColor := Theme.Foreground;
-  CardSizingLabel.TextSettings.FontColor := Theme.TerminalUI;
-  SelectionLabel.TextSettings.FontColor := Theme.Foreground;
-  TreeCommandsLabel.TextSettings.FontColor := Theme.TerminalUI;
-  StatusLabel.TextSettings.FontColor := Theme.Foreground;
-  EventLabel.TextSettings.FontColor := Theme.TerminalUI;
+  ProductLabel.TextSettings.FontColor := UniListView1.TextColor;
+  SubtitleLabel.TextSettings.FontColor := UniListView1.SecondaryTextColor;
+  OptionsLabel.TextSettings.FontColor := UniListView1.TextColor;
+  CardSizingLabel.TextSettings.FontColor := UniListView1.SecondaryTextColor;
+  SelectionLabel.TextSettings.FontColor := UniListView1.TextColor;
+  TreeCommandsLabel.TextSettings.FontColor := UniListView1.SecondaryTextColor;
+  StatusLabel.TextSettings.FontColor := UniListView1.TextColor;
+  EventLabel.TextSettings.FontColor := UniListView1.SecondaryTextColor;
   UpdateModeButtons;
 end;
 
 procedure TMainForm.ThemeComboBoxChange(Sender: TObject);
 begin
-  ApplyTheme;
+  if FUpdatingStyles then Exit;
+  try
+    ApplySelectedStyle;
+  except
+    on E: Exception do
+    begin
+      FUpdatingStyles := True;
+      try ThemeComboBox.ItemIndex := FSelectedStyleIndex;
+      finally FUpdatingStyles := False; end;
+      ShowMessage(E.Message);
+    end;
+  end;
 end;
 
 procedure TMainForm.ApplyMode(const AMode: Integer);

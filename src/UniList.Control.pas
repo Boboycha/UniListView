@@ -9,7 +9,7 @@ uses
   System.StrUtils, System.Actions, System.Messaging,
   Data.DB,
   FMX.Types, FMX.Controls, FMX.Objects, FMX.Platform, FMX.Graphics,
-  FMX.Styles.Objects,
+  FMX.Styles.Objects, FMX.StdCtrls, FMX.Ani,
   UniList.Canvas,
   UniList.Types, UniList.Items, UniList.Vector, UniList.Performance, UniList.Text,
   UniList.Columns, UniList.Theme, UniList.Rules, UniList.Search;
@@ -225,6 +225,11 @@ type
     FSecondaryTextColor: TAlphaColor;
     FAccentColor: TAlphaColor;
     FUseStyleBook: Boolean;
+    FStyleIconColor: TAlphaColor;
+    FStyleCheckImages: array[Boolean] of TBitmap;
+    FStyleCheckSource: TRectF;
+    FStyleCheckScale: Single;
+    FStyleCheckCacheReady: Boolean;
     FOwnThemeColors: TArray<TAlphaColor>;
     FOwnThemeVariant: TUniThemeVariant;
     FThemeName: string;
@@ -265,6 +270,9 @@ type
     procedure Redraw;
     procedure SetSelectedIndex(const Value: Integer);
     procedure SetUseStyleBook(const Value: Boolean);
+    function ResolveIconColor(const ADefault: TAlphaColor): TAlphaColor;
+    procedure ClearStyleCheckCache;
+    procedure EnsureStyleCheckCache;
     procedure SaveOwnTheme;
     procedure RestoreOwnTheme;
     procedure StyleChangedHandler(const Sender: TObject; const Msg: TMessage);
@@ -1079,6 +1087,7 @@ end;
 
 destructor TUniListView.Destroy;
 begin
+  ClearStyleCheckCache;
   TMessageManager.DefaultManager.Unsubscribe(TStyleChangedMessage, StyleChangedHandler);
   FInitializing := True;
   if FResizeHeightTimer <> nil then
@@ -3446,7 +3455,7 @@ begin
       IconBox.CenterPoint.Y - FCardTemplate.IconSize * 0.5,
       IconBox.CenterPoint.X + FCardTemplate.IconSize * 0.5,
       IconBox.CenterPoint.Y + FCardTemplate.IconSize * 0.5);
-      DrawVectorIcon(ACanvas, ItemIcon(Item), IconRect, FAccentColor, 1.7);
+      DrawVectorIcon(ACanvas, ItemIcon(Item), IconRect, ResolveIconColor(FAccentColor), 1.7);
       SecondaryIcon := ItemSecondaryIcon(Item);
       if SecondaryIcon <> uviNone then
       begin
@@ -3454,7 +3463,7 @@ begin
           IconBox.Bottom + 4,
           IconBox.CenterPoint.X + FCardTemplate.IconSize * 0.32,
           IconBox.Bottom + 4 + FCardTemplate.IconSize * 0.64);
-        DrawVectorIcon(ACanvas, SecondaryIcon, IconRect, FAccentColor, 1.4);
+        DrawVectorIcon(ACanvas, SecondaryIcon, IconRect, ResolveIconColor(FAccentColor), 1.4);
       end;
     finally
       BlockTimer.Stop;
@@ -3571,9 +3580,9 @@ begin
           FULL_WIDTH_CARD_ACTION_RADIUS, Paint);
       end;
       if ActionEnabled(Item, FActions[ActionIndex]) then
-        IconColor := FAccentColor
+        IconColor := ResolveIconColor(FAccentColor)
       else
-        IconColor := UniBlendColor(BackgroundColor, FAccentColor,
+        IconColor := UniBlendColor(BackgroundColor, ResolveIconColor(FAccentColor),
           ACTION_DISABLED_BLEND);
       IconRect := ActionRect;
       IconRect.Inflate(-FULL_WIDTH_CARD_ACTION_ICON_INSET,
@@ -3713,7 +3722,7 @@ begin
       IconBox.CenterPoint.Y - FCardTemplate.IconSize * 0.5,
       IconBox.CenterPoint.X + FCardTemplate.IconSize * 0.5,
       IconBox.CenterPoint.Y + FCardTemplate.IconSize * 0.5);
-      DrawVectorIcon(ACanvas, ItemIcon(Item), IconRect, FAccentColor, 1.7);
+      DrawVectorIcon(ACanvas, ItemIcon(Item), IconRect, ResolveIconColor(FAccentColor), 1.7);
       SecondaryIcon := ItemSecondaryIcon(Item);
       if SecondaryIcon <> uviNone then
       begin
@@ -3721,7 +3730,7 @@ begin
           IconBox.Bottom + 4,
           IconBox.CenterPoint.X + FCardTemplate.IconSize * 0.32,
           IconBox.Bottom + 4 + FCardTemplate.IconSize * 0.64);
-        DrawVectorIcon(ACanvas, SecondaryIcon, IconRect, FAccentColor, 1.4);
+        DrawVectorIcon(ACanvas, SecondaryIcon, IconRect, ResolveIconColor(FAccentColor), 1.4);
       end;
     finally
       BlockTimer.Stop;
@@ -3775,9 +3784,9 @@ begin
             ACTION_HOVER_BLEND);
         ACanvas.DrawRoundRect(AR, 6, 6, Paint);
       end;
-      if ActionEnabled(Item, FActions[I]) then IconColor := FAccentColor
+      if ActionEnabled(Item, FActions[I]) then IconColor := ResolveIconColor(FAccentColor)
       else
-        IconColor := UniBlendColor(Bg, FAccentColor,
+        IconColor := UniBlendColor(Bg, ResolveIconColor(FAccentColor),
           ACTION_DISABLED_BLEND);
       IconRect := AR; IconRect.Inflate(-5, -5);
       if FActions[I].Icon <> uviNone then
@@ -4408,10 +4417,10 @@ begin
         begin
           if FSortAscendingValues[SortIndex] then
             DrawVectorIcon(ACanvas, uviChevronDown,
-              RectF(R.Right - 27, 10, R.Right - 15, 22), FAccentColor, 1.5)
+              RectF(R.Right - 27, 10, R.Right - 15, 22), ResolveIconColor(FAccentColor), 1.5)
           else
             DrawVectorIcon(ACanvas, uviChevronUp,
-              RectF(R.Right - 27, 10, R.Right - 15, 22), FAccentColor, 1.5);
+              RectF(R.Right - 27, 10, R.Right - 15, 22), ResolveIconColor(FAccentColor), 1.5);
           ACanvas.DrawSimpleText(IntToStr(SortIndex + 1), R.Right - 13,
             Baseline, Font, Paint);
         end;
@@ -4556,9 +4565,9 @@ begin
           LIST_ACTION_RADIUS, Paint);
       end;
       if ActionEnabled(Item, FActions[ActionIndex]) then
-        IconColor := FSecondaryTextColor
+        IconColor := ResolveIconColor(FSecondaryTextColor)
       else
-        IconColor := UniBlendColor(ABackgroundColor, FSecondaryTextColor,
+        IconColor := UniBlendColor(ABackgroundColor, ResolveIconColor(FSecondaryTextColor),
           ACTION_DISABLED_BLEND);
       IconRect := ActionRect;
       IconRect.Inflate(-LIST_ACTION_ICON_INSET, -LIST_ACTION_ICON_INSET);
@@ -7428,7 +7437,7 @@ begin
         TextX + FCardTreeNavigationIconSize,
         (FCardTreeBreadcrumbHeight + FCardTreeNavigationIconSize) * 0.5);
       DrawVectorIcon(ACanvas, uviChevronLeft, IconRect,
-        FCardTreeNavigationIconColor, 1.5);
+        ResolveIconColor(FCardTreeNavigationIconColor), 1.5);
       TextX := IconRect.Right + CARD_TREE_ICON_PADDING;
     end;
     for BreadcrumbIndex := 0 to High(FCardTreeBreadcrumbs) do
@@ -7480,10 +7489,10 @@ begin
       if (FHotHit.Kind = uchCardTreeNavigate) and
          (FHotHit.ItemIndex = ItemIndex) then
         DrawVectorIcon(ACanvas, Icon, IconRect,
-          FCardTreeBreadcrumbHotColor, 1.5)
+          ResolveIconColor(FCardTreeBreadcrumbHotColor), 1.5)
       else
         DrawVectorIcon(ACanvas, Icon, IconRect,
-          FCardTreeNavigationIconColor, 1.5);
+          ResolveIconColor(FCardTreeNavigationIconColor), 1.5);
     end;
     if (FCardTreeMode = ctmExplorer) and
        FCardTreeExplorerShowChildCount then
@@ -8059,11 +8068,113 @@ begin
   end;
 end;
 
+function TUniListView.ResolveIconColor(const ADefault: TAlphaColor): TAlphaColor;
+begin
+  if FUseStyleBook and (FStyleIconColor <> TAlphaColors.Null) then
+    Result := FStyleIconColor
+  else
+    Result := ADefault;
+end;
+
+procedure TUniListView.ClearStyleCheckCache;
+begin
+  FreeAndNil(FStyleCheckImages[False]);
+  FreeAndNil(FStyleCheckImages[True]);
+  FStyleCheckCacheReady := False;
+end;
+
+procedure TUniListView.EnsureStyleCheckCache;
+var
+  Check: TCheckBox;
+  Style: TFmxObject;
+  Checked: Boolean;
+  Data: TBitmapData;
+  X, Y, LeftPixel, TopPixel, RightPixel, BottomPixel: Integer;
+  procedure FinishAnimations(const Obj: TFmxObject);
+  var
+    Child: TFmxObject;
+  begin
+    if Obj is TAnimation then TAnimation(Obj).Stop;
+    if Obj.ChildrenCount > 0 then
+      for Child in Obj.Children do FinishAnimations(Child);
+  end;
+begin
+  if FStyleCheckCacheReady and SameValue(FStyleCheckScale, CurrentSceneScale) then Exit;
+  ClearStyleCheckCache;
+  FStyleCheckCacheReady := True;
+  FStyleCheckScale := CurrentSceneScale;
+  if not FUseStyleBook or (Scene = nil) or (Scene.StyleBook = nil) then Exit;
+  Style := Scene.StyleBook.GetStyle(Self);
+  if (Style = nil) or (Style.FindStyleResource('checkboxstyle') = nil) then Exit;
+  Check := TCheckBox.Create(nil);
+  try
+    // No Parent: the probe never enters the visual tree or the tab order.
+    Check.SetNewScene(Scene);
+    Check.Text := '';
+    Check.StyleLookup := 'checkboxstyle';
+    Check.SetBounds(0, 0, 32, 32);
+    Check.ApplyStyleLookup;
+    LeftPixel := MaxInt;
+    TopPixel := MaxInt;
+    RightPixel := 0;
+    BottomPixel := 0;
+    for Checked := False to True do
+    begin
+      Check.IsChecked := Checked;
+      Check.StartTriggerAnimation(Check, 'IsChecked');
+      FinishAnimations(Check);
+      FStyleCheckImages[Checked] := Check.MakeScreenshot;
+      if FStyleCheckImages[Checked].Map(TMapAccess.Read, Data) then
+      try
+        for Y := 0 to Data.Height - 1 do
+          for X := 0 to Data.Width - 1 do
+            if (Data.GetPixel(X, Y) shr 24) <> 0 then
+            begin
+              LeftPixel := Min(LeftPixel, X);
+              TopPixel := Min(TopPixel, Y);
+              RightPixel := Max(RightPixel, X + 1);
+              BottomPixel := Max(BottomPixel, Y + 1);
+            end;
+      finally
+        FStyleCheckImages[Checked].Unmap(Data);
+      end;
+    end;
+    if (RightPixel > LeftPixel) and (BottomPixel > TopPixel) then
+      FStyleCheckSource := RectF(LeftPixel, TopPixel, RightPixel, BottomPixel)
+    else
+    begin
+      FreeAndNil(FStyleCheckImages[False]);
+      FreeAndNil(FStyleCheckImages[True]);
+    end;
+  finally
+    Check.Free;
+  end;
+end;
+
 procedure TUniListView.DrawCheckBox(const ACanvas: IUniCanvas;
   const ARect: TRectF; const AState: TUniCheckState);
 var
   Paint: IUniPaint;
+  BitmapCanvas: IUniBitmapCanvas;
 begin
+  if FUseStyleBook and Supports(ACanvas, IUniBitmapCanvas, BitmapCanvas) then
+  begin
+    EnsureStyleCheckCache;
+    if FStyleCheckImages[AState = ucsChecked] <> nil then
+    begin
+      BitmapCanvas.DrawBitmap(FStyleCheckImages[AState = ucsChecked], FStyleCheckSource, ARect);
+      if AState = ucsIndeterminate then
+      begin
+        Paint := TUniPaintFactory.Create;
+        Paint.Style := TUniPaintStyle.Fill;
+        Paint.Color := FTextColor;
+        ACanvas.DrawRect(RectF(ARect.Left + ARect.Width * 0.25,
+          ARect.CenterPoint.Y - 1, ARect.Right - ARect.Width * 0.25,
+          ARect.CenterPoint.Y + 1), Paint);
+      end;
+      Exit;
+    end;
+  end;
   Paint := TUniPaintFactory.Create;
   Paint.AntiAlias := True;
   Paint.Style := TUniPaintStyle.Stroke;
@@ -8930,6 +9041,8 @@ end;
 procedure TUniListView.SetUseStyleBook(const Value: Boolean);
 begin
   if FUseStyleBook = Value then Exit;
+  ClearStyleCheckCache;
+  FStyleIconColor := TAlphaColors.Null;
   FUseStyleBook := Value;
   if Value then
   begin
@@ -9008,7 +9121,7 @@ end;
 procedure TUniListView.RefreshStyleBook;
 var
   Style: TFmxObject;
-  Background, Foreground, Accent, Selection, UI, Color: TAlphaColor;
+  Background, Foreground, Accent, Selection, UI, Color, IconColor: TAlphaColor;
   Variant: TUniThemeVariant;
   FoundColor: Boolean;
   procedure ReadColor(const AStyleName, AResourceName: string; var AValue: TAlphaColor);
@@ -9027,6 +9140,8 @@ var
 begin
   if not FUseStyleBook or FInitializing or
     (csLoading in ComponentState) or (csDestroying in ComponentState) then Exit;
+  ClearStyleCheckCache;
+  FStyleIconColor := TAlphaColors.Null;
   RestoreOwnTheme;
   if (Scene = nil) or (Scene.StyleBook = nil) then
   begin
@@ -9057,6 +9172,10 @@ begin
   ReadColor('unilistselection', '', Selection);
   ReadColor('unilistaccent', '', Accent);
   ReadColor('unilistui', '', UI);
+  // A selection brush is a background, not a foreground for small glyphs.
+  IconColor := Foreground;
+  ReadColor('buttonstyle', 'text', IconColor);
+  ReadColor('unilisticon', '', IconColor);
   if not FoundColor then
   begin
     Redraw;
@@ -9067,6 +9186,7 @@ begin
     Variant := utvDark
   else
     Variant := utvLight;
+  FStyleIconColor := IconColor;
   ApplyPalette(Background, Foreground, Accent, Selection, UI, Variant);
 end;
 

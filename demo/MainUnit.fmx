@@ -1,4 +1,4 @@
-object MainForm: TMainForm
+﻿object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'UniListView Demo'
@@ -65,6 +65,17 @@ object MainForm: TMainForm
         Size.PlatformDefault = False
         TabOrder = 1
         TextSettings.Trimming = None
+      end
+      object OpenStyleButton: TButton
+        Action = actLoadStyle
+        Align = Right
+        Margins.Top = 12.000000000000000000
+        Margins.Right = 8.000000000000000000
+        Margins.Bottom = 12.000000000000000000
+        Size.Width = 112.000000000000000000
+        Size.Height = 34.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
       end
       object ThemeComboBox: TComboBox
         Align = Right
@@ -471,10 +482,21 @@ object MainForm: TMainForm
       Text = 'Collapse'
       OnExecute = actCollapseAllExecute
     end
+    object actLoadStyle: TAction
+      Text = 'Load .style...'
+      OnExecute = actLoadStyleExecute
+    end
     object actJsonStress: TAction
       Text = 'JSON stress'
       OnExecute = actJsonStressExecute
     end
+  end
+  object OpenStyleDialog: TOpenDialog
+    Filter = 'FMX styles (*.style)|*.style'
+    Options = [ofFileMustExist, ofPathMustExist]
+    Title = 'Load FMX style'
+    Left = 760
+    Top = 520
   end
   object StyleBook1: TStyleBook
     Styles = <

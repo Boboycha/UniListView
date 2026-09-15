@@ -77,6 +77,12 @@ type
       const AFont: IUniFont; const APaint: IUniPaint);
   end;
 
+  // Optional bitmap support; preserves the existing IUniCanvas contract.
+  IUniBitmapCanvas = interface
+    ['{B4F523B7-D567-4F43-AE8B-FB46F86A4D93}']
+    procedure DrawBitmap(const ABitmap: TBitmap; const ASource, ADest: TRectF);
+  end;
+
   TUniTypefaceFactory = class
   public
     class function MakeFromName(const AFamily: string;
@@ -142,7 +148,7 @@ type
     procedure SetStrokeJoin(const AValue: TUniStrokeJoin);
   end;
 
-  TCanvasAdapter = class(TInterfacedObject, IUniCanvas)
+  TCanvasAdapter = class(TInterfacedObject, IUniCanvas, IUniBitmapCanvas)
   private
     FCanvas: TCanvas;
     FScaleX: Single;
@@ -153,6 +159,7 @@ type
     constructor Create(const ACanvas: TCanvas; const AScaleX,
       AScaleY: Single);
     destructor Destroy; override;
+    procedure DrawBitmap(const ABitmap: TBitmap; const ASource, ADest: TRectF);
     procedure Save;
     procedure Restore;
     procedure ClipRect(const ARect: TRectF);
@@ -266,6 +273,11 @@ begin
   FCanvas.Stroke.Kind := TBrushKind.Solid;
   FCanvas.Stroke.Color := APaint.Color;
   FCanvas.Stroke.Thickness := Max(0.1, APaint.StrokeWidth);
+end;
+
+procedure TCanvasAdapter.DrawBitmap(const ABitmap: TBitmap; const ASource, ADest: TRectF);
+begin
+  FCanvas.DrawBitmap(ABitmap, ASource, ADest, 1);
 end;
 
 procedure TCanvasAdapter.Save;
