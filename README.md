@@ -1,10 +1,10 @@
 ﻿# UniListView FMX
 
-Виртуализированный список и карточная сетка для Delphi FMX и Skia.
+Виртуализированный список, карточная сетка и дерево для Delphi FMX.
 
 ## Что реализовано
 
-- виртуализированная отрисовка карточек через `TSkPaintBox`;
+- виртуализированная отрисовка через `TPaintBox` и FMX Canvas;
 - адаптивная сетка и горизонтальная лента;
 - колесо мыши, drag-to-scroll и перетаскиваемые полосы прокрутки;
 - векторные иконки без PNG, шрифтовых символов и внешних SVG-файлов;
@@ -12,6 +12,7 @@
 - векторные иконки `Edit`, `Delete`, `Open`, `More`, `Server`, `Check`, `ChevronRight`, `ChevronDown`;
 - design-time объект `CardTemplate` в Object Inspector;
 - настройки видимости icon/title/text/detail/actions;
+- собственные темы и палитра из назначенного форме `TStyleBook`;
 - все текстовые файлы сохранены в UTF-8 BOM с окончаниями CRLF;
 - package-файлы не требуют отсутствующих `.res`.
 
@@ -22,7 +23,7 @@
 3. Открыть и установить `packages\UniListViewDesign.dpk`.
 4. Открыть `demo\UniListDemo.dpr`.
 
-Если ранее был установлен старый BPL, сначала удалить старые `UniListViewRuntime.bpl` и `UniListViewDesign.bpl` из общей папки BPL.
+При обновлении установленных пакетов закройте IDE перед заменой BPL. Разрядность design-time пакета должна соответствовать IDE; runtime-пакет собирайте для целевой платформы приложения.
 
 ## Design-time
 
@@ -90,3 +91,58 @@ Click a sortable header to toggle ascending/descending order.
 - `SaveLayoutToFile` / `LoadLayoutFromFile`.
 
 Состояние связывается с колонкой через `LayoutID`, с резервным поиском по `FieldName`.
+
+## Цветовая схема формы
+
+По умолчанию `UseStyleBook = False`: используются собственные темы (`ThemeName`,
+`LoadThemeFromFile`) и настройки цветов. Для палитры из `TStyleBook` формы:
+
+```delphi
+Form1.StyleBook := StyleBook1;
+UniListView1.UseStyleBook := True;
+```
+
+Смена или удаление `StyleBook`, загрузка формы и перенос списка на другую форму
+обновляют палитру автоматически. `UseStyleBook := False` возвращает цвета,
+сохранённые перед включением режима, включая ручные настройки. Назначение
+`ThemeName` или успешная загрузка YAML-темы также включает собственную тему.
+Без назначенного стиля используется сохранённая собственная палитра.
+
+Используются ресурсы `backgroundstyle`, `listboxstyle/background`,
+`listboxstyle/selection`, `text`, `labelstyle/text`, `listboxitemstyle/text`.
+Поддерживаются solid brush/shape, текстовые и цветовые ресурсы; для bitmap-стиля
+цвет определяется по центру отрисованного ресурса. Это адаптация палитры:
+геометрия и отрисовка карточек остаются средствами UniListView.
+
+Для точной палитры нестандартного стиля можно добавить в его корень
+`TBrushObject` или `TColorObject` с `StyleName`: `unilistbackground`,
+`unilistforeground`, `unilistselection`, `unilistaccent`, `unilistui`.
+Эти ресурсы имеют приоритет. После прямого изменения ресурсов в коде вызывайте
+`RefreshStyleBook`. Палитра читается при обновлении стиля, а не для каждого элемента.
+Режим сохраняется в FMX и JSON layout.
+
+Проверка: `tests/StyleBookRuntimeSmoke.dpr`, первый аргумент — каталог стилей
+RAD Studio, содержащий `Dark.style` и `Win10ModernSlateGray.style`.
+## Демо и проверка запуска
+
+`demo/UniListDemo.dpr` демонстрирует Cards, List и Tree, поиск, отметки элементов,
+выбор темы, размеры карточек и наборы до 10 000 элементов. JSON stress-тест
+открывается отдельным окном. Форма и её StyleBook доступны в дизайнере FMX.
+
+Выбор `ThemeName` в коде, в том числе в `OnCreate`, переключает компонент на
+собственную тему. Если требуется палитра формы, включайте `UseStyleBook` после
+такой инициализации.
+
+Для стилей с `TFillRGBEffect` приложение должно подключать `FMX.Filter.Effects`.
+В демо зависимость указана в `MainUnit.pas`. Без неё загрузка StyleBook вызывает
+`Class TFillRGBEffect not found`; при освобождении недосозданной формы FMX может
+показать вторичный access violation.
+
+Проверки:
+
+- `tests/ThemeRuntimeSmoke.dpr` — собственные темы, сохранность данных и выбора;
+- `tests/StyleBookRuntimeSmoke.dpr` — палитра формы, смена стиля и сериализация;
+- `tests/DemoStyleStartupSmoke.dpr` — создание, показ и закрытие актуальной формы демо.
+
+Сборки пакетов и демо проверены в Win32/Win64. Для запуска smoke-тестов добавьте
+`src` в путь поиска модулей; для теста формы демо также добавьте `demo`.

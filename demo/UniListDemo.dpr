@@ -11,6 +11,7 @@ uses
   UniList.Types in '..\src\UniList.Types.pas',
   UniList.Items in '..\src\UniList.Items.pas',
   UniList.Columns in '..\src\UniList.Columns.pas',
+  UniList.Canvas in '..\src\UniList.Canvas.pas',
   UniList.Vector in '..\src\UniList.Vector.pas',
   UniList.Text in '..\src\UniList.Text.pas',
   UniList.Theme in '..\src\UniList.Theme.pas',

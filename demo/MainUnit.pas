@@ -3,135 +3,93 @@
 interface
 
 uses
-  System.SysUtils,
-  System.Classes,
-  System.Diagnostics,
-  System.Math,
-  System.StrUtils,
-  System.Types,
-  System.UITypes,
-  FMX.Types,
-  FMX.Controls,
-  FMX.Controls.Presentation,
-  FMX.Forms,
-  FMX.StdCtrls,
-  FMX.Edit,
-  FMX.ListBox,
-  FMX.Objects,
-  FMX.Layouts,
-  UniList.Types,
-  UniList.Items,
-  UniList.Columns,
-  UniList.Theme,
-  UniList.Rules,
-  UniList.Search,
-  UniList.Control,
-  UniList.Popup,
-  UniList.DropDown,
-  UniList.Lookup,
-  System.Skia,
-  FMX.Skia, UniList.Json.Adapter;
+  System.SysUtils, System.Classes, System.Actions, System.Math, System.UITypes,
+  FMX.Types, FMX.Controls, FMX.Controls.Presentation, FMX.Forms, FMX.StdCtrls,
+  FMX.Edit, FMX.ListBox, FMX.Objects, FMX.Layouts, FMX.ActnList, FMX.Filter.Effects,
+  UniList.Types, UniList.Items, UniList.Columns, UniList.Theme, UniList.Rules,
+  UniList.Control;
 
 type
   TMainForm = class(TForm)
-    BackgroundRect: TRectangle;
-    RootLayout: TLayout;
-    HeaderPanel: TRectangle;
-    HeaderLayout: TLayout;
-    SettingsGroupPanel: TRectangle;
-    PopupGroupPanel: TRectangle;
-    DropDownGroupPanel: TRectangle;
-    TitleLabel: TLabel;
-    ThemeCaptionLabel: TLabel;
+    Background: TRectangle;
+    Header: TRectangle;
+    ProductLabel: TLabel;
+    SubtitleLabel: TLabel;
     ThemeComboBox: TComboBox;
-    RandomThemeButton: TButton;
-    ModeButton: TButton;
-    JsonStressButton: TButton;
-    ThemeInfoLayout: TLayout;
-    ThemeInfoPanel: TRectangle;
-    LookupSearchSettingsPanel: TRectangle;
-    LookupSearchSettingsLabel: TLabel;
-    LookupShowSearchCheckBox: TCheckBox;
-    LookupAutoFocusCheckBox: TCheckBox;
-    LookupClearSearchCheckBox: TCheckBox;
-    LookupSearchDelayLabel: TLabel;
-    LookupSearchDelayEdit: TEdit;
-    VariantCaptionLabel: TLabel;
-    VariantValueLabel: TLabel;
-    AuthorCaptionLabel: TLabel;
-    AuthorValueLabel: TLabel;
+    JsonButton: TButton;
+    Toolbar: TRectangle;
     SearchEdit: TEdit;
-    SearchResultLabel: TLabel;
-    CardLayoutCaptionLabel: TLabel;
-    CardLayoutComboBox: TComboBox;
-    CardSizingCaptionLabel: TLabel;
+    ModeLayout: TLayout;
+    CardsButton: TButton;
+    ListButton: TButton;
+    TreeButton: TButton;
+    DataSetComboBox: TComboBox;
+    ReloadButton: TButton;
+    BodyLayout: TLayout;
+    Sidebar: TRectangle;
+    OptionsLabel: TLabel;
+    ShowChecksCheckBox: TCheckBox;
+    HoverActionsCheckBox: TCheckBox;
+    AutoRowHeightCheckBox: TCheckBox;
+    GridLinesCheckBox: TCheckBox;
+    CardSizingLabel: TLabel;
     CardSizingComboBox: TComboBox;
-    ActionVisibilityCaptionLabel: TLabel;
-    ActionVisibilityComboBox: TComboBox;
-    PopupAnchorEdit: TEdit;
-    OpenPopupButton: TButton;
-    PopupPlacementComboBox: TComboBox;
-    PopupWidthModeComboBox: TComboBox;
-    PopupEscapeCheckBox: TCheckBox;
-    PopupOutsideCheckBox: TCheckBox;
-    PopupContentPanel: TRectangle;
-    PopupTitleLabel: TLabel;
-    PopupEdit: TEdit;
-    PopupActionButton: TButton;
-    PopupHintLabel: TLabel;
-    UniPopupHost1: TUniPopupHost;
-    DropDownOpenButton: TButton;
-    DropDownCloseButton: TButton;
-    DropDownFieldClickCheckBox: TCheckBox;
-    DropDownContentPanel: TRectangle;
-    DropDownContentTitleLabel: TLabel;
-    DropDownContentEdit: TEdit;
-    DropDownContentCheckBox: TCheckBox;
-    DropDownContentCloseButton: TButton;
-    LookupClearButton: TButton;
-    LookupCommitCheckBox: TCheckBox;
-    LookupViewComboBox: TComboBox;
-    LookupSelectionLabel: TLabel;
+    SelectionLabel: TLabel;
+    CheckAllButton: TButton;
+    ClearChecksButton: TButton;
+    TreeCommandsLabel: TLabel;
+    ExpandAllButton: TButton;
+    CollapseAllButton: TButton;
     UniListView1: TUniListView;
-    LookupGroupPanel: TRectangle;
+    StatusBar: TRectangle;
+    StatusLabel: TLabel;
+    EventLabel: TLabel;
+    Actions: TActionList;
+    actCards: TAction;
+    actList: TAction;
+    actTree: TAction;
+    actReload: TAction;
+    actCheckAll: TAction;
+    actClearChecks: TAction;
+    actExpandAll: TAction;
+    actCollapseAll: TAction;
+    actJsonStress: TAction;
+    StyleBook1: TStyleBook;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: WideChar; Shift: TShiftState);
     procedure ThemeComboBoxChange(Sender: TObject);
-    procedure RandomThemeButtonClick(Sender: TObject);
-    procedure ModeButtonClick(Sender: TObject);
-    procedure JsonStressButtonClick(Sender: TObject);
-    procedure UniListView1TreeLoadChildren(Sender: TObject;
-      const ParentKey: string; var Handled: Boolean);
-    procedure SearchEditChange(Sender: TObject);
+    procedure SearchEditChangeTracking(Sender: TObject);
     procedure SearchEditKeyDown(Sender: TObject; var Key: Word;
       var KeyChar: WideChar; Shift: TShiftState);
-    procedure UniListView1SearchChanged(Sender: TObject);
-    procedure CardLayoutComboBoxChange(Sender: TObject);
+    procedure ModeActionExecute(Sender: TObject);
+    procedure actReloadExecute(Sender: TObject);
+    procedure actCheckAllExecute(Sender: TObject);
+    procedure actClearChecksExecute(Sender: TObject);
+    procedure actExpandAllExecute(Sender: TObject);
+    procedure actCollapseAllExecute(Sender: TObject);
+    procedure actJsonStressExecute(Sender: TObject);
+    procedure ShowChecksCheckBoxChange(Sender: TObject);
+    procedure HoverActionsCheckBoxChange(Sender: TObject);
+    procedure AutoRowHeightCheckBoxChange(Sender: TObject);
+    procedure GridLinesCheckBoxChange(Sender: TObject);
     procedure CardSizingComboBoxChange(Sender: TObject);
-    procedure ActionVisibilityComboBoxChange(Sender: TObject);
-    procedure OpenPopupButtonClick(Sender: TObject);
-    procedure PopupActionButtonClick(Sender: TObject);
-    procedure UniPopupHost1PopupShown(Sender: TObject);
-    procedure UniPopupHost1PopupClosed(Sender: TObject;
-      const AReason: TUniPopupCloseReason);
-    procedure UniDropDown1Opened(Sender: TObject);
-    procedure UniDropDown1Closed(Sender: TObject;
-      const AReason: TUniPopupCloseReason);
-    procedure LookupViewComboBoxChange(Sender: TObject);
-    procedure UniLookup1SelectionChanged(Sender: TObject;
-      const AItemIndex: Integer);
-    procedure UniLookup1ItemSelected(Sender: TObject;
-      const AItem: TUniListItem);
-    procedure LookupSearchDelayEditChangeTracking(Sender: TObject);
+    procedure UniListView1ItemClick(Sender: TObject; const AItemIndex: Integer);
+    procedure UniListView1ItemAction(Sender: TObject;
+      const AItemIndex: Integer; const AActionName: string);
+    procedure UniListView1ItemCheckChanged(Sender: TObject;
+      AItem: TUniListItem; AChecked: Boolean);
+    procedure UniListView1StateChanged(Sender: TObject);
   private
-    FSearchStopwatch: TStopwatch;
-    procedure PopulateDemo;
-    procedure PopulateLookup;
-    procedure FillThemeList;
-    procedure ApplySelectedTheme;
-    procedure UpdateThemeChrome;
-    procedure UpdateModeButton;
+    FEventText: string;
+    procedure ConfigureList;
+    procedure PopulateDemo(const AItemCount: Integer);
+    procedure FillThemes;
+    procedure ApplyTheme;
+    procedure ApplyMode(const AMode: Integer);
+    procedure UpdateChrome;
+    procedure UpdateModeButtons;
+    procedure UpdateStatus;
   end;
 
 var
@@ -145,174 +103,303 @@ uses
 {$R *.fmx}
 
 const
-  STRESS_ITEM_COUNT = 30000;
+  MODE_CARDS = 0;
+  MODE_LIST = 1;
+  MODE_TREE = 2;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  PopulateStopwatch: TStopwatch;
 begin
-  PopulateStopwatch := TStopwatch.StartNew;
-  PopulateDemo;
-  PopulateStopwatch.Stop;
-  FillThemeList;
-  ApplySelectedTheme;
-  CardLayoutComboBox.Items.Clear;
-  CardLayoutComboBox.Items.Add('Сетка');
-  CardLayoutComboBox.Items.Add('На всю ширину');
-  CardLayoutComboBox.ItemIndex := Ord(UniListView1.CardLayout);
-  CardSizingComboBox.Items.Clear;
-  CardSizingComboBox.Items.Add('Fixed');
+  FillThemes;
+  DataSetComboBox.Items.Add('32 items');
+  DataSetComboBox.Items.Add('1,000 items');
+  DataSetComboBox.Items.Add('10,000 items');
+  DataSetComboBox.ItemIndex := 0;
   CardSizingComboBox.Items.Add('Responsive');
-  CardSizingComboBox.Items.Add('Stretch Columns');
-  CardSizingComboBox.Items.Add('Auto By Title');
-  CardSizingComboBox.ItemIndex := Ord(UniListView1.CardSizingMode);
-  UniListView1.CardTemplate.AutoCardHeight := True;
-  ActionVisibilityComboBox.Items.Clear;
-  ActionVisibilityComboBox.Items.Add('Always');
-  ActionVisibilityComboBox.Items.Add('On Hover');
-  ActionVisibilityComboBox.ItemIndex := Ord(UniListView1.ActionVisibility);
-  PopupPlacementComboBox.Items.Clear;
-  PopupPlacementComboBox.Items.Add('Auto');
-  PopupPlacementComboBox.Items.Add('Below');
-  PopupPlacementComboBox.Items.Add('Above');
-  PopupPlacementComboBox.ItemIndex := Ord(UniPopupHost1.Placement);
-  PopupWidthModeComboBox.Items.Clear;
-  PopupWidthModeComboBox.Items.Add('Anchor');
-  PopupWidthModeComboBox.Items.Add('Content');
-  PopupWidthModeComboBox.Items.Add('Fixed');
-  PopupWidthModeComboBox.ItemIndex := Ord(UniPopupHost1.WidthMode);
-  LookupViewComboBox.Items.Clear;
-  LookupViewComboBox.Items.Add('List');
-  LookupViewComboBox.Items.Add('Full-width');
-  LookupViewComboBox.ItemIndex := 0;
-  UpdateModeButton;
-  TitleLabel.Text := Format('UniListView · %s · %d ms',
-    [FormatFloat('#,##0', UniListView1.Items.Count),
-     PopulateStopwatch.ElapsedMilliseconds]);
+  CardSizingComboBox.Items.Add('Fixed width');
+  CardSizingComboBox.Items.Add('Stretch columns');
+  CardSizingComboBox.Items.Add('Auto by title');
+  CardSizingComboBox.ItemIndex := 0;
+  ConfigureList;
+  PopulateDemo(32);
+  ApplyMode(MODE_CARDS);
+  ApplyTheme;
 end;
 
-procedure TMainForm.PopulateLookup;
-const
-  Names: array[0..11] of string = (
-    'PostgreSQL Production', 'Redis Cluster', 'Neo4j Knowledge Base',
-    'API Gateway', 'Deployment Pipeline', 'Grafana Monitoring',
-    'RabbitMQ', 'Security Audit', 'Object Storage', 'DevOps Hub',
-    'HAProxy Edge', 'Rocky Linux Builder');
+procedure TMainForm.ConfigureList;
 var
   Column: TUniListColumn;
-  Item: TUniListItem;
-  ItemIndex: Integer;
+  CardAction: TUniCardAction;
+  Rule: TUniColorRule;
 begin
+  UniListView1.BeginUpdate;
+  try
+    UniListView1.Columns.Clear;
+    Column := UniListView1.Columns.Add;
+    Column.LayoutID := 'name';
+    Column.FieldName := 'name';
+    Column.Caption := 'Name';
+    Column.WidthMode := ucwmFill;
+    Column.MinWidth := 180;
+    Column.CardRole := ucrTitle;
+    Column.Frozen := True;
+    Column := UniListView1.Columns.Add;
+    Column.LayoutID := 'description';
+    Column.FieldName := 'description';
+    Column.Caption := 'Endpoint';
+    Column.WidthMode := ucwmFill;
+    Column.MinWidth := 190;
+    Column.CardRole := ucrSubtitle;
+    Column := UniListView1.Columns.Add;
+    Column.LayoutID := 'status';
+    Column.FieldName := 'status';
+    Column.Caption := 'Status';
+    Column.Width := 120;
+    Column.CardRole := ucrDetail;
+    Column := UniListView1.Columns.Add;
+    Column.LayoutID := 'latency';
+    Column.FieldName := 'latency';
+    Column.Caption := 'Latency';
+    Column.Width := 90;
+    Column.DataType := ucdtInteger;
+    Column.Alignment := TTextAlign.Trailing;
+    Column.CardRole := ucrTrailing;
+    Column := UniListView1.Columns.Add;
+    Column.LayoutID := 'id';
+    Column.FieldName := 'id';
+    Column.Visible := False;
+    Column.VisibleInCards := False;
+    Column.CardRole := ucrHidden;
+    Column := UniListView1.Columns.Add;
+    Column.LayoutID := 'parent_id';
+    Column.FieldName := 'parent_id';
+    Column.Visible := False;
+    Column.VisibleInCards := False;
+    Column.CardRole := ucrHidden;
+
+    UniListView1.Actions.Clear;
+    CardAction := UniListView1.Actions.Add;
+    CardAction.Name := 'favorite';
+    CardAction.Caption := 'Favorite';
+    CardAction.Icon := uviStarFilled;
+    CardAction.Width := 28;
+    CardAction.Visibility := ucavAlways;
+    CardAction := UniListView1.Actions.Add;
+    CardAction.Name := 'edit';
+    CardAction.Caption := 'Edit';
+    CardAction.Icon := uviEdit;
+    CardAction.Width := 28;
+    CardAction.Visibility := ucavOnHover;
+
+    UniListView1.ColorRules.Clear;
+    Rule := UniListView1.ColorRules.Add;
+    Rule.FieldName := 'status';
+    Rule.Operator := ucroContains;
+    Rule.Value := 'Degraded';
+    Rule.Scope := ucrsCell;
+    Rule.TargetColumn := 'status';
+    Rule.UseThemeColors := True;
+    Rule.ThemeTone := ucrttWarning;
+    Rule := UniListView1.ColorRules.Add;
+    Rule.FieldName := 'status';
+    Rule.Operator := ucroContains;
+    Rule.Value := 'Offline';
+    Rule.Scope := ucrsRow;
+    Rule.UseThemeColors := True;
+    Rule.ThemeTone := ucrttDanger;
+
+    UniListView1.CardTemplate.TitleField := 'name';
+    UniListView1.CardTemplate.TextField := 'description';
+    UniListView1.CardTemplate.DetailField := 'status';
+    UniListView1.CardTemplate.StatusField := 'status';
+    UniListView1.CardTemplate.Icon := uviServer;
+    UniListView1.CardTemplate.AutoCardHeight := True;
+    UniListView1.CardTemplate.TitleMaxLines := 2;
+    UniListView1.CardTemplate.TextMaxLines := 1;
+    UniListView1.CardTemplate.DetailMaxLines := 1;
+    UniListView1.CardTemplate.SelectableText := True;
+    UniListView1.TreeKeyField := 'id';
+    UniListView1.TreeParentField := 'parent_id';
+    UniListView1.TreeColumn := 'name';
+    UniListView1.TreeCheckMode := tcmCascadeFull;
+    UniListView1.MultiCheck := True;
+  finally
+    UniListView1.EndUpdate;
+  end;
 end;
 
-procedure TMainForm.LookupSearchDelayEditChangeTracking(Sender: TObject);
+procedure TMainForm.PopulateDemo(const AItemCount: Integer);
+const
+  GROUP_NAMES: array[0..3] of string = (
+    'Production', 'Development', 'Infrastructure', 'Remote sites');
+  STATUSES: array[0..4] of string = (
+    'Healthy', 'Healthy', 'Healthy', 'Degraded', 'Offline');
 var
-  DelayValue: Integer;
-begin
-end;
-
-procedure TMainForm.LookupViewComboBoxChange(Sender: TObject);
-begin
-  if LookupViewComboBox.ItemIndex = 1 then
+  I: Integer;
+  GroupIndex: Integer;
+  Item: TUniListItem;
+  procedure AddItem(const AID, AParentID, AName, ADescription,
+    AStatus: string; const ALatency: Integer);
   begin
-  end
-  else
-end;
-
-procedure TMainForm.UniLookup1SelectionChanged(Sender: TObject;
-  const AItemIndex: Integer);
-begin
-  LookupSelectionLabel.Text := Format('Index: %d', [AItemIndex]);
-end;
-
-procedure TMainForm.UniLookup1ItemSelected(Sender: TObject;
-  const AItem: TUniListItem);
-begin
-  if AItem = nil then
-    LookupSelectionLabel.Text := 'Selection cleared'
-  else
-    LookupSelectionLabel.Text := 'Selected: ' + AItem.Title;
-end;
-
-procedure TMainForm.UniDropDown1Opened(Sender: TObject);
-begin
-  DropDownOpenButton.Text := 'Opened';
-  PopupContentPanel.Visible:=true;
-end;
-
-procedure TMainForm.UniDropDown1Closed(Sender: TObject;
-  const AReason: TUniPopupCloseReason);
-begin
-  DropDownOpenButton.Text := 'Open dropdown';
-  PopupContentPanel.Visible:=false
-end;
-
-procedure TMainForm.OpenPopupButtonClick(Sender: TObject);
-begin
-  if PopupPlacementComboBox.ItemIndex >= 0 then
-    UniPopupHost1.Placement :=
-      TUniPopupPlacement(PopupPlacementComboBox.ItemIndex);
-  if PopupWidthModeComboBox.ItemIndex >= 0 then
-    UniPopupHost1.WidthMode :=
-      TUniPopupWidthMode(PopupWidthModeComboBox.ItemIndex);
-  UniPopupHost1.CloseOnEscape := PopupEscapeCheckBox.IsChecked;
-  UniPopupHost1.CloseOnOutsideClick := PopupOutsideCheckBox.IsChecked;
-  UniPopupHost1.ShowPopup(PopupAnchorEdit, PopupContentPanel);
-end;
-
-procedure TMainForm.PopupActionButtonClick(Sender: TObject);
-begin
-  UniPopupHost1.ClosePopup;
-end;
-
-procedure TMainForm.UniPopupHost1PopupShown(Sender: TObject);
-begin
-  OpenPopupButton.Text := 'Popup открыт';
-end;
-
-procedure TMainForm.UniPopupHost1PopupClosed(Sender: TObject;
-  const AReason: TUniPopupCloseReason);
-begin
-  case AReason of
-    upcrProgrammatic:
-      OpenPopupButton.Text := 'Open Popup';
-    upcrEscape:
-      OpenPopupButton.Text := 'Esc: закрыт';
-    upcrOutsideClick:
-      OpenPopupButton.Text := 'Outside: закрыт';
-    upcrOwnerHidden:
-      OpenPopupButton.Text := 'Anchor скрыт';
-    upcrOwnerDestroyed:
-      OpenPopupButton.Text := 'Owner destroyed';
+    Item := UniListView1.Items.Add;
+    Item.ID := AID;
+    Item.ParentID := AParentID;
+    Item.SetField('id', AID);
+    Item.SetField('parent_id', AParentID);
+    Item.SetField('name', AName);
+    Item.SetField('description', ADescription);
+    Item.SetField('status', AStatus);
+    Item.SetField('latency', ALatency);
   end;
+begin
+  UniListView1.BeginUpdate;
+  try
+    UniListView1.Items.Clear;
+    for GroupIndex := Low(GROUP_NAMES) to High(GROUP_NAMES) do
+      AddItem(Format('group-%d', [GroupIndex]), '', GROUP_NAMES[GroupIndex],
+        Format('%d managed endpoints', [Max(0, (AItemCount - 4) div 4)]),
+        'Group', 0);
+    for I := 1 to Max(0, AItemCount - 4) do
+    begin
+      GroupIndex := (I - 1) mod Length(GROUP_NAMES);
+      AddItem(Format('server-%d', [I]), Format('group-%d', [GroupIndex]),
+        Format('%s-node-%2.2d', [LowerCase(StringReplace(GROUP_NAMES[GroupIndex],
+          ' ', '-', [rfReplaceAll])), I]),
+        Format('10.%d.%d.%d:22', [20 + GroupIndex, (I div 240) mod 240,
+          10 + (I mod 240)]), STATUSES[I mod Length(STATUSES)],
+        4 + ((I * 7) mod 73));
+    end;
+  finally
+    UniListView1.EndUpdate;
+  end;
+  FEventText := Format('%s loaded',
+    [DataSetComboBox.Items[DataSetComboBox.ItemIndex]]);
+  UpdateStatus;
 end;
 
-procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
-  var KeyChar: WideChar; Shift: TShiftState);
+procedure TMainForm.FillThemes;
+var
+  ThemeName: string;
+  DefaultIndex: Integer;
 begin
-  if (ssCtrl in Shift) and (Key = Ord('F')) then
+  ThemeComboBox.Items.Clear;
+  DefaultIndex := -1;
+  for ThemeName in TUniThemeManager.ThemeNames do
   begin
-    SearchEdit.SetFocus;
-    SearchEdit.SelectAll;
-    Key := 0;
-    KeyChar := #0;
-    Exit;
+    ThemeComboBox.Items.Add(ThemeName);
+    if SameText(ThemeName, 'Atom One Dark') then
+      DefaultIndex := ThemeComboBox.Items.Count - 1;
   end;
-  if Key <> vkEscape then
-    Exit;
-  SearchEdit.Text := '';
-  UniListView1.ClearSearch;
-  Key := 0;
-  KeyChar := #0;
+  if DefaultIndex < 0 then
+    DefaultIndex := 0;
+  ThemeComboBox.ItemIndex := DefaultIndex;
 end;
 
-procedure TMainForm.SearchEditChange(Sender: TObject);
+procedure TMainForm.ApplyTheme;
 begin
-  if SearchEdit.Text = '' then
-    FSearchStopwatch.Reset
+  if ThemeComboBox.ItemIndex < 0 then
+    Exit;
+  UniListView1.ThemeName := ThemeComboBox.Items[ThemeComboBox.ItemIndex];
+  UpdateChrome;
+end;
+
+procedure TMainForm.UpdateChrome;
+var
+  Theme: TUniThemeDefinition;
+  Surface: TAlphaColor;
+begin
+  Theme := TUniThemeManager.Find(UniListView1.ThemeName);
+  if Theme = nil then
+    Exit;
+  Surface := UniBlendColor(Theme.Background, Theme.Foreground, 0.08);
+  Background.Fill.Color := Theme.Background;
+  Header.Fill.Color := Surface;
+  Toolbar.Fill.Color := Surface;
+  Sidebar.Fill.Color := Surface;
+  StatusBar.Fill.Color := Surface;
+  Header.Stroke.Color := UniBlendColor(Theme.Background, Theme.Foreground, 0.18);
+  Toolbar.Stroke.Color := Header.Stroke.Color;
+  Sidebar.Stroke.Color := Header.Stroke.Color;
+  StatusBar.Stroke.Color := Header.Stroke.Color;
+  ProductLabel.TextSettings.FontColor := Theme.Foreground;
+  SubtitleLabel.TextSettings.FontColor := Theme.TerminalUI;
+  OptionsLabel.TextSettings.FontColor := Theme.Foreground;
+  CardSizingLabel.TextSettings.FontColor := Theme.TerminalUI;
+  SelectionLabel.TextSettings.FontColor := Theme.Foreground;
+  TreeCommandsLabel.TextSettings.FontColor := Theme.TerminalUI;
+  StatusLabel.TextSettings.FontColor := Theme.Foreground;
+  EventLabel.TextSettings.FontColor := Theme.TerminalUI;
+  UpdateModeButtons;
+end;
+
+procedure TMainForm.ThemeComboBoxChange(Sender: TObject);
+begin
+  ApplyTheme;
+end;
+
+procedure TMainForm.ApplyMode(const AMode: Integer);
+begin
+  UniListView1.TreeMode := AMode = MODE_TREE;
+  if AMode = MODE_CARDS then
+    UniListView1.ViewMode := uvmCards
   else
-    FSearchStopwatch := TStopwatch.StartNew;
+    UniListView1.ViewMode := uvmList;
+  if AMode = MODE_TREE then
+    UniListView1.ExpandAll;
+  ExpandAllButton.Enabled := AMode = MODE_TREE;
+  CollapseAllButton.Enabled := AMode = MODE_TREE;
+  CardSizingComboBox.Enabled := AMode = MODE_CARDS;
+  FEventText := 'View changed';
+  UpdateModeButtons;
+  UpdateStatus;
+end;
+
+procedure TMainForm.UpdateModeButtons;
+var
+  ActiveMode: Integer;
+begin
+  if UniListView1.TreeMode then
+    ActiveMode := MODE_TREE
+  else if UniListView1.ViewMode = uvmList then
+    ActiveMode := MODE_LIST
+  else
+    ActiveMode := MODE_CARDS;
+  CardsButton.Opacity := IfThen(ActiveMode = MODE_CARDS, 1.0, 0.68);
+  ListButton.Opacity := IfThen(ActiveMode = MODE_LIST, 1.0, 0.68);
+  TreeButton.Opacity := IfThen(ActiveMode = MODE_TREE, 1.0, 0.68);
+end;
+
+procedure TMainForm.ModeActionExecute(Sender: TObject);
+begin
+  if Sender = actCards then
+    ApplyMode(MODE_CARDS)
+  else if Sender = actList then
+    ApplyMode(MODE_LIST)
+  else if Sender = actTree then
+    ApplyMode(MODE_TREE);
+end;
+
+procedure TMainForm.UpdateStatus;
+var
+  SelectedName: string;
+begin
+  if (UniListView1.SelectedIndex >= 0) and
+     (UniListView1.SelectedIndex < UniListView1.Items.Count) then
+    SelectedName := UniListView1.Items[UniListView1.SelectedIndex]
+      .FieldAsString('name')
+  else
+    SelectedName := 'none';
+  StatusLabel.Text := Format('%s items  |  %s matches  |  %s checked',
+    [FormatFloat('#,##0', UniListView1.Items.Count),
+     FormatFloat('#,##0', UniListView1.SearchMatchCount),
+     FormatFloat('#,##0', UniListView1.CheckedCount)]);
+  EventLabel.Text := Format('Selected: %s  |  %s', [SelectedName, FEventText]);
+end;
+
+procedure TMainForm.SearchEditChangeTracking(Sender: TObject);
+begin
   UniListView1.SearchText := SearchEdit.Text;
+  FEventText := 'Search updated';
+  UpdateStatus;
 end;
 
 procedure TMainForm.SearchEditKeyDown(Sender: TObject; var Key: Word;
@@ -323,452 +410,134 @@ begin
     SearchEdit.Text := '';
     UniListView1.ClearSearch;
     Key := 0;
-    KeyChar := #0;
-    Exit;
-  end;
-  if Key <> vkReturn then
-    Exit;
-  if ssShift in Shift then
-    UniListView1.FindPrevious
-  else
-    UniListView1.FindNext;
-  Key := 0;
-  KeyChar := #0;
-end;
-
-procedure TMainForm.UniListView1SearchChanged(Sender: TObject);
-begin
-  if UniListView1.SearchText = '' then
+  end
+  else if Key = vkReturn then
   begin
-    SearchResultLabel.Text := '';
-    Exit;
-  end;
-  if UniListView1.SearchRunning then
-    SearchResultLabel.Text := Format('%d…', [UniListView1.SearchMatchCount])
-  else
-  begin
-    FSearchStopwatch.Stop;
-    SearchResultLabel.Text := Format('%d · %d ms',
-      [UniListView1.SearchMatchCount, FSearchStopwatch.ElapsedMilliseconds]);
+    if ssShift in Shift then
+      UniListView1.FindPrevious
+    else
+      UniListView1.FindNext;
+    Key := 0;
   end;
 end;
 
-procedure TMainForm.PopulateDemo;
-var
-  Column: TUniListColumn;
-  ItemIndex: Integer;
-  Item: TUniListItem;
-  Rule: TUniColorRule;
-
-  procedure AddServer(const AID, AParentID, AName, ADescription, AStatus: string;
-    const ALatency: Integer; const AHasChildren: Boolean = False);
-  begin
-    Item := UniListView1.Items.Add;
-    Item.SetField('id', AID);
-    Item.SetField('parent_id', AParentID);
-    Item.SetField('name', AName);
-    Item.SetField('description', ADescription);
-    Item.SetField('status', AStatus);
-    Item.SetField('latency_ms', ALatency);
-    Item.SetField('icon', 'server');
-    Item.SetField('has_children', AHasChildren);
-  end;
-
+procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: WideChar; Shift: TShiftState);
 begin
-  UniListView1.CardTemplate.TitleField := 'name';
-  UniListView1.CardTemplate.TextField := 'description';
-  UniListView1.CardTemplate.DetailField := 'status';
-  UniListView1.CardTemplate.IconField := 'icon';
-  UniListView1.TreeKeyField := 'id';
-  UniListView1.TreeParentField := 'parent_id';
-  UniListView1.TreeColumn := 'name';
-  UniListView1.TreeLazyLoad := True;
-  UniListView1.TreeHasChildrenField := 'has_children';
-  UniListView1.ShowCheckBoxes := True;
-
-  { Columns created in the Form Designer remain untouched. }
-  if UniListView1.Columns.Count = 0 then
+  if (Key = Ord('F')) and (ssCtrl in Shift) then
   begin
-    Column := UniListView1.Columns.Add;
-    Column.FieldName := 'name';
-    Column.Caption := 'Наименование';
-    Column.WidthMode := ucwmFill;
-    Column.MinWidth := 260;
-    Column.WrapText := True;
-    Column.MaxLines := 3;
-    Column.CardRole := ucrTitle;
-
-    Column := UniListView1.Columns.Add;
-    Column.FieldName := 'description';
-    Column.Caption := 'Описание';
-    Column.Visible := False;
-    Column.VisibleInCards := True;
-    Column.CardRole := ucrSubtitle;
-
-    Column := UniListView1.Columns.Add;
-    Column.FieldName := 'status';
-    Column.Caption := 'Состояние';
-    Column.Width := 190;
-    Column.WrapText := True;
-    Column.MaxLines := 2;
-    Column.CardRole := ucrTrailing;
-
-    Column := UniListView1.Columns.Add;
-    Column.FieldName := 'latency_ms';
-    Column.Caption := 'Задержка, ms';
-    Column.Width := 120;
-    Column.DataType := ucdtInteger;
-    Column.Alignment := TTextAlign.Trailing;
-    Column.CardRole := ucrDetail;
-
-    Column := UniListView1.Columns.Add;
-    Column.FieldName := 'id';
-    Column.Caption := 'ID';
-    Column.Visible := False;
-    Column.CardRole := ucrHidden;
-
-    Column := UniListView1.Columns.Add;
-    Column.FieldName := 'parent_id';
-    Column.Caption := 'Parent ID';
-    Column.Visible := False;
-    Column.CardRole := ucrHidden;
-
-    Column := UniListView1.Columns.Add;
-    Column.FieldName := 'has_children';
-    Column.Caption := 'Has children';
-    Column.Visible := False;
-    Column.CardRole := ucrHidden;
+    SearchEdit.SetFocus;
+    SearchEdit.SelectAll;
+    Key := 0;
   end;
+end;
 
-  UniListView1.ColorRules.BeginUpdate;
-  try
-    UniListView1.ColorRules.Clear;
+procedure TMainForm.actReloadExecute(Sender: TObject);
+const
+  ITEM_COUNTS: array[0..2] of Integer = (32, 1000, 10000);
+begin
+  if DataSetComboBox.ItemIndex < 0 then
+    DataSetComboBox.ItemIndex := 0;
+  PopulateDemo(ITEM_COUNTS[DataSetComboBox.ItemIndex]);
+  if UniListView1.TreeMode then
+    UniListView1.ExpandAll;
+end;
 
-    Rule := UniListView1.ColorRules.Add;
-    Rule.FieldName := 'latency_ms';
-    Rule.Operator := ucroGreater;
-    Rule.Value := '20';
-    Rule.Scope := ucrsCell;
-    Rule.TargetColumn := 'latency_ms';
-    Rule.UseThemeColors := True;
-    Rule.ThemeTone := ucrttDanger;
-    Rule.UseBackgroundColor := True;
-    Rule.UseTextColor := True;
+procedure TMainForm.actCheckAllExecute(Sender: TObject);
+begin
+  UniListView1.CheckAll;
+  FEventText := 'All visible items checked';
+  UpdateStatus;
+end;
 
-    Rule := UniListView1.ColorRules.Add;
-    Rule.FieldName := 'status';
-    Rule.Operator := ucroContains;
-    Rule.Value := 'Healthy';
-    Rule.Scope := ucrsRow;
-    Rule.UseThemeColors := True;
-    Rule.ThemeTone := ucrttSuccess;
-    Rule.UseBackgroundColor := True;
+procedure TMainForm.actClearChecksExecute(Sender: TObject);
+begin
+  UniListView1.UncheckAll;
+  FEventText := 'Selection cleared';
+  UpdateStatus;
+end;
 
-    Rule := UniListView1.ColorRules.Add;
-    Rule.FieldName := 'status';
-    Rule.Operator := ucroContains;
-    Rule.Value := 'recommendations';
-    Rule.Scope := ucrsCell;
-    Rule.TargetColumn := 'status';
-    Rule.UseThemeColors := True;
-    Rule.ThemeTone := ucrttWarning;
-    Rule.UseTextColor := True;
-  finally
-    UniListView1.ColorRules.EndUpdate;
-  end;
-
-  UniListView1.Items.BeginUpdate;
-  try
-    UniListView1.Clear;
-    AddServer('infra', '', 'Infrastructure',
-      'Основные сервисы и платформы', 'Healthy', 1);
-    AddServer('db', 'infra', 'Databases',
-      'Системы хранения данных', 'Healthy', 2);
-    AddServer('postgres', 'db', 'PostgreSQL Production',
-      'Основной кластер PostgreSQL 17',
-      '3 узла · Streaming replication · Healthy', 18);
-    AddServer('redis', 'db', 'Redis Cluster',
-      'Высокопроизводительный кэш приложений',
-      '8 узлов · 16384 slots · Online', 4);
-    AddServer('neo4j', 'db', 'Neo4j Knowledge Graph',
-      'Граф связей сервисов и документов',
-      'Java 21 · Bolt enabled · Ready', 16);
-
-    AddServer('apps', 'infra', 'Applications',
-      'Сервисы и прикладные системы', 'Healthy', 3);
-    AddServer('api', 'apps', 'DevOps Hub API',
-      'Служба управления инфраструктурой',
-      'Delphi 12 · FMX · Port 9000', 12);
-    AddServer('gateway', 'apps', 'API Gateway',
-      'Единая точка доступа к сервисам',
-      'HAProxy · TLS · 14 backends', 3);
-    AddServer('unilist', 'apps', 'UniListView',
-      'Виртуальный список и адаптивные карточки',
-      'Skia · Themes · Filters · MultiSort', 1);
-
-    AddServer('ops', 'infra', 'Operations',
-      'Мониторинг, доставка и резервирование', 'Healthy', 2);
-    AddServer('grafana', 'ops', 'Grafana Monitoring',
-      'Метрики баз данных и приложений',
-      'Prometheus · pg_exporter · 24 dashboards', 24);
-    AddServer('backup', 'ops', 'Backup Storage',
-      'Полные и инкрементальные резервные копии',
-      'Последняя копия: сегодня · 04:30', 7);
-    AddServer('rabbit', 'ops', 'RabbitMQ',
-      'Очереди фоновых заданий',
-      '12 queues · 4 consumers · No alerts', 11);
-    AddServer('pipeline', 'ops', 'Deployment Pipeline',
-      'Автоматическая сборка и доставка',
-      'Jenkins · 18 jobs · Last build successful', 31);
-    AddServer('security', 'ops', 'Security Audit',
-      'Контроль ролей, сертификатов и доступа',
-      '0 critical · 2 recommendations', 6);
-    AddServer('storage', 'ops', 'File Storage',
-      'Хранилище документов и вложений',
-      '2.4 TB used · 68% free', 9);
-    AddServer('remote', 'infra', 'Remote Sites',
-      'Дочерние узлы загружаются при раскрытии',
-      'Lazy loading · Click to load', 14, True);
-
-    while UniListView1.Items.Count < STRESS_ITEM_COUNT do
-    begin
-      ItemIndex := UniListView1.Items.Count;
-      if ItemIndex = STRESS_ITEM_COUNT - 1 then
-        AddServer(Format('stress-%d', [ItemIndex]), '',
-          Format('Needle Service %.5d', [ItemIndex]),
-          'Редкий маркер для проверки точного поиска',
-          'Stress · Ready', ItemIndex mod 100)
-      else
-        AddServer(Format('stress-%d', [ItemIndex]), '',
-          Format('Service %.5d', [ItemIndex]),
-          Format('Нагрузочная запись %.5d · UniListView', [ItemIndex]),
-          Format('Zone %d · %s', [ItemIndex mod 12,
-            IfThen(ItemIndex mod 7 = 0, 'Warning', 'Healthy')]),
-          ItemIndex mod 100);
-    end;
-  finally
-    UniListView1.Items.EndUpdate;
-  end;
+procedure TMainForm.actExpandAllExecute(Sender: TObject);
+begin
   UniListView1.ExpandAll;
+  FEventText := 'Tree expanded';
+  UpdateStatus;
 end;
 
-procedure TMainForm.UniListView1TreeLoadChildren(Sender: TObject;
-  const ParentKey: string; var Handled: Boolean);
+procedure TMainForm.actCollapseAllExecute(Sender: TObject);
+begin
+  UniListView1.CollapseAll;
+  FEventText := 'Tree collapsed';
+  UpdateStatus;
+end;
+
+procedure TMainForm.actJsonStressExecute(Sender: TObject);
 var
-  Item: TUniListItem;
-
-  procedure AddChild(const AID, AName, ADescription, AStatus: string;
-    const ALatency: Integer);
-  begin
-    Item := UniListView1.Items.Add;
-    Item.SetField('id', AID);
-    Item.SetField('parent_id', ParentKey);
-    Item.SetField('name', AName);
-    Item.SetField('description', ADescription);
-    Item.SetField('status', AStatus);
-    Item.SetField('latency_ms', ALatency);
-    Item.SetField('icon', 'server');
-    Item.SetField('has_children', False);
-  end;
-
+  Form: TJsonStressForm;
 begin
-  Handled := False;
-  if not SameText(ParentKey, 'remote') then
-    Exit;
-
-  UniListView1.Items.BeginUpdate;
-  try
-    AddChild('tashkent', 'Tashkent Office',
-      'Основной удалённый офис', 'VPN · Online', 22);
-    AddChild('samarkand', 'Samarkand Office',
-      'Региональная площадка', 'VPN · Online', 37);
-    AddChild('bukhara', 'Bukhara Office',
-      'Резервная региональная площадка', 'VPN · Standby', 48);
-  finally
-    UniListView1.Items.EndUpdate;
-  end;
-  Handled := True;
+  Form := TJsonStressForm.Create(Self);
+  Form.Show;
 end;
 
-procedure TMainForm.FillThemeList;
-var
-  ThemeNames: TArray<string>;
-  ThemeName: string;
-  SelectedIndex: Integer;
+procedure TMainForm.ShowChecksCheckBoxChange(Sender: TObject);
 begin
-  ThemeNames := UniListView1.AvailableThemeNames;
-
-  ThemeComboBox.BeginUpdate;
-  try
-    ThemeComboBox.Items.Clear;
-    for ThemeName in ThemeNames do
-      ThemeComboBox.Items.Add(ThemeName);
-  finally
-    ThemeComboBox.EndUpdate;
-  end;
-
-  SelectedIndex := ThemeComboBox.Items.IndexOf(UniListView1.ThemeName);
-  if SelectedIndex < 0 then
-    SelectedIndex := ThemeComboBox.Items.IndexOf('Termius Dark');
-  if (SelectedIndex < 0) and (ThemeComboBox.Count > 0) then
-    SelectedIndex := 0;
-
-  ThemeComboBox.ItemIndex := SelectedIndex;
+  UniListView1.ShowCheckBoxes := ShowChecksCheckBox.IsChecked;
 end;
 
-procedure TMainForm.ApplySelectedTheme;
+procedure TMainForm.HoverActionsCheckBoxChange(Sender: TObject);
 begin
-  if ThemeComboBox.ItemIndex < 0 then
-    Exit;
-
-  UniListView1.ThemeName := ThemeComboBox.Items[ThemeComboBox.ItemIndex];
-  UpdateThemeChrome;
-end;
-
-procedure TMainForm.ThemeComboBoxChange(Sender: TObject);
-begin
-  ApplySelectedTheme;
-end;
-
-procedure TMainForm.RandomThemeButtonClick(Sender: TObject);
-var
-  NewIndex: Integer;
-begin
-  if ThemeComboBox.Count = 0 then
-    Exit;
-  if ThemeComboBox.Count = 1 then
-    NewIndex := 0
+  if HoverActionsCheckBox.IsChecked then
+    UniListView1.ActionVisibility := uavOnHover
   else
-  begin
-    repeat
-      NewIndex := Random(ThemeComboBox.Count);
-    until NewIndex <> ThemeComboBox.ItemIndex;
-  end;
-  ThemeComboBox.ItemIndex := NewIndex;
-  ApplySelectedTheme;
+    UniListView1.ActionVisibility := uavAlways;
 end;
 
-procedure TMainForm.UpdateThemeChrome;
-var
-  BorderColor: TAlphaColor;
-  GroupColor: TAlphaColor;
-  Theme: TUniThemeDefinition;
-  HeaderColor: TAlphaColor;
+procedure TMainForm.AutoRowHeightCheckBoxChange(Sender: TObject);
 begin
-  Theme := TUniThemeManager.Find(UniListView1.ThemeName);
-  if Theme = nil then
-    Exit;
-
-  UniPopupHost1.ThemeName := UniListView1.ThemeName;
-  BackgroundRect.Fill.Color := Theme.Background;
-  HeaderColor := UniBlendColor(Theme.Background, Theme.TerminalUI, 0.18);
-  GroupColor := UniBlendColor(HeaderColor, Theme.Background, 0.38);
-  BorderColor := UniBlendColor(Theme.Background, Theme.Foreground, 0.16);
-  HeaderPanel.Fill.Color := HeaderColor;
-  HeaderPanel.Stroke.Color := BorderColor;
-  SettingsGroupPanel.Fill.Color := GroupColor;
-  PopupGroupPanel.Fill.Color := GroupColor;
-  DropDownGroupPanel.Fill.Color := GroupColor;
-  LookupGroupPanel.Fill.Color := GroupColor;
-  ThemeInfoPanel.Fill.Color := GroupColor;
-  LookupSearchSettingsPanel.Fill.Color := GroupColor;
-  SettingsGroupPanel.Stroke.Color := BorderColor;
-  PopupGroupPanel.Stroke.Color := BorderColor;
-  DropDownGroupPanel.Stroke.Color := BorderColor;
-  LookupGroupPanel.Stroke.Color := BorderColor;
-  ThemeInfoPanel.Stroke.Color := BorderColor;
-  LookupSearchSettingsPanel.Stroke.Color := BorderColor;
-
-  TitleLabel.TextSettings.FontColor := Theme.Foreground;
-  SearchResultLabel.TextSettings.FontColor := Theme.Foreground;
-  ThemeCaptionLabel.TextSettings.FontColor := Theme.Foreground;
-  CardLayoutCaptionLabel.TextSettings.FontColor := Theme.Foreground;
-  ActionVisibilityCaptionLabel.TextSettings.FontColor := Theme.Foreground;
-  VariantCaptionLabel.TextSettings.FontColor := Theme.TerminalUI;
-  AuthorCaptionLabel.TextSettings.FontColor := Theme.TerminalUI;
-  VariantValueLabel.TextSettings.FontColor := Theme.Foreground;
-  AuthorValueLabel.TextSettings.FontColor := Theme.Foreground;
-  LookupSearchSettingsLabel.TextSettings.FontColor := Theme.Foreground;
-  LookupSearchDelayLabel.TextSettings.FontColor := Theme.TerminalUI;
-  PopupTitleLabel.TextSettings.FontColor := Theme.Foreground;
-  PopupHintLabel.TextSettings.FontColor := Theme.TerminalUI;
-  DropDownContentTitleLabel.TextSettings.FontColor := Theme.Foreground;
-  LookupSelectionLabel.TextSettings.FontColor := Theme.Foreground;
-
-  if Theme.Variant = utvDark then
-    VariantValueLabel.Text := 'Тёмная'
-  else
-    VariantValueLabel.Text := 'Светлая';
-
-  AuthorValueLabel.Text := Theme.Author;
-  UniListView1.Redraw;
+  UniListView1.ListAutoRowHeight := AutoRowHeightCheckBox.IsChecked;
 end;
 
-procedure TMainForm.UpdateModeButton;
+procedure TMainForm.GridLinesCheckBoxChange(Sender: TObject);
 begin
-  if UniListView1.ViewMode = uvmCards then
-    ModeButton.Text := 'Показать список'
-  else if UniListView1.TreeMode then
-    ModeButton.Text := 'Показать карточки'
-  else
-    ModeButton.Text := 'Показать дерево';
-end;
-
-procedure TMainForm.CardLayoutComboBoxChange(Sender: TObject);
-begin
-  if CardLayoutComboBox.ItemIndex < 0 then
-    Exit;
-  UniListView1.CardLayout :=
-    TUniCardLayout(CardLayoutComboBox.ItemIndex);
-  UniListView1.CardTemplate.AutoCardHeight := True;
+  UniListView1.ListGridLines := GridLinesCheckBox.IsChecked;
+  UniListView1.ListHorizontalGridLines := GridLinesCheckBox.IsChecked;
+  UniListView1.Repaint;
 end;
 
 procedure TMainForm.CardSizingComboBoxChange(Sender: TObject);
+const
+  SIZING_MODES: array[0..3] of TUniCardSizingMode =
+    (ucsmResponsive, ucsmFixed, ucsmStretchColumns, ucsmAutoByTitle);
 begin
-  if CardSizingComboBox.ItemIndex < 0 then
-    Exit;
-  UniListView1.CardSizingMode :=
-    TUniCardSizingMode(CardSizingComboBox.ItemIndex);
+  if CardSizingComboBox.ItemIndex >= 0 then
+    UniListView1.CardSizingMode := SIZING_MODES[CardSizingComboBox.ItemIndex];
 end;
 
-procedure TMainForm.ActionVisibilityComboBoxChange(Sender: TObject);
+procedure TMainForm.UniListView1ItemClick(Sender: TObject;
+  const AItemIndex: Integer);
 begin
-  if ActionVisibilityComboBox.ItemIndex < 0 then
-    Exit;
-  UniListView1.ActionVisibility :=
-    TUniActionVisibility(ActionVisibilityComboBox.ItemIndex);
+  FEventText := 'Item clicked';
+  UpdateStatus;
 end;
 
-procedure TMainForm.ModeButtonClick(Sender: TObject);
+procedure TMainForm.UniListView1ItemAction(Sender: TObject;
+  const AItemIndex: Integer; const AActionName: string);
 begin
-  if UniListView1.ViewMode = uvmCards then
-  begin
-    UniListView1.ViewMode := uvmList;
-    UniListView1.TreeMode := False;
-  end
-  else if not UniListView1.TreeMode then
-  begin
-    UniListView1.TreeMode := True;
-    UniListView1.ExpandAll;
-  end
-  else
-  begin
-    UniListView1.TreeMode := False;
-    UniListView1.ViewMode := uvmCards;
-  end;
-  UpdateModeButton;
+  if (AItemIndex >= 0) and (AItemIndex < UniListView1.Items.Count) then
+    FEventText := Format('%s: %s', [AActionName,
+      UniListView1.Items[AItemIndex].FieldAsString('name')]);
+  UpdateStatus;
 end;
 
-procedure TMainForm.JsonStressButtonClick(Sender: TObject);
-var
-  StressForm: TJsonStressForm;
+procedure TMainForm.UniListView1ItemCheckChanged(Sender: TObject;
+  AItem: TUniListItem; AChecked: Boolean);
 begin
-  StressForm := TJsonStressForm.Create(Self);
-  try
-    StressForm.ShowModal;
-  finally
-    StressForm.Free;
-  end;
+  UpdateStatus;
+end;
+
+procedure TMainForm.UniListView1StateChanged(Sender: TObject);
+begin
+  UpdateStatus;
 end;
 
 end.

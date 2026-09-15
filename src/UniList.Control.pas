@@ -6,9 +6,10 @@ uses
   System.SysUtils, System.Classes, System.Types, System.UITypes, System.Math,
   System.Math.Vectors,
   System.Rtti, System.Generics.Collections, System.JSON, System.IOUtils,
-  System.StrUtils, System.Actions,
+  System.StrUtils, System.Actions, System.Messaging,
   Data.DB,
   FMX.Types, FMX.Controls, FMX.Objects, FMX.Platform, FMX.Graphics,
+  FMX.Styles.Objects,
   UniList.Canvas,
   UniList.Types, UniList.Items, UniList.Vector, UniList.Performance, UniList.Text,
   UniList.Columns, UniList.Theme, UniList.Rules, UniList.Search;
@@ -223,6 +224,9 @@ type
     FTextColor: TAlphaColor;
     FSecondaryTextColor: TAlphaColor;
     FAccentColor: TAlphaColor;
+    FUseStyleBook: Boolean;
+    FOwnThemeColors: TArray<TAlphaColor>;
+    FOwnThemeVariant: TUniThemeVariant;
     FThemeName: string;
     FThemeVariant: TUniThemeVariant;
     FHeaderColor: TAlphaColor;
@@ -260,6 +264,12 @@ type
       const ADest: TRectF; const AOpacity: Single);
     procedure Redraw;
     procedure SetSelectedIndex(const Value: Integer);
+    procedure SetUseStyleBook(const Value: Boolean);
+    procedure SaveOwnTheme;
+    procedure RestoreOwnTheme;
+    procedure StyleChangedHandler(const Sender: TObject; const Msg: TMessage);
+    procedure ApplyPalette(const Background, Foreground, Accent, Selection, UI: TAlphaColor;
+      const Variant: TUniThemeVariant);
     procedure SetThemeName(const Value: string);
     procedure SetFontFamily(const Value: string);
     procedure SetFontSize(const Value: Single);
@@ -586,6 +596,8 @@ type
     procedure LoadLayoutFromJSON(const AJSON: string);
     procedure SaveLayoutToFile(const AFileName: string);
     procedure LoadLayoutFromFile(const AFileName: string);
+    procedure SetNewScene(AScene: IScene); override;
+    procedure RefreshStyleBook;
     procedure LoadThemeFromFile(const AFileName: string);
     function AvailableThemeNames: TArray<string>;
     procedure ResetPerformanceCounters;
@@ -729,6 +741,7 @@ type
     property SearchText: string read GetSearchText write SetSearchText;
     property SearchOptions: TUniSearchOptions read GetSearchOptions
       write SetSearchOptions;
+    property UseStyleBook: Boolean read FUseStyleBook write SetUseStyleBook default False;
     property ThemeName: string read FThemeName write SetThemeName;
     property FontFamily: string read FFontFamily write SetFontFamily;
     property FontSize: Single read FFontSize write SetFontSize;
@@ -1058,6 +1071,7 @@ begin
   FLastLayoutWidth := Width;
   FLastLayoutHeight := Height;
   FInitializing := False;
+  TMessageManager.DefaultManager.SubscribeToMessage(TStyleChangedMessage, StyleChangedHandler);
   RebuildFilter;
   InvalidateLayout;
   EnsureLayout;
@@ -1065,6 +1079,7 @@ end;
 
 destructor TUniListView.Destroy;
 begin
+  TMessageManager.DefaultManager.Unsubscribe(TStyleChangedMessage, StyleChangedHandler);
   FInitializing := True;
   if FResizeHeightTimer <> nil then
   begin
@@ -5916,6 +5931,11 @@ end;
 procedure TUniListView.Loaded;
 begin
   inherited;
+  if FUseStyleBook then
+  begin
+    SaveOwnTheme;
+    RefreshStyleBook;
+  end;
   RefreshDesignPreview;
   InvalidateLayout;
 end;
@@ -6130,6 +6150,7 @@ begin
       ActionVisibilityText := 'always';
     Root.AddPair('actionVisibility', ActionVisibilityText);
     Root.AddPair('themeName', FThemeName);
+    Root.AddPair('useStyleBook', TJSONBool.Create(FUseStyleBook));
     Root.AddPair('sortColumn', TJSONNumber.Create(FSortColumnIndex));
     Root.AddPair('sortAscending', TJSONBool.Create(FSortAscending));
     Root.AddPair('footerVisible', TJSONBool.Create(FListFooterVisible));
@@ -6245,6 +6266,7 @@ begin
     ThemeNameValue := Root.GetValue<string>('themeName', '');
     if ThemeNameValue <> '' then
       SetThemeName(ThemeNameValue);
+    SetUseStyleBook(Root.GetValue<Boolean>('useStyleBook', False));
     CardLayoutText := Root.GetValue<string>('cardLayout', '');
     if SameText(CardLayoutText, 'fullWidth') then
       FCardLayout := uclFullWidth
@@ -8840,38 +8862,222 @@ end;
 
 procedure TUniListView.ApplyTheme(const ATheme: TUniThemeDefinition);
 begin
-  if ATheme = nil then
-    Exit;
+  if ATheme = nil then Exit;
+  if not (csLoading in ComponentState) then SetUseStyleBook(False);
   FThemeName := ATheme.Name;
-  FThemeVariant := ATheme.Variant;
-  FBackgroundColor := ATheme.Background;
-  FTextColor := ATheme.Foreground;
-  FAccentColor := ATheme.Cursor;
-  FCardColor := UniBlendColor(ATheme.Background, ATheme.Foreground,
-    IfThen(ATheme.Variant = utvDark, 0.055, 0.025));
-  FCardHotColor := UniBlendColor(FCardColor, ATheme.Foreground,
-    IfThen(ATheme.Variant = utvDark, 0.09, 0.055));
-  FCardSelectedColor := UniBlendColor(ATheme.Background, ATheme.Selection, 0.28);
-  FSecondaryTextColor := UniBlendColor(ATheme.Foreground, ATheme.Background, 0.38);
-  FHeaderColor := UniBlendColor(ATheme.Background, ATheme.TerminalUI,
-    IfThen(ATheme.Variant = utvDark, 0.22, 0.10));
-  FAlternateRowColor := UniBlendColor(FCardColor, ATheme.TerminalUI,
-    IfThen(ATheme.Variant = utvDark, 0.055, 0.025));
-  FFooterColor := UniBlendColor(FHeaderColor, ATheme.Background, 0.18);
-  FGridColor := UniBlendColor(ATheme.Background, ATheme.TerminalUI, 0.48);
+  ApplyPalette(ATheme.Background, ATheme.Foreground, ATheme.Cursor,
+    ATheme.Selection, ATheme.TerminalUI, ATheme.Variant);
+end;
+
+procedure TUniListView.ApplyPalette(const Background, Foreground, Accent,
+  Selection, UI: TAlphaColor; const Variant: TUniThemeVariant);
+begin
+  FThemeVariant := Variant;
+  FBackgroundColor := Background;
+  FTextColor := Foreground;
+  FAccentColor := Accent;
+  FCardColor := UniBlendColor(Background, Foreground,
+    IfThen(Variant = utvDark, 0.055, 0.025));
+  FCardHotColor := UniBlendColor(FCardColor, Foreground,
+    IfThen(Variant = utvDark, 0.09, 0.055));
+  FCardSelectedColor := UniBlendColor(Background, Selection, 0.28);
+  FSecondaryTextColor := UniBlendColor(Foreground, Background, 0.38);
+  FHeaderColor := UniBlendColor(Background, UI,
+    IfThen(Variant = utvDark, 0.22, 0.10));
+  FAlternateRowColor := UniBlendColor(FCardColor, UI,
+    IfThen(Variant = utvDark, 0.055, 0.025));
+  FFooterColor := UniBlendColor(FHeaderColor, Background, 0.18);
+  FGridColor := UniBlendColor(Background, UI, 0.48);
   FCardTreeParentBackgroundColor := UniBlendColor(FCardColor,
-    ATheme.Cursor, FCardTreeExplorerParentEmphasis);
-  FCardTreeNavigationIconColor := ATheme.Cursor;
+    Accent, FCardTreeExplorerParentEmphasis);
+  FCardTreeNavigationIconColor := Accent;
   FCardTreeBreadcrumbTextColor := FSecondaryTextColor;
-  FCardTreeBreadcrumbHotColor := ATheme.Cursor;
+  FCardTreeBreadcrumbHotColor := Accent;
   Redraw;
+end;
+
+procedure TUniListView.SaveOwnTheme;
+begin
+  FOwnThemeVariant := FThemeVariant;
+  FOwnThemeColors := TArray<TAlphaColor>.Create(FBackgroundColor, FTextColor,
+    FAccentColor, FCardColor, FCardHotColor, FCardSelectedColor, FSecondaryTextColor,
+    FHeaderColor, FAlternateRowColor, FFooterColor, FGridColor,
+    FCardTreeParentBackgroundColor, FCardTreeNavigationIconColor,
+    FCardTreeBreadcrumbTextColor, FCardTreeBreadcrumbHotColor);
+end;
+
+procedure TUniListView.RestoreOwnTheme;
+begin
+  if Length(FOwnThemeColors) = 0 then Exit;
+  FThemeVariant := FOwnThemeVariant;
+  FBackgroundColor := FOwnThemeColors[0];
+  FTextColor := FOwnThemeColors[1];
+  FAccentColor := FOwnThemeColors[2];
+  FCardColor := FOwnThemeColors[3];
+  FCardHotColor := FOwnThemeColors[4];
+  FCardSelectedColor := FOwnThemeColors[5];
+  FSecondaryTextColor := FOwnThemeColors[6];
+  FHeaderColor := FOwnThemeColors[7];
+  FAlternateRowColor := FOwnThemeColors[8];
+  FFooterColor := FOwnThemeColors[9];
+  FGridColor := FOwnThemeColors[10];
+  FCardTreeParentBackgroundColor := FOwnThemeColors[11];
+  FCardTreeNavigationIconColor := FOwnThemeColors[12];
+  FCardTreeBreadcrumbTextColor := FOwnThemeColors[13];
+  FCardTreeBreadcrumbHotColor := FOwnThemeColors[14];
+end;
+
+procedure TUniListView.SetUseStyleBook(const Value: Boolean);
+begin
+  if FUseStyleBook = Value then Exit;
+  FUseStyleBook := Value;
+  if Value then
+  begin
+    SaveOwnTheme;
+    RefreshStyleBook;
+  end
+  else
+  begin
+    RestoreOwnTheme;
+    FOwnThemeColors := nil;
+    Redraw;
+  end;
+end;
+
+procedure TUniListView.SetNewScene(AScene: IScene);
+begin
+  inherited;
+  RefreshStyleBook;
+end;
+
+procedure TUniListView.StyleChangedHandler(const Sender: TObject; const Msg: TMessage);
+begin
+  if (TStyleChangedMessage(Msg).Scene <> nil) and
+    (TStyleChangedMessage(Msg).Scene <> Scene) then Exit;
+  if (TStyleChangedMessage(Msg).Value <> nil) and (Scene <> nil) and
+    (Scene.StyleBook <> TStyleChangedMessage(Msg).Value) then Exit;
+  RefreshStyleBook;
+end;
+
+// Read shared resources without modifying or reparenting the form's style.
+function UniStyleColor(const AObject: TFmxObject; out AColor: TAlphaColor): Boolean;
+var
+  Bitmap: TBitmap;
+  Data: TBitmapData;
+begin
+  Result := False;
+  if AObject is TBrushObject then
+  begin
+    if TBrushObject(AObject).Brush.Kind <> TBrushKind.Solid then Exit;
+    AColor := TBrushObject(AObject).Brush.Color;
+  end
+  else if AObject is TColorObject then
+    AColor := TColorObject(AObject).Color
+  else if AObject is TText then
+    AColor := TText(AObject).TextSettings.FontColor
+  else if AObject is TShape then
+  begin
+    if TShape(AObject).Fill.Kind <> TBrushKind.Solid then Exit;
+    AColor := TShape(AObject).Fill.Color;
+  end
+  else if AObject is TCustomStyleObject then
+  begin
+    Bitmap := TBitmap.Create(16, 16);
+    try
+      Bitmap.Clear(TAlphaColors.Null);
+      if not Bitmap.Canvas.BeginScene then Exit;
+      try
+        TCustomStyleObject(AObject).DrawToCanvas(Bitmap.Canvas, RectF(0, 0, 16, 16));
+      finally
+        Bitmap.Canvas.EndScene;
+      end;
+      if not Bitmap.Map(TMapAccess.Read, Data) then Exit;
+      try
+        AColor := Data.GetPixel(8, 8);
+      finally
+        Bitmap.Unmap(Data);
+      end;
+    finally
+      Bitmap.Free;
+    end;
+  end
+  else Exit;
+  Result := (AColor shr 24) <> 0;
+end;
+
+procedure TUniListView.RefreshStyleBook;
+var
+  Style: TFmxObject;
+  Background, Foreground, Accent, Selection, UI, Color: TAlphaColor;
+  Variant: TUniThemeVariant;
+  FoundColor: Boolean;
+  procedure ReadColor(const AStyleName, AResourceName: string; var AValue: TAlphaColor);
+  var
+    Obj: TFmxObject;
+  begin
+    Obj := Style.FindStyleResource(AStyleName);
+    if (Obj <> nil) and (AResourceName <> '') then
+      Obj := Obj.FindStyleResource(AResourceName);
+    if UniStyleColor(Obj, Color) then
+    begin
+      AValue := Color;
+      FoundColor := True;
+    end;
+  end;
+begin
+  if not FUseStyleBook or FInitializing or
+    (csLoading in ComponentState) or (csDestroying in ComponentState) then Exit;
+  RestoreOwnTheme;
+  if (Scene = nil) or (Scene.StyleBook = nil) then
+  begin
+    Redraw;
+    Exit;
+  end;
+  Style := Scene.StyleBook.GetStyle(Self);
+  if Style = nil then
+  begin
+    Redraw;
+    Exit;
+  end;
+  FoundColor := False;
+  Background := FBackgroundColor;
+  Foreground := FTextColor;
+  Selection := FCardSelectedColor;
+  ReadColor('backgroundstyle', '', Background);
+  ReadColor('listboxstyle', 'background', Background);
+  ReadColor('text', '', Foreground);
+  ReadColor('labelstyle', 'text', Foreground);
+  ReadColor('listboxitemstyle', 'text', Foreground);
+  ReadColor('listboxstyle', 'selection', Selection);
+  Accent := Selection or $FF000000;
+  UI := Foreground;
+  // Optional semantic resources take precedence over standard FMX resources.
+  ReadColor('unilistbackground', '', Background);
+  ReadColor('unilistforeground', '', Foreground);
+  ReadColor('unilistselection', '', Selection);
+  ReadColor('unilistaccent', '', Accent);
+  ReadColor('unilistui', '', UI);
+  if not FoundColor then
+  begin
+    Redraw;
+    Exit;
+  end;
+  if (((Background shr 16) and $FF) * 299 +
+      ((Background shr 8) and $FF) * 587 + (Background and $FF) * 114) < 128000 then
+    Variant := utvDark
+  else
+    Variant := utvLight;
+  ApplyPalette(Background, Foreground, Accent, Selection, UI, Variant);
 end;
 
 procedure TUniListView.SetThemeName(const Value: string);
 var Theme: TUniThemeDefinition;
 begin
   if SameText(FThemeName, Value) then
+  begin
+    if not (csLoading in ComponentState) then SetUseStyleBook(False);
     Exit;
+  end;
   Theme := TUniThemeManager.Find(Value);
   if Theme = nil then
   begin
