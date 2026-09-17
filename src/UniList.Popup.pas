@@ -416,8 +416,6 @@ begin
     Exit;
   if UniPopupDiagnosticsEnabled then
     UniTraceFormActive(PopupForm.Active);
-  if not PopupForm.Active then
-    Exit;
   if UniPopupDiagnosticsEnabled then
     UniTraceAnchorParentedVisible(AAnchor.ParentedVisible);
   if not AAnchor.ParentedVisible then

@@ -6,11 +6,13 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
+  System.UITypes,
   System.StartUpCopy,
   FMX.Types,
   FMX.Controls,
   FMX.Forms,
   UniList.Types in '..\src\UniList.Types.pas',
+  UniList.Canvas in '..\src\UniList.Canvas.pas',
   UniList.Items in '..\src\UniList.Items.pas',
   UniList.Vector in '..\src\UniList.Vector.pas',
   UniList.Text in '..\src\UniList.Text.pas',
@@ -24,6 +26,11 @@ uses
   UniList.Lookup in '..\src\UniList.Lookup.pas';
 
 type
+  TTestLookup = class(TUniLookup)
+  public
+    procedure ClickField;
+  end;
+
   TLookupEventRecorder = class
   private
     FAllowChange: Boolean;
@@ -41,6 +48,11 @@ type
     property Events: TStringList read FEvents;
     property SelectedItem: TUniListItem read FSelectedItem;
   end;
+
+procedure TTestLookup.ClickField;
+begin
+  MouseClick(TMouseButton.mbLeft, [], Width * 0.5, Height * 0.5);
+end;
 
 constructor TLookupEventRecorder.Create;
 begin
@@ -88,14 +100,15 @@ var
   EventRecorder: TLookupEventRecorder;
   Form: TForm;
   Item: TUniListItem;
-  Lookup: TUniLookup;
+  LightPopupColor: TAlphaColor;
+  Lookup: TTestLookup;
 
 begin
   Application.Initialize;
-  Form := TForm.Create(nil);
+  Form := TForm.CreateNew(nil);
   EventRecorder := TLookupEventRecorder.Create;
   try
-    Lookup := TUniLookup.Create(Form);
+    Lookup := TTestLookup.Create(Form);
     Form.SetBounds(0, 0, 640, 480);
     Form.Active := True;
     Lookup.Parent := Form;
@@ -123,6 +136,12 @@ begin
       'Unexpected default search prompt');
     Require(Lookup.NoMatchesText = 'No matches',
       'Unexpected no-matches text');
+    LightPopupColor := Lookup.PopupHost.SurfaceColor;
+    Lookup.ThemeName := 'Termius Dark';
+    Require(SameText(Lookup.ListView.ThemeName, 'Termius Dark'),
+      'Lookup theme was not propagated to its list');
+    Require(Lookup.PopupHost.SurfaceColor <> LightPopupColor,
+      'Lookup popup surface did not follow the dark theme');
     Lookup.ShowSearchBox := False;
     Require(not Lookup.ShowSearchBox,
       'ShowSearchBox=False was ignored');
@@ -135,8 +154,9 @@ begin
     Require(EventRecorder.SelectedItem = Lookup.Items[1],
       'OnItemSelected did not receive TUniListItem');
     Require(EventRecorder.Events.CommaText =
-      '"changing:-1:1",changed:1,selected:Redis',
-      'Programmatic event order is invalid');
+      'changing:-1:1,changed:1,selected:Redis',
+      'Programmatic event order is invalid: ' +
+      EventRecorder.Events.CommaText);
 
     EventRecorder.Events.Clear;
     EventRecorder.AllowChange := False;
@@ -195,6 +215,13 @@ begin
     Require(Lookup.ItemIndex = 0,
       'No-matches search changed committed selection');
     Lookup.CancelSelection;
+
+    Form.Active := False;
+    Lookup.ClickField;
+    Require(Lookup.IsDropDownOpen,
+      'Lookup popup did not open by click in an inactive FMX form');
+    Lookup.CloseDropDown;
+    Form.Active := True;
 
     Lookup.PopupViewMode := uvmCards;
     Lookup.PopupCardLayout := uclFullWidth;
