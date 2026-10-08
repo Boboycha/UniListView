@@ -11,6 +11,8 @@ uses
   FMX.Controls,
   FMX.Forms,
   UniList.Types in '..\src\UniList.Types.pas',
+  UniList.Canvas in '..\src\UniList.Canvas.pas',
+  UniList.Performance in '..\src\UniList.Performance.pas',
   UniList.Items in '..\src\UniList.Items.pas',
   UniList.Vector in '..\src\UniList.Vector.pas',
   UniList.Text in '..\src\UniList.Text.pas',

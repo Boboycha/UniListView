@@ -33,6 +33,7 @@ iOSSimulator/
 *.deployproj
 *.stat
 *.tvsconfig
+*.delphilsp.json
 /Demos/UniListView.Showcase/UniListView.Showcase
 
 # Editor / OS files
