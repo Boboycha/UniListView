@@ -9,12 +9,16 @@ uses
   System.StrUtils, System.Actions, System.Messaging,
   Data.DB,
   FMX.Types, FMX.Controls, FMX.Objects, FMX.Platform, FMX.Graphics,
-  FMX.Styles.Objects, FMX.StdCtrls, FMX.Ani,
+  FMX.Styles.Objects, FMX.StdCtrls, FMX.Ani, FMX.Edit,
   UniList.Canvas,
   UniList.Types, UniList.Items, UniList.Vector, UniList.Performance, UniList.Text,
   UniList.Columns, UniList.Theme, UniList.Rules, UniList.Search;
 
 type
+  TUniValidateEditEvent = procedure(Sender: TObject; AItem: TUniListItem;
+    const AFieldName: string; var AValue: TValue; var AError: string) of object;
+  TUniFieldEditedEvent = procedure(Sender: TObject; AItem: TUniListItem;
+    const AFieldName: string; const AOldValue, ANewValue: TValue) of object;
   TUniCheckScope = (ucsAllItems, ucsVisibleItems);
   TUniTreeLoadChildrenEvent = procedure(Sender: TObject;
     const ParentKey: string; var Handled: Boolean) of object;
@@ -59,6 +63,20 @@ type
 
   TUniListView = class(TPaintBox)
   private
+    FEditable: Boolean;
+    FCellEditor: TEdit;
+    FEditorBackground: TRectangle;
+    FEditItem: TUniListItem;
+    FEditColumn: TUniListColumn;
+    FEditField: string;
+    FActiveFieldName: string;
+    FEditDoubleClick: Boolean;
+    FEditDataType: TUniColumnDataType;
+    FEditOriginal: TValue;
+    FEditError: string;
+    FCommittingEdit: Boolean;
+    FOnValidateEdit: TUniValidateEditEvent;
+    FOnFieldEdited: TUniFieldEditedEvent;
     FItems: TUniListItems;
     FViewMode: TUniViewMode;
     FCardLayout: TUniCardLayout;
@@ -257,6 +275,18 @@ type
     FUpdatingDesignPreview: Boolean;
     FDataSource: TDataSource;
     FDesignDataLink: TUniDesignPreviewDataLink;
+    procedure SetEditable(const Value: Boolean);
+    function GetEditing: Boolean;
+    function GetEditText: string;
+    procedure SetEditText(const Value: string);
+    procedure EditorKeyDown(Sender: TObject; var Key: Word; var KeyChar: WideChar;
+      Shift: TShiftState);
+    procedure EditorExit(Sender: TObject);
+    function EditCellRect(const AItemIndex, AColumnIndex: Integer): TRectF;
+    function BeginEditAt(const APoint: TPointF): Boolean;
+    function EditFieldAt(const APoint: TPointF; out AItemIndex: Integer): string;
+    function CardEditRect(const AItemIndex: Integer; const AFieldName: string;
+      const AForHitTest: Boolean = False): TRectF;
     procedure ItemsChanged(Sender: TObject);
     procedure ItemChanged(Sender: TObject; const AItemIndex: Integer;
       const AFieldName: string);
@@ -547,6 +577,14 @@ type
       const ADetail: string = ''): TUniListItem;
     procedure BeginUpdate; reintroduce;
     procedure EndUpdate; reintroduce;
+    function BeginEdit(const AItemIndex, AColumnIndex: Integer): Boolean;
+    function BeginFieldEdit(const AItemIndex: Integer; const AFieldName: string): Boolean;
+    function CommitEdit: Boolean;
+    procedure CancelEdit;
+    property Editing: Boolean read GetEditing;
+    property EditText: string read GetEditText write SetEditText;
+    property EditError: string read FEditError;
+    property ActiveFieldName: string read FActiveFieldName;
     procedure Clear;
     procedure ExpandAll;
     procedure CollapseAll;
@@ -638,6 +676,9 @@ type
     property Enabled;
     property HitTest;
     property Opacity;
+    property Editable: Boolean read FEditable write SetEditable default False;
+    property OnValidateEdit: TUniValidateEditEvent read FOnValidateEdit write FOnValidateEdit;
+    property OnFieldEdited: TUniFieldEditedEvent read FOnFieldEdited write FOnFieldEdited;
     property ViewMode: TUniViewMode read FViewMode write SetViewMode
       default uvmCards;
     property CardLayout: TUniCardLayout read FCardLayout write SetCardLayout
@@ -805,6 +846,25 @@ type
 procedure Register;
 
 implementation
+
+type
+  TUniFieldEdit = class(TEdit)
+  protected
+    procedure DialogKey(var Key: Word; Shift: TShiftState); override;
+  end;
+
+procedure TUniFieldEdit.DialogKey(var Key: Word; Shift: TShiftState);
+var
+  Ch: WideChar;
+begin
+  if (Key in [vkTab, vkReturn, vkEscape]) and IsFocused and
+     (Owner is TUniListView) then
+  begin
+    Ch := #0;
+    TUniListView(Owner).EditorKeyDown(Self, Key, Ch, Shift);
+  end;
+  if Key <> 0 then inherited;
+end;
 
 const
   DEFAULT_TITLE_FONT_SIZE = 15.0;
@@ -1087,6 +1147,8 @@ end;
 
 destructor TUniListView.Destroy;
 begin
+  FEditItem := nil;
+  if FCellEditor <> nil then FCellEditor.OnExit := nil;
   ClearStyleCheckCache;
   TMessageManager.DefaultManager.Unsubscribe(TStyleChangedMessage, StyleChangedHandler);
   FInitializing := True;
@@ -2216,6 +2278,7 @@ end;
 
 procedure TUniListView.InvalidateLayout(const AGeometryOnly: Boolean);
 begin
+  if Editing then CancelEdit;
   UniPerfInc(upcRequestRepaint);
   if FLayoutDirty then
     FGeometryOnlyLayout := FGeometryOnlyLayout and AGeometryOnly
@@ -3185,6 +3248,7 @@ begin
   R := CardRect(DisplayIndex);
   Item := FItems[AIndex];
   X := R.Left + FCardTemplate.InnerPadding;
+  if CheckBoxesVisible then X := X + GRID_CARD_CHECKBOX_SIZE + GRID_CARD_CHECKBOX_GAP;
   if FCardTemplate.ShowIcon then
     X := X + FCardTemplate.IconBoxSize + 12;
   Y := R.Top + FCardTemplate.InnerPadding;
@@ -3355,6 +3419,8 @@ var
     ResolveBlockColors(AColumn, ADefaultColor, BlockText, BlockBackground,
       UseBlockBackground);
     BlockRect := RectF(AX, AY, AX + AWidth, AY + ALayout.Height);
+    if Editing and (FEditItem = Item) and
+       FCellEditor.BoundsRect.IntersectsWith(BlockRect) then Exit;
     if UseBlockBackground then
     begin
       Paint.Style := TUniPaintStyle.Fill;
@@ -3629,6 +3695,11 @@ var
       L := Default(TUniTextLayout);
     end;
     LR := RectF(TextX, TextY, TextX + W, TextY + L.Height);
+    if Editing and (FEditItem = Item) and FCellEditor.BoundsRect.IntersectsWith(LR) then
+    begin
+      TextY := TextY + L.Height + FCardTemplate.TextGap;
+      Exit;
+    end;
     if (FSelectedTextHit.Kind = uchText) and
        (FSelectedTextHit.ItemIndex = AIndex) and
        (FSelectedTextHit.TextPart = Part) then
@@ -5313,6 +5384,7 @@ procedure TUniListView.ItemsChanged(Sender: TObject);
 var
   OldCheckedCount: Integer;
 begin
+  if Editing then CancelEdit;
   OldCheckedCount := FCheckedCount;
   RecalculateCheckedCount;
   if (not FCheckBatch) and (OldCheckedCount <> FCheckedCount) and
@@ -5355,7 +5427,18 @@ procedure TUniListView.MouseDown(Button: TMouseButton; Shift: TShiftState;
 var
   DividerColumn: Integer;
 begin
+  // FMX dispatches DblClick from inherited MouseDown, before our own handler.
+  FEditDoubleClick := False;
+  if Button = TMouseButton.mbLeft then FMouseDownPos := PointF(X, Y);
   inherited;
+  if FEditDoubleClick then
+  begin
+    FMousePressed := False;
+    FPanning := False;
+    FSelectingText := False;
+    FPressedHit := TUniCardHit.None;
+    Exit;
+  end;
   if Button <> TMouseButton.mbLeft then
     Exit;
   if FColumnChooserVisible then
@@ -5504,10 +5587,15 @@ procedure TUniListView.MouseUp(Button: TMouseButton; Shift: TShiftState;
   X, Y: Single);
 var
   Hit: TUniCardHit;
-  ColumnIndex, TreeDisplayIndex: Integer;
+  ColumnIndex, TreeDisplayIndex, ActiveItemIndex: Integer;
   CardAction: TUniCardAction;
 begin
   inherited;
+  if FEditDoubleClick and (Button = TMouseButton.mbLeft) then
+  begin
+    FEditDoubleClick := False;
+    Exit;
+  end;
   if FColumnChooserVisible then
   begin
     if Button = TMouseButton.mbLeft then
@@ -5660,6 +5748,8 @@ begin
   end;
   if not FPanning then
   begin
+    if FEditable and (Hit.Kind in [uchItem, uchText]) then
+      FActiveFieldName := EditFieldAt(PointF(X, Y), ActiveItemIndex);
     if FListFilterVisible and (Y >= FListHeaderHeight) and
        (Y < ListBodyTop) and (Hit.Kind = uchHeader) then
     begin
@@ -5672,7 +5762,10 @@ begin
     else if (FPressedHit.Kind = uchText) and
        (Hit.ItemIndex = FPressedHit.ItemIndex) and
        (Hit.TextPart = FPressedHit.TextPart) then
-      SelectTextHit(FPressedHit)
+    begin
+      SelectTextHit(FPressedHit);
+      if FEditable then SetSelectedIndex(Hit.ItemIndex);
+    end
     else if (FPressedHit.Kind = uchAction) and
       (Hit.Kind = uchAction) and
       (Hit.ItemIndex = FPressedHit.ItemIndex) and
@@ -5727,6 +5820,7 @@ const
 var
   PerfTimer: TUniPerfScope;
 begin
+  CancelEdit;
   PerfTimer := TUniPerfScope.Start(upcScroll);
   try
   inherited;
@@ -5759,6 +5853,459 @@ begin
   ClearHoverState;
 end;
 
+procedure TUniListView.SetEditable(const Value: Boolean);
+begin
+  if FEditable = Value then Exit;
+  FEditable := Value;
+  if not Value then CancelEdit;
+end;
+
+function TUniListView.GetEditing: Boolean;
+begin
+  Result := FEditItem <> nil;
+end;
+
+function TUniListView.GetEditText: string;
+begin
+  if FCellEditor <> nil then Result := FCellEditor.Text else Result := '';
+end;
+
+procedure TUniListView.SetEditText(const Value: string);
+begin
+  if Editing then FCellEditor.Text := Value;
+end;
+
+procedure TUniListView.CancelEdit;
+begin
+  if not Editing then Exit;
+  FEditItem := nil;
+  FEditColumn := nil;
+  FEditField := '';
+  FEditOriginal := TValue.Empty;
+  FEditError := '';
+  if FCellEditor <> nil then FCellEditor.Visible := False;
+  if FEditorBackground <> nil then FEditorBackground.Visible := False;
+  Redraw;
+end;
+
+function TUniListView.EditCellRect(const AItemIndex, AColumnIndex: Integer): TRectF;
+var
+  DisplayIndex: Integer;
+  BottomEdge: Single;
+begin
+  Result := TRectF.Empty;
+  if (FViewMode <> uvmList) or (AItemIndex < 0) or (AItemIndex >= FItems.Count) or
+     (AColumnIndex < 0) or (AColumnIndex >= FColumns.Count) then Exit;
+  if not FColumns[AColumnIndex].Visible then Exit;
+  EnsureLayout;
+  for DisplayIndex := FirstVisibleIndex to LastVisibleIndex do
+    if DisplayItemIndex(DisplayIndex) = AItemIndex then
+    begin
+      Result := ListRowRect(DisplayIndex);
+      Result.Left := ColumnScreenLeft(AColumnIndex);
+      Result.Right := Result.Left + FColumnWidths[AColumnIndex];
+      if FTreeMode and SameText(FColumns[AColumnIndex].FieldName, FTreeColumn) then
+      begin
+        Result.Left := Result.Left + TreeLevel(DisplayIndex) * FTreeIndent + FTreeIndent;
+        if CheckBoxesVisible then Result.Left := Result.Left + FTreeIndent;
+      end;
+      if not IsColumnFrozen(AColumnIndex) then Result.Left := Max(Result.Left, FrozenColumnsRight);
+      Result.Left := Max(Result.Left, 0);
+      Result.Right := Min(Result.Right, Width - ListActionsWidth(FItems[AItemIndex]) - 12);
+      BottomEdge := Height;
+      if FListFooterVisible then BottomEdge := BottomEdge - FListFooterHeight;
+      if (Result.Top < ListBodyTop) or (Result.Bottom > BottomEdge) or (Result.Width < 24) then
+        Result := TRectF.Empty
+      else Result.Inflate(-1, -1);
+      Exit;
+    end;
+end;
+
+function TUniListView.CardEditRect(const AItemIndex: Integer;
+  const AFieldName: string; const AForHitTest: Boolean): TRectF;
+var
+  R: TRectF;
+  DisplayIndex, I, BlockIndex: Integer;
+  X, Y, RightEdge, TrailingWidth, W: Single;
+  Values: array[0..3] of string;
+  Names: array[0..3] of string;
+  Cols: array[0..3] of TUniListColumn;
+  Sizes: array[0..3] of Single;
+  Eligible: Boolean;
+  Layout: TUniTextLayout;
+  Part: TUniTextPart;
+begin
+  Result := TRectF.Empty;
+  if (AFieldName = '') or (AItemIndex < 0) or (AItemIndex >= FItems.Count) then Exit;
+  EnsureLayout;
+  DisplayIndex := CardDisplayIndexOf(AItemIndex);
+  if DisplayIndex < 0 then Exit;
+  R := CardRect(DisplayIndex);
+  Names[0] := FCardTemplate.TitleField;
+  if CardTitleColumn <> nil then Names[0] := CardTitleColumn.FieldName;
+  Names[1] := FCardTemplate.TextField;
+  Names[2] := FCardTemplate.DetailField;
+  Sizes[0] := FTitleFontSize;
+  Sizes[1] := FFontSize;
+  Sizes[2] := FDetailFontSize;
+  Sizes[3] := FFontSize;
+  Eligible := False;
+  if FCardLayout <> uclFullWidth then
+  begin
+    Eligible := (FCardTemplate.ShowTitle and SameText(AFieldName, Names[0])) or
+      (FCardTemplate.ShowText and SameText(AFieldName, Names[1])) or
+      (FCardTemplate.ShowDetail and SameText(AFieldName, Names[2]));
+    PrepareItemTextLayout(AItemIndex, TextAvailableWidth(R));
+    for Part := utpTitle to utpDetail do
+      if SameText(AFieldName, Names[Ord(Part) - Ord(utpTitle)]) then
+      begin
+        Result := TextRect(AItemIndex, Part);
+        Break;
+      end;
+  end
+  else
+  begin
+    FullWidthValues(FItems[AItemIndex], Values[0], Values[1], Values[2], Values[3],
+      Cols[0], Cols[1], Cols[2], Cols[3]);
+    if FullWidthUsesRoles then
+      for I := 0 to 3 do
+        if Cols[I] <> nil then Names[I] := Cols[I].FieldName else Names[I] := '';
+    // A compound role displays several fields; the API can edit each source field.
+    if FullWidthUsesRoles then
+      for I := 0 to FColumns.Count - 1 do
+        if FColumns[I].VisibleInCards and SameText(FColumns[I].FieldName, AFieldName) then
+          case FColumns[I].CardRole of
+            ucrTitle: Names[0] := AFieldName;
+            ucrSubtitle: Names[1] := AFieldName;
+            ucrDetail: Names[2] := AFieldName;
+            ucrTrailing: Names[3] := AFieldName;
+          end;
+    for I := 0 to 3 do Eligible := Eligible or SameText(AFieldName, Names[I]);
+    X := R.Left + FULL_WIDTH_CARD_HORIZONTAL_PADDING;
+    if CheckBoxesVisible then X := X + FULL_WIDTH_CARD_CHECKBOX_SPACE;
+    if FCardTemplate.ShowIcon then X := X + FCardTemplate.IconBoxSize + FULL_WIDTH_CARD_ICON_GAP;
+    RightEdge := R.Right - FULL_WIDTH_CARD_HORIZONTAL_PADDING;
+    if CardTreeActive and CardTreeItemHasChildren(AItemIndex) then
+      RightEdge := RightEdge - FCardTreeNavigationIconSize - CARD_TREE_ICON_PADDING;
+    if CardTreeActive and (FCardTreeMode = ctmExplorer) and
+       FCardTreeExplorerShowChildCount and CardTreeItemIsParent(AItemIndex) then
+      RightEdge := RightEdge - CARD_TREE_BADGE_WIDTH - CARD_TREE_BADGE_GAP;
+    if FCardTemplate.ShowActions then
+      for I := FActions.Count - 1 downto 0 do
+        if ActionVisible(FItems[AItemIndex], FActions[I]) then
+          RightEdge := RightEdge - FActions[I].Width - FULL_WIDTH_CARD_ACTION_GAP;
+    if RightEdge < R.Right - FULL_WIDTH_CARD_HORIZONTAL_PADDING then
+      RightEdge := RightEdge - FULL_WIDTH_CARD_GAP;
+    Y := R.Top + FULL_WIDTH_CARD_VERTICAL_PADDING;
+    TrailingWidth := 0;
+    if Values[3] <> '' then
+      TrailingWidth := EnsureRange(EstimateTextWidth(Values[3], FFontSize),
+        FULL_WIDTH_CARD_TRAILING_MIN_WIDTH, R.Width * FULL_WIDTH_CARD_TRAILING_MAX_RATIO);
+    if SameText(AFieldName, Names[3]) and (TrailingWidth > 0) then
+      Result := RectF(RightEdge - TrailingWidth, Y, RightEdge, Y + FFontSize * 1.5)
+    else
+    begin
+      if TrailingWidth > 0 then RightEdge := RightEdge - TrailingWidth - FULL_WIDTH_CARD_GAP;
+      W := Max(1, RightEdge - X);
+      for BlockIndex := 0 to 2 do
+      begin
+        if Values[BlockIndex] = '' then Continue;
+        if (BlockIndex > 0) and (Y > R.Top + FULL_WIDTH_CARD_VERTICAL_PADDING) then
+          Y := Y + FULL_WIDTH_CARD_TITLE_GAP;
+        if BlockIndex = 0 then
+          Layout := BuildTextLayout(Values[BlockIndex], W, Sizes[BlockIndex], False, True,
+            FULL_WIDTH_CARD_TITLE_MAX_LINES)
+        else if BlockIndex = 1 then
+          Layout := BuildTextLayout(Values[BlockIndex], W, Sizes[BlockIndex],
+            FCardTemplate.WordWrap, FCardTemplate.Ellipsis, FULL_WIDTH_CARD_SUBTITLE_MAX_LINES)
+        else
+          Layout := BuildTextLayout(Values[BlockIndex], W, Sizes[BlockIndex],
+            FCardTemplate.WordWrap, FCardTemplate.Ellipsis, FULL_WIDTH_CARD_DETAIL_MAX_LINES);
+        if SameText(AFieldName, Names[BlockIndex]) then
+        begin
+          Result := RectF(X, Y, X + W, Y + Layout.Height);
+          Break;
+        end;
+        Y := Y + Layout.Height;
+      end;
+    end;
+  end;
+  // Empty fields have no painted text. Keyboard/API editing uses the card's text area.
+  if Result.IsEmpty and Eligible and not AForHitTest then
+  begin
+    X := R.Left + FCardTemplate.InnerPadding;
+    if CheckBoxesVisible then X := X + GRID_CARD_CHECKBOX_SIZE + GRID_CARD_CHECKBOX_GAP;
+    if FCardTemplate.ShowIcon then X := X + FCardTemplate.IconBoxSize + GRID_CARD_ICON_GAP;
+    Result := RectF(X, R.Top + FCardTemplate.InnerPadding, X + TextAvailableWidth(R),
+      R.Top + FCardTemplate.InnerPadding + 24);
+  end;
+  if Result.IsEmpty then Exit;
+  if not AForHitTest then Result.Bottom := Max(Result.Bottom, Result.Top + 24);
+  Result.Right := Min(Result.Right, Min(R.Right, Width) - 2);
+  if (Result.Top < 0) or (Result.Bottom > Min(R.Bottom, Height)) or
+     (Result.Left < 0) or (Result.Width < 24) then Result := TRectF.Empty;
+end;
+
+function TUniListView.BeginEdit(const AItemIndex, AColumnIndex: Integer): Boolean;
+begin
+  Result := False;
+  if (AColumnIndex < 0) or (AColumnIndex >= FColumns.Count) then Exit;
+  Result := BeginFieldEdit(AItemIndex, FColumns[AColumnIndex].FieldName);
+end;
+
+function TUniListView.BeginFieldEdit(const AItemIndex: Integer;
+  const AFieldName: string): Boolean;
+var
+  Bounds: TRectF;
+  Column: TUniListColumn;
+  Item: TUniListItem;
+  ItemIndex, ColumnIndex, I: Integer;
+begin
+  Result := False;
+  if not FEditable or not Enabled or (csDesigning in ComponentState) or
+     (csDestroying in ComponentState) or (AFieldName = '') then Exit;
+  if (AItemIndex < 0) or (AItemIndex >= FItems.Count) then Exit;
+  Item := FItems[AItemIndex];
+  if Editing and not CommitEdit then Exit;
+  ItemIndex := FItems.IndexOf(Item);
+  if (ItemIndex < 0) or not Item.Enabled or not FEditable then Exit;
+  Column := nil;
+  ColumnIndex := -1;
+  for I := 0 to FColumns.Count - 1 do
+    if SameText(FColumns[I].FieldName, AFieldName) then
+    begin
+      Column := FColumns[I];
+      ColumnIndex := I;
+      Break;
+    end;
+  if (Column <> nil) and Column.ReadOnly then Exit;
+  if FViewMode = uvmList then Bounds := EditCellRect(ItemIndex, ColumnIndex)
+  else Bounds := CardEditRect(ItemIndex, AFieldName);
+  if Bounds.IsEmpty then Exit;
+  if FCellEditor = nil then
+  begin
+    FEditorBackground := TRectangle.Create(Self);
+    FEditorBackground.Visible := False;
+    FEditorBackground.HitTest := False;
+    FEditorBackground.Stroke.Kind := TBrushKind.None;
+    FEditorBackground.Parent := Self;
+    FCellEditor := TUniFieldEdit.Create(Self);
+    FCellEditor.Visible := False;
+    FCellEditor.Parent := Self;
+    FCellEditor.OnKeyDown := EditorKeyDown;
+    FCellEditor.OnExit := EditorExit;
+  end;
+  FCellEditor.SetBounds(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
+  FCellEditor.Text := Item.FieldAsString(AFieldName);
+  FCellEditor.Hint := '';
+  FCellEditor.ShowHint := True;
+  FCellEditor.TextSettings.Font.Size := FFontSize;
+  FCellEditor.StyledSettings := [TStyledSetting.Family, TStyledSetting.Style, TStyledSetting.FontColor];
+  FEditOriginal := Item.Fields[AFieldName];
+  FEditField := AFieldName;
+  FActiveFieldName := AFieldName;
+  FEditDataType := ucdtText;
+  if Column <> nil then FEditDataType := Column.DataType;
+  case FEditDataType of
+    ucdtDateTime: FCellEditor.Text := DateTimeToStr(Item.FieldAsDateTime(AFieldName));
+    ucdtFloat: FCellEditor.Text := FloatToStr(Item.FieldAsFloat(AFieldName));
+  end;
+  FEditItem := Item;
+  FEditColumn := Column;
+  FEditError := '';
+  FSelectedIndex := ItemIndex;
+  FFilterEditColumn := -1;
+  FCellEditor.Visible := True;
+  FCellEditor.ApplyStyleLookup;
+  FEditorBackground.SetBounds(FCellEditor.Position.X, FCellEditor.Position.Y,
+    FCellEditor.Width, FCellEditor.Height);
+  FEditorBackground.Fill.Color := FCardSelectedColor or $FF000000;
+  FEditorBackground.Visible := True;
+  FEditorBackground.BringToFront;
+  FCellEditor.BringToFront;
+  Redraw;
+  FCellEditor.SetFocus;
+  FCellEditor.SelectAll;
+  Result := True;
+end;
+
+function TUniListView.EditFieldAt(const APoint: TPointF;
+  out AItemIndex: Integer): string;
+var
+  Hit: TUniCardHit;
+  ColumnIndex: Integer;
+begin
+  Result := '';
+  AItemIndex := -1;
+  Hit := HitTestAt(APoint);
+  if not (Hit.Kind in [uchItem, uchText]) then Exit;
+  AItemIndex := Hit.ItemIndex;
+  if FViewMode = uvmCards then
+  begin
+    for ColumnIndex := 0 to FColumns.Count - 1 do
+      if CardEditRect(Hit.ItemIndex, FColumns[ColumnIndex].FieldName, True).Contains(APoint) then
+        Exit(FColumns[ColumnIndex].FieldName);
+    if CardEditRect(Hit.ItemIndex, FCardTemplate.TitleField, True).Contains(APoint) then
+      Exit(FCardTemplate.TitleField);
+    if CardEditRect(Hit.ItemIndex, FCardTemplate.TextField, True).Contains(APoint) then
+      Exit(FCardTemplate.TextField);
+    if CardEditRect(Hit.ItemIndex, FCardTemplate.DetailField, True).Contains(APoint) then
+      Exit(FCardTemplate.DetailField);
+    Exit;
+  end;
+  for ColumnIndex := 0 to FColumns.Count - 1 do
+    if EditCellRect(Hit.ItemIndex, ColumnIndex).Contains(APoint) then
+      Exit(FColumns[ColumnIndex].FieldName);
+end;
+
+function TUniListView.BeginEditAt(const APoint: TPointF): Boolean;
+var
+  ItemIndex: Integer;
+  FieldName: string;
+begin
+  Result := False;
+  if not FEditable then Exit;
+  FieldName := EditFieldAt(APoint, ItemIndex);
+  if FieldName <> '' then
+    Result := BeginFieldEdit(ItemIndex, FieldName);
+end;
+
+function TUniListView.CommitEdit: Boolean;
+var
+  Item: TUniListItem;
+  FieldName, Input, ErrorText: string;
+  OldValue, NewValue: TValue;
+  IntegerValue: Int64;
+  FloatValue: Double;
+  DateValue: TDateTime;
+  BooleanValue, Valid: Boolean;
+begin
+  Result := not Editing;
+  if Result or FCommittingEdit then Exit;
+  if not FEditable or not Enabled or (FItems.IndexOf(FEditItem) < 0) or
+     ((FEditColumn <> nil) and FEditColumn.ReadOnly) then
+  begin
+    CancelEdit;
+    Exit(False);
+  end;
+  FCommittingEdit := True;
+  try
+    Item := FEditItem;
+    FieldName := FEditField;
+    OldValue := FEditOriginal;
+    Input := FCellEditor.Text;
+    Valid := True;
+    case FEditDataType of
+      ucdtInteger:
+        begin
+          Valid := TryStrToInt64(Trim(Input), IntegerValue);
+          if Valid then NewValue := TValue.From<Int64>(IntegerValue);
+        end;
+      ucdtFloat:
+        begin
+          Valid := TryStrToFloat(Trim(Input), FloatValue) and not IsNan(FloatValue) and not IsInfinite(FloatValue);
+          if Valid then NewValue := TValue.From<Double>(FloatValue);
+        end;
+      ucdtDateTime:
+        begin
+          Valid := TryStrToDateTime(Trim(Input), DateValue);
+          if Valid then NewValue := TValue.From<TDateTime>(DateValue);
+        end;
+      ucdtBoolean:
+        begin
+          Valid := TryStrToBool(Trim(Input), BooleanValue);
+          if Valid then NewValue := TValue.From<Boolean>(BooleanValue);
+        end;
+    else
+      NewValue := TValue.From<string>(Input);
+    end;
+    ErrorText := '';
+    if not Valid then ErrorText := 'Invalid value for ' + FieldName;
+    if Valid and Assigned(FOnValidateEdit) then
+      FOnValidateEdit(Self, Item, FieldName, NewValue, ErrorText);
+    // Validation code may clear/reload items or columns. Never use stale references.
+    if (FEditItem <> Item) or (FItems.IndexOf(Item) < 0) then Exit(False);
+    if ErrorText <> '' then
+    begin
+      FEditError := ErrorText;
+      FCellEditor.Hint := ErrorText;
+      FCellEditor.StyledSettings := FCellEditor.StyledSettings - [TStyledSetting.FontColor];
+      FCellEditor.TextSettings.FontColor := TAlphaColors.Red;
+      Exit(False);
+    end;
+    CancelEdit;
+    Item.SetField(FieldName, NewValue);
+    if FItems.IndexOf(Item) >= 0 then
+    begin
+      FSelectedIndex := FItems.IndexOf(Item);
+      if Assigned(FOnFieldEdited) then FOnFieldEdited(Self, Item, FieldName, OldValue, NewValue);
+    end;
+    Result := True;
+  finally
+    FCommittingEdit := False;
+  end;
+end;
+
+procedure TUniListView.EditorExit(Sender: TObject);
+begin
+  if Editing and not FCommittingEdit then CommitEdit;
+end;
+
+procedure TUniListView.EditorKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: WideChar; Shift: TShiftState);
+var
+  Fields: TStringList;
+  Item: TUniListItem;
+  CurrentField: string;
+  I, Index, Direction, ItemIndex: Integer;
+begin
+  if Key = vkTab then
+  begin
+    Key := 0;
+    KeyChar := #0;
+    Item := FEditItem;
+    CurrentField := FEditField;
+    if not CommitEdit then Exit;
+    ItemIndex := FItems.IndexOf(Item);
+    if ItemIndex < 0 then Exit;
+    Fields := TStringList.Create;
+    try
+      Fields.CaseSensitive := False;
+      for I := 0 to FColumns.Count - 1 do
+        if Fields.IndexOf(FColumns[I].FieldName) < 0 then Fields.Add(FColumns[I].FieldName);
+      if FViewMode = uvmCards then
+      begin
+        if Fields.IndexOf(FCardTemplate.TitleField) < 0 then Fields.Add(FCardTemplate.TitleField);
+        if Fields.IndexOf(FCardTemplate.TextField) < 0 then Fields.Add(FCardTemplate.TextField);
+        if Fields.IndexOf(FCardTemplate.DetailField) < 0 then Fields.Add(FCardTemplate.DetailField);
+      end;
+      Index := Fields.IndexOf(CurrentField);
+      if ssShift in Shift then Direction := -1 else Direction := 1;
+      for I := 1 to Fields.Count do
+      begin
+        Index := (Index + Direction + Fields.Count) mod Fields.Count;
+        if BeginFieldEdit(ItemIndex, Fields[Index]) then Break;
+      end;
+    finally
+      Fields.Free;
+    end;
+    if not Editing then SetFocus;
+  end
+  else if Key = vkEscape then
+  begin
+    CancelEdit;
+    SetFocus;
+    Key := 0;
+    KeyChar := #0;
+  end
+  else if Key = vkReturn then
+  begin
+    if CommitEdit then SetFocus;
+    Key := 0;
+    KeyChar := #0;
+  end;
+end;
+
 procedure TUniListView.DblClick;
 var
   ColumnIndex: Integer;
@@ -5766,6 +6313,11 @@ var
 begin
   inherited;
   MousePos := FMouseDownPos;
+  if BeginEditAt(MousePos) then
+  begin
+    FEditDoubleClick := True;
+    Exit;
+  end;
   ColumnIndex := -1;
   if FViewMode = uvmList then
     ColumnIndex := ListHeaderDividerHit(MousePos);
@@ -5782,8 +6334,26 @@ end;
 
 procedure TUniListView.KeyDown(var Key: Word; var KeyChar: WideChar;
   Shift: TShiftState);
+var
+  ColumnIndex: Integer;
 begin
   inherited;
+  if FEditable and (Key = vkF2) then
+  begin
+    if FActiveFieldName <> '' then
+      BeginFieldEdit(FSelectedIndex, FActiveFieldName)
+    else
+    begin
+      if FViewMode = uvmCards then
+        BeginFieldEdit(FSelectedIndex, FCardTemplate.TitleField);
+      if not Editing then
+        for ColumnIndex := 0 to FColumns.Count - 1 do
+          if BeginEdit(FSelectedIndex, ColumnIndex) then Break;
+    end;
+    Key := 0;
+    KeyChar := #0;
+    Exit;
+  end;
   if (FFilterEditColumn >= 0) and (FFilterEditColumn < FColumns.Count) then
   begin
     if Key = vkBack then
@@ -6324,6 +6894,7 @@ begin
     if ExpandedArray <> nil then
       for Element in ExpandedArray do
         FTreeExpandedKeys.Add(Element.Value);
+    if Editing then CancelEdit;
     OldCheckedCount := FCheckedCount;
     CheckedArray := Root.GetValue<TJSONArray>('treeChecked');
     FCheckBatch := True;
@@ -8959,6 +9530,7 @@ end;
 
 procedure TUniListView.SetScrollX(const Value: Single);
 begin
+  CancelEdit;
   FScrollX := Value;
   ClampScroll;
   Redraw;
@@ -8966,6 +9538,7 @@ end;
 
 procedure TUniListView.SetScrollY(const Value: Single);
 begin
+  CancelEdit;
   FScrollY := Value;
   ClampScroll;
   Redraw;

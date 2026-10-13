@@ -32,6 +32,7 @@ type
     FVisibleInCards: Boolean;
     FCardRole: TUniCardRole;
     FSortable: Boolean;
+    FReadOnly: Boolean;
     FFrozen: Boolean;
     FFormat: string;
     FFooterAggregate: TUniFooterAggregate;
@@ -53,6 +54,7 @@ type
     procedure SetVisible(const Value: Boolean);
     procedure SetVisibleInCards(const Value: Boolean);
     procedure SetCardRole(const Value: TUniCardRole);
+    procedure SetReadOnly(const Value: Boolean);
     procedure SetSortable(const Value: Boolean);
     procedure SetFrozen(const Value: Boolean);
     procedure SetFormat(const Value: string);
@@ -84,6 +86,7 @@ type
       write SetVisibleInCards default True;
     property CardRole: TUniCardRole read FCardRole write SetCardRole
       default ucrAuto;
+    property ReadOnly: Boolean read FReadOnly write SetReadOnly default False;
     property Sortable: Boolean read FSortable write SetSortable default True;
     property Frozen: Boolean read FFrozen write SetFrozen default False;
     property Format: string read FFormat write SetFormat;
@@ -132,6 +135,13 @@ begin
   FFilterOperator := ufoContains;
   FWrapText := False;
   FMaxLines := 0;
+end;
+
+procedure TUniListColumn.SetReadOnly(const Value: Boolean);
+begin
+  if FReadOnly = Value then Exit;
+  FReadOnly := Value;
+  Changed(False);
 end;
 
 procedure TUniListColumn.SetLayoutID(const Value: string);
@@ -332,6 +342,7 @@ begin
     FVisibleInCards := TUniListColumn(Source).VisibleInCards;
     FCardRole := TUniListColumn(Source).CardRole;
     FSortable := TUniListColumn(Source).Sortable;
+    FReadOnly := TUniListColumn(Source).ReadOnly;
     FFrozen := TUniListColumn(Source).Frozen;
     FFormat := TUniListColumn(Source).Format;
     FFooterAggregate := TUniListColumn(Source).FooterAggregate;

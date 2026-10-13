@@ -3,7 +3,7 @@
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Actions, System.Math, System.UITypes, System.IOUtils,
+  System.SysUtils, System.Rtti, System.Classes, System.Actions, System.Math, System.UITypes, System.IOUtils,
   FMX.Types, FMX.Controls, FMX.Controls.Presentation, FMX.Forms, FMX.StdCtrls,
   FMX.Edit, FMX.ListBox, FMX.Objects, FMX.Layouts, FMX.ActnList, FMX.Filter.Effects, FMX.Dialogs, FMX.Styles,
   UniList.Types, UniList.Items, UniList.Columns, UniList.Theme, UniList.Rules,
@@ -91,6 +91,8 @@ type
     FUpdatingStyles: Boolean;
     FSelectedStyleIndex: Integer;
     procedure InstallStyle(const AStyle: TStyleBook);
+    procedure FieldEdited(Sender: TObject; AItem: TUniListItem;
+      const AFieldName: string; const AOldValue, ANewValue: TValue);
     procedure ConfigureList;
     procedure PopulateDemo(const AItemCount: Integer);
     procedure FillStyles;
@@ -141,6 +143,13 @@ begin
   ApplySelectedStyle;
 end;
 
+procedure TMainForm.FieldEdited(Sender: TObject; AItem: TUniListItem;
+  const AFieldName: string; const AOldValue, ANewValue: TValue);
+begin
+  FEventText := 'Saved: ' + AFieldName;
+  UpdateStatus;
+end;
+
 procedure TMainForm.ConfigureList;
 var
   Column: TUniListColumn;
@@ -149,6 +158,10 @@ var
 begin
   UniListView1.BeginUpdate;
   try
+    UniListView1.Editable := True;
+    UniListView1.OnFieldEdited := FieldEdited;
+    UniListView1.Hint := 'Double-click a field or press F2 to edit. Enter saves; Esc cancels.';
+    UniListView1.ShowHint := True;
     UniListView1.Columns.Clear;
     Column := UniListView1.Columns.Add;
     Column.LayoutID := 'name';
@@ -182,12 +195,14 @@ begin
     Column := UniListView1.Columns.Add;
     Column.LayoutID := 'id';
     Column.FieldName := 'id';
+    Column.ReadOnly := True;
     Column.Visible := False;
     Column.VisibleInCards := False;
     Column.CardRole := ucrHidden;
     Column := UniListView1.Columns.Add;
     Column.LayoutID := 'parent_id';
     Column.FieldName := 'parent_id';
+    Column.ReadOnly := True;
     Column.Visible := False;
     Column.VisibleInCards := False;
     Column.CardRole := ucrHidden;
@@ -629,6 +644,8 @@ begin
     FEventText := Format('%s: %s', [AActionName,
       UniListView1.Items[AItemIndex].FieldAsString('name')]);
   UpdateStatus;
+  if SameText(AActionName, 'edit') then
+    UniListView1.BeginFieldEdit(AItemIndex, 'name');
 end;
 
 procedure TMainForm.UniListView1ItemCheckChanged(Sender: TObject;

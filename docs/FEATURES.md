@@ -8,6 +8,15 @@
 - Stable resize behavior with batched layout and update controls.
 - Named item fields with string, Boolean, integer and date/time accessors.
 
+## Field Editing
+
+- Opt-in editing in list/tree cells, card templates and full-width card roles.
+- One reusable FMX editor with form StyleBook support; no editor per item.
+- Double-click editing, F2 on the active clicked field, Enter/Escape and Tab/Shift+Tab within an item.
+- Typed conversion, per-column ReadOnly, validation and post-save events.
+- Programmatic BeginFieldEdit/BeginEdit, CommitEdit/CancelEdit and error access.
+- Safe cancellation when layout or source collection changes.
+
 ## Cards And Actions
 
 - Design-time `CardTemplate` configuration.
